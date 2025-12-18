@@ -30,6 +30,7 @@ export async function createCourse(formData: FormData) {
     data: {
       title: validation.data.title,
       description: validation.data.description || "",
+      slug: validation.data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Date.now(),
     },
   });
 

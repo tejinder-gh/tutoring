@@ -1,4 +1,5 @@
 import FloatingCTA from "@/components/FloatingCTA";
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeContext";
 import { routing } from '@/i18n/routing';
@@ -56,9 +57,12 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <Navbar />
-            <main className="pt-16 pb-16 min-h-screen">
-              {children}
-            </main>
+            <div className="flex flex-col min-h-screen">
+              <main className="flex-grow pt-16">
+                {children}
+              </main>
+              <Footer />
+            </div>
             <FloatingCTA seatsLeft={12} />
           </ThemeProvider>
         </NextIntlClientProvider>

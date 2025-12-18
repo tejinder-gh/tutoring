@@ -32,6 +32,18 @@ export default function Navbar() {
             {t("courses")}
           </Link>
           <Link
+            href="/about"
+            className="text-text-muted hover:text-foreground transition"
+          >
+            {t("about")}
+          </Link>
+           <Link
+            href="/contact"
+            className="text-text-muted hover:text-foreground transition"
+          >
+            {t("contact")}
+          </Link>
+          <Link
             href="/register"
             className="text-text-muted hover:text-foreground transition"
           >

@@ -1,35 +1,74 @@
 {
   "hero": {
-    "title": "Same Industry level experience",
-    "subtitle": "Get hands-on real world experience with closely related to"
+    "title": "Industry-Level Experience. Real Skills. Real Results.",
+    "subtitle": "Master production-grade engineering through hands-on projects, structured mentorship, and proven career outcomes."
   },
   "cta": {
     "apply": "Apply Now",
-    "viewCourses": "View Courses"
+    "viewCourses": "Explore Curriculum",
+    "enrollNow": "Enroll in {tier}"
   },
   "nav": {
     "courses": "Courses",
     "about": "About",
     "contact": "Contact",
     "login": "Login",
-    "register": "Register"
+    "register": "Register",
+    "careers": "Careers",
+    "legal": "Legal"
   },
-  "problemSolution": {
-    "title": "Why Traditional Education Fails",
-    "subtitle": "We bridge the gap between academic theory and industry reality.",
-    "problemTitle": "The Problem",
-    "solutionTitle": "Our Solution",
-    "problems": {
-      "theory": "Colleges teach outdated theory",
-      "tools": "Local centers teach tools, not engineering",
-      "portfolio": "Lack of portfolio depth",
-      "debugging": "No debugging skills"
+  "about": {
+    "title": "About Us",
+    "hero": {
+      "title": "Building the Future of Education",
+      "subtitle": "We are on a mission to bridge the gap between academic learning and industry requirements."
     },
-    "solutions": {
-      "skills": "Industry-relevant, production skills",
-      "principles": "Focus on engineering principles",
-      "projects": "3+ Real production-style projects",
-      "reading": "Intensive debugging & code reading"
+    "mission": {
+      "title": "Our Mission",
+      "content": "To provide accessible, high-quality technical education that empowers individuals to succeed in the modern digital economy."
+    },
+    "values": {
+      "title": "Our Values",
+      "1": "Excellence in Teaching",
+      "2": "Student-Centric Approach",
+      "3": "Industry Relevance"
+    }
+  },
+  "careers": {
+    "title": "Join Our Team",
+    "subtitle": "Help us shape the next generation of engineers.",
+    "noOpenings": "There are currently no open positions. Please check back later."
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "content": "This is a placeholder for the Privacy Policy. We respect your data."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "content": "This is a placeholder for the Terms of Service."
+    }
+  },
+  "theGap": {
+    "title": "Bridging the Industry-Academia Gap",
+    "subtitle": "Most programs teach you to code. We train you to engineer.",
+    "leftTitle": "Where Most Programs Stop",
+    "rightTitle": "Where We Take You",
+    "comparison": {
+      "left": {
+        "1": "Surface-level syntax mastery",
+        "2": "Isolated tutorial projects",
+        "3": "No debugging experience",
+        "4": "Theory without context",
+        "5": "Limited portfolio depth"
+      },
+      "right": {
+        "1": "Production-grade architecture",
+        "2": "End-to-end system integration",
+        "3": "Intensive code reading & debugging",
+        "4": "Real-world engineering principles",
+        "5": "3+ portfolio-ready projects"
+      }
     }
   },
   "floating": {
@@ -49,58 +88,184 @@
     },
     "quote": "\"We don't promise jobs. We build developers who <highlight>earn</highlight> jobs.\""
   },
+  "analogy": {
+    "title": "The Career Progression",
+    "subtitle": "Think of software development like building a city—each tier represents mastery of a different scale of responsibility.",
+    "tiers": {
+      "junior": {
+        "role": "The Specialist Craftsperson",
+        "description": "Like a skilled plumber executing precise blueprints—you master foundational tools and execute well-defined tasks with reliability and precision."
+      },
+      "intermediate": {
+        "role": "The Site Foreman",
+        "description": "Like a construction foreman integrating systems—you coordinate plumbing, electrical, and framing independently, ensure quality through testing, and handle unexpected issues."
+      },
+      "senior": {
+        "role": "The Lead Architect",
+        "description": "Like a city architect designing neighborhoods—you define scalable infrastructure, mitigate risks (zoning, security), and present strategic vision to stakeholders."
+      }
+    }
+  },
   "courses": {
     "title": "The Engineer's Roadmap",
-    "subtitle": "A structured path from \"Hello World\" to your first offer letter. We don't sell courses; we build careers.",
-    "roadmap": {
-      "fundamentals": {
-        "title": "Fundamentals",
-        "subtitle": "The Foundation",
-        "description": "Build a rock-solid base. Master the syntax, logic, and core principles that every engineer needs.",
-        "cta": "Course Details",
-        "features": {
-          "basics": "Language Basics (JS/PHP)",
-          "structures": "Data Structures Introduction",
-          "algo": "Algorithmic Thinking",
-          "git": "Version Control (Git)"
-        }
+    "subtitle": "A structured path from 'Hello World' to your first offer letter. We don't sell courses; we build careers.",
+    "viewDetails": "View Full Curriculum",
+    "tiers": {
+      "tier1": {
+        "title": "Tier 1: Junior Developer Career Preparation",
+        "role": "The Executor Track",
+        "description": "Enable students to efficiently execute well-defined programming tasks under guidance, while establishing foundational Computer Science knowledge, structured collaboration habits, and reliable persistence skills.",
+        "experience": "0–2 Years Equivalent Experience",
+        "modules": [
+          {
+            "code": "M1",
+            "title": "Web Foundations & Git",
+            "tech": "Semantic HTML5, CSS3 (Flexbox/Grid), Responsive Design, ARIA, Git Workflow",
+            "outcome": "Personal Portfolio Website (fully responsive, accessible)",
+            "details": "Master foundational web technologies and version control. Build a professional portfolio demonstrating semantic structure and responsive design."
+          },
+          {
+            "code": "M2",
+            "title": "Core JavaScript & Frontend",
+            "tech": "JavaScript ES6+ (scope, closures), DOM Manipulation, Promises, Async/Await, Big-O Notation",
+            "outcome": "API Integration Project (external read-only API)",
+            "details": "Deep dive into JavaScript fundamentals and asynchronous programming. Successfully integrate external APIs into dynamic web applications."
+          },
+          {
+            "code": "M2.5",
+            "title": "Interview Fundamentals (DSA)",
+            "tech": "Data Structures (Array, LinkedList, Stack, Queue, HashMap, Tree, Graph), Algorithms (Two Pointers, Sliding Window, BFS/DFS, Binary Search)",
+            "outcome": "Weekly: 2 LeetCode Easy + 1 Medium. Biweekly: 45-min Mock Technical Screen",
+            "details": "Master foundational algorithms and data structures essential for technical interviews. Regular timed assessments build problem-solving speed."
+          },
+          {
+            "code": "M3",
+            "title": "React Library Immersion",
+            "tech": "React JSX, Functional Components, Hooks (useState, useEffect), Client-side Routing, UI Libraries, Linting, Component Testing",
+            "outcome": "Component Library with Clean Git History",
+            "details": "Build production-quality React applications following modern best practices. Implement robust component architecture with proper testing."
+          },
+          {
+            "code": "M4",
+            "title": "Backend, Persistence & Production Basics",
+            "tech": "Node.js/Express, CRUD APIs, SQLite, Production Debugging (Logs, Monitoring), DataDog/Sentry Basics",
+            "outcome": "Deployed API with Logs & Cross-Browser Testing",
+            "details": "Create backend services with proper persistence and production-ready monitoring. Deploy to real hosting environments."
+          }
+        ],
+        "softSkills": {
+          "focus": "Curiosity & Adaptability, Team Communication, Learning from Guidance",
+          "assessment": "Weekly PR Review Exercises (Scored Rubric), Daily Standups, Constructive Feedback Receptiveness",
+          "details": "Develop essential collaboration skills through structured peer reviews and daily communication rituals."
+        },
+        "capstone": "Personal Portfolio Website + API Integration Project with Production Deployment"
       },
-      "handsOn": {
-        "title": "Hands-on Training",
-        "subtitle": "The Build Phase",
-        "description": "Stop watching tutorials. Start building real production software in a studio environment.",
-        "cta": "Explore more",
-        "features": {
-          "stack": "Full Stack Development (MERN)",
-          "reviews": "Daily Code Reviews",
-          "projects": "3 Production Projects",
-          "arch": "System Architecture"
-        }
+      "tier2": {
+        "title": "Tier 2: Intermediate Developer Career Preparation",
+        "role": "The Independent Problem-Solver Track",
+        "description": "Produce autonomous full-stack specialists capable of independent execution, mastering system integration, robust quality assurance, and incident management.",
+        "experience": "3–5 Years Equivalent Experience",
+        "modules": [
+          {
+            "code": "M5",
+            "title": "Advanced Frontend Engineering",
+            "tech": "Advanced React Hooks (useReducer, Custom Hooks), State Management (Redux/Zustand), TypeScript (Mandatory), Performance Optimization (Memoization, Throttling, Core Web Vitals)",
+            "outcome": "Performance-Optimized TypeScript Application",
+            "details": "Master complex state management and performance optimization. Mandatory TypeScript adoption across all client-side code."
+          },
+          {
+            "code": "M6",
+            "title": "Robust API Architecture & Management",
+            "tech": "Node.js/Express with TypeScript, RESTful API Design, Authentication (JWT), Authorization, API Versioning, Backwards Compatibility, Migration Strategies",
+            "outcome": "Secure, Versioned REST API",
+            "details": "Design production-grade APIs with proper authentication, versioning, and migration paths for long-term maintainability."
+          },
+          {
+            "code": "M7",
+            "title": "Data Persistence, Modeling, and Integration",
+            "tech": "Database Architecture (Logical & Physical Modeling), SQL (ORMs, Transactions), NoSQL (MongoDB), Database Scalability (Connection Pooling)",
+            "outcome": "Complex, Well-Modeled Database Schema + External API Integration",
+            "details": "Architect robust data models for both relational and non-relational databases. Integrate multiple complex external services."
+          },
+          {
+            "code": "M8",
+            "title": "Production Reliability & Incident Response",
+            "tech": "Test-Driven Development (TDD), Critical Path Testing (Auth, Payment, Data Loss), 10+ E2E Integration Tests, Structured Logging, Monitoring/Alerting (SLOs), Error Handling, Graceful Degradation",
+            "outcome": "Chaos Engineering Simulation (survive 3 random failures) + Incident Response Simulation (RCA/Post-Mortem)",
+            "details": "Build resilient systems with comprehensive testing. Practice debugging under pressure through simulated production incidents."
+          }
+        ],
+        "softSkills": {
+          "focus": "Prioritization & Time Management, Advanced Creative Problem-Solving, Emotional Intelligence (EQ)",
+          "assessment": "Leading PR Review Sections (Scored Rubric), Managing Extended Scope, Technical Blog Post (Complex Concept)",
+          "details": "Navigate complex trade-offs and manage long-term projects. Lead code reviews focusing on architecture and maintainability."
+        },
+        "capstone": "Robust Full-Stack Service with Critical Path Test Coverage + Complex External Service Integration"
       },
-      "career": {
-        "title": "Career Advancement",
-        "subtitle": "The Launch",
-        "description": "Transition from coder to professional engineer. Focus on scaling, performance, and leadership.",
-        "cta": "Know more",
-        "features": {
-          "ts": "Advanced TypeScript",
-          "devops": "DevOps & CI/CD",
-          "interview": "Interview Preparation",
-          "assurance": "Placement Assurance"
-        }
+      "tier3": {
+        "title": "Tier 3: Senior Developer Career Preparation",
+        "role": "The Architect Track",
+        "description": "Develop strategic architects and leaders capable of translating ambiguous business requirements into actionable system architectures and driving organizational impact through influence.",
+        "experience": "5+ Years Equivalent Experience",
+        "modules": [
+          {
+            "code": "M9",
+            "title": "System Design Fundamentals",
+            "tech": "Distributed Systems (Horizontal Scaling, Load Balancing), CAP Theorem, Messaging Systems (Kafka), Advanced Caching (Consistent Hashing), Case Studies (Netflix, Uber Architecture)",
+            "outcome": "Comprehensive System Design Document (SDD)",
+            "details": "Master distributed systems architecture. Analyze real-world system designs and create comprehensive architectural documentation."
+          },
+          {
+            "code": "M10",
+            "title": "Cloud, DevOps, and Observability",
+            "tech": "Cloud Fundamentals (AWS: IAM, Compute, Storage), Serverless Computing, Advanced CI/CD Pipelines, Infrastructure as Code (IaC), Container Orchestration (Kubernetes)",
+            "outcome": "Full DevOps Implementation Diagram (CI/CD Pipeline + IaC Structure)",
+            "details": "Implement production-grade cloud infrastructure. Design and document complete DevOps workflows."
+          },
+          {
+            "code": "M11",
+            "title": "Advanced Security and Performance",
+            "tech": "Multi-Factor Authentication (MFA), Content Security Policy (CSP), Security Risk Management, Performance Auditing, Core Web Vitals, Optimization Techniques",
+            "outcome": "Security Risk Mitigation Plan + Performance Audit",
+            "details": "Deep dive into security hardening and performance optimization. Make autonomous decisions weighing complex trade-offs."
+          },
+          {
+            "code": "M12",
+            "title": "Executive Leadership and Architectural Defense",
+            "tech": "Technical Debt Management, Quality Standards, Mentorship & Constructive Feedback, Custom API Design, Backend Framework Architecture",
+            "outcome": "Architectural Defense before CTO Panel (2/3 Approval Required)",
+            "details": "Present architecture to 3 real CTOs/Staff Engineers. Document feedback, iterate, and defend until approval—demonstrating organizational influence."
+          }
+        ],
+        "softSkills": {
+          "focus": "Analytical Thinking, Stakeholder Communication, Decision-Making & Risk Mitigation, Mentorship & Conflict Resolution",
+          "assessment": "Technical RFC Writing, Stakeholder Influence Simulations, CTO Panel Defense, Leading Team Code Reviews",
+          "details": "Translate technical decisions for non-technical executives. Guide junior engineers and resolve team conflicts effectively."
+        },
+        "capstone": "Architectural Review and Defense: Present to CTO Panel, Iterate Based on Feedback, Achieve 2/3 Approval"
       }
     },
-    "detail": {
-      "level": "Level",
-      "enroll": "Enroll Now",
-      "syllabus": "View Syllabus",
-      "students": "Students",
-      "certificate": "Certificate Included",
-      "learn": "What You'll Learn",
-      "curriculum": "Course Curriculum",
-      "instructors": "Your Instructors",
-      "lessons": "Lessons",
-      "comingSoon": "Detailed learning outcomes coming soon."
+    "prReview": {
+      "title": "Soft Skills Measurement: PR Review Scoring Rubric",
+      "subtitle": "Formalizing communication, EQ, and mentorship as core technical competencies across all tiers.",
+      "passingScore": "Average 12/15 points across module to pass",
+      "criteria": [
+        {
+          "name": "Actionable Feedback Given",
+          "focus": "Quality of technical guidance, adherence to best practices, clarity of writing, helpfulness to recipient",
+          "scale": "0–5 Points"
+        },
+        {
+          "name": "Graceful Response to Criticism",
+          "focus": "Emotional Intelligence (EQ) & Conflict Resolution. Professional acceptance and application of constructive criticism",
+          "scale": "0–5 Points"
+        },
+        {
+          "name": "Code Improvement Demonstrated",
+          "focus": "Degree of successful integration of feedback to enhance code quality, maintainability, or security",
+          "scale": "0–5 Points"
+        }
+      ]
     }
   },
   "contact": {
@@ -145,7 +310,20 @@
     "continue": "Continue"
   },
   "footer": {
+    "description": "Empowering the next generation of software engineers with industry-ready skills.",
     "copyright": "Future Ready Tutoring. All rights reserved.",
-    "address": "Model Town, Ludhiana"
+    "address": "Model Town, Ludhiana",
+    "links": {
+      "company": "Company",
+      "about": "About Us",
+      "careers": "Careers",
+      "contact": "Contact",
+      "legal": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "courses": "Courses",
+      "resources": "Resources"
+    },
+    "contact": "Contact Us"
   }
 }

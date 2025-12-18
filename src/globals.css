@@ -15,22 +15,50 @@
 }
 
 :root {
-  /* Light theme */
-  --background: #F8FAFC;
-  --foreground: #0F172A;
-  --primary: #FBBF24;
-  --accent: #F1F5F9;
-  --border: #E6E9EE;
-  --text-muted: #6B7280;
+  /* Apple-inspired Light theme */
+  --background: #FAFAFA;
+  /* Softer white */
+  --foreground: #1D1D1F;
+  /* Apple's dark gray */
+  --primary: #0071E3;
+  /* Apple blue */
+  --secondary: #FF9500;
+  /* Apple orange */
+  --accent: #F5F5F7;
+  /* Light gray accent */
+  --border: #D2D2D7;
+  /* Apple border gray */
+  --text-muted: #6E6E73;
+  /* Apple muted text */
+
+  /* Gradient support */
+  --gradient-start: #0071E3;
+  --gradient-end: #005BB5;
+  --gradient-mesh-1: rgba(0, 113, 227, 0.1);
+  --gradient-mesh-2: rgba(255, 149, 0, 0.08);
 }
 
 [data-theme="dark"] {
-  --background: #071025;
-  --foreground: #E6EEF6;
-  --primary: #FBBF24;
-  --accent: #0B1220;
-  --border: #132029;
-  --text-muted: #94A3B8;
+  --background: #000000;
+  /* Pure black */
+  --foreground: #F5F5F7;
+  /* Light gray text */
+  --primary: #0A84FF;
+  /* Brighter blue for dark */
+  --secondary: #FF9F0A;
+  /* Brighter orange for dark */
+  --accent: #1C1C1E;
+  /* Dark gray accent */
+  --border: #38383A;
+  /* Dark border */
+  --text-muted: #98989D;
+  /* Muted text for dark */
+
+  /* Gradient support for dark mode */
+  --gradient-start: #0A84FF;
+  --gradient-end: #0066CC;
+  --gradient-mesh-1: rgba(10, 132, 255, 0.15);
+  --gradient-mesh-2: rgba(255, 159, 10, 0.1);
 }
 
 html,
@@ -85,4 +113,42 @@ select:focus {
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+/* Apple-inspired gradient utilities */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+}
+
+.gradient-mesh {
+  background:
+    radial-gradient(circle at 20% 50%, var(--gradient-mesh-1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--gradient-mesh-2) 0%, transparent 50%);
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .glass {
+  background: rgba(28, 28, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Enhanced shadows for depth */
+.shadow-elegant {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .shadow-elegant {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
 }
