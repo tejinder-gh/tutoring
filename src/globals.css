@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-text-muted: var(--text-muted);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-default: 0.75rem;
+}
+
+:root {
+  /* Light theme */
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --primary: #FBBF24;
+  --accent: #F1F5F9;
+  --border: #E6E9EE;
+  --text-muted: #6B7280;
+}
+
+[data-theme="dark"] {
+  --background: #071025;
+  --foreground: #E6EEF6;
+  --primary: #FBBF24;
+  --accent: #0B1220;
+  --border: #132029;
+  --text-muted: #94A3B8;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography and common elements */
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Small utility defaults used across the app */
+.bg-card {
+  background-color: var(--accent);
+}
+
+.border-default {
+  border-color: var(--border);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* Make selection color align with brand */
+::selection {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+/* Small responsive helpers */
+.container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

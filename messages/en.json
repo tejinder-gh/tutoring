@@ -1,0 +1,151 @@
+{
+  "hero": {
+    "title": "Same Industry level experience",
+    "subtitle": "Get hands-on real world experience with closely related to"
+  },
+  "cta": {
+    "apply": "Apply Now",
+    "viewCourses": "View Courses"
+  },
+  "nav": {
+    "courses": "Courses",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register"
+  },
+  "problemSolution": {
+    "title": "Why Traditional Education Fails",
+    "subtitle": "We bridge the gap between academic theory and industry reality.",
+    "problemTitle": "The Problem",
+    "solutionTitle": "Our Solution",
+    "problems": {
+      "theory": "Colleges teach outdated theory",
+      "tools": "Local centers teach tools, not engineering",
+      "portfolio": "Lack of portfolio depth",
+      "debugging": "No debugging skills"
+    },
+    "solutions": {
+      "skills": "Industry-relevant, production skills",
+      "principles": "Focus on engineering principles",
+      "projects": "3+ Real production-style projects",
+      "reading": "Intensive debugging & code reading"
+    }
+  },
+  "floating": {
+    "seatsLeft": "{count, plural, =1 {Only 1 seat left!} other {Only {count} seats left!}}",
+    "deadline": "Applications close in 3 days",
+    "applyNow": "Apply Now",
+    "reserve": "Reserve Your Spot Now"
+  },
+  "trust": {
+    "stats": {
+      "placementLabel": "Placement Target",
+      "placementSub": "within 6 months",
+      "salaryLabel": "Average Salary",
+      "salarySub": "starting package",
+      "assuranceLabel": "Placement Assurance",
+      "assuranceSub": "Or free repeat support"
+    },
+    "quote": "\"We don't promise jobs. We build developers who <highlight>earn</highlight> jobs.\""
+  },
+  "courses": {
+    "title": "The Engineer's Roadmap",
+    "subtitle": "A structured path from \"Hello World\" to your first offer letter. We don't sell courses; we build careers.",
+    "roadmap": {
+      "fundamentals": {
+        "title": "Fundamentals",
+        "subtitle": "The Foundation",
+        "description": "Build a rock-solid base. Master the syntax, logic, and core principles that every engineer needs.",
+        "cta": "Course Details",
+        "features": {
+          "basics": "Language Basics (JS/PHP)",
+          "structures": "Data Structures Introduction",
+          "algo": "Algorithmic Thinking",
+          "git": "Version Control (Git)"
+        }
+      },
+      "handsOn": {
+        "title": "Hands-on Training",
+        "subtitle": "The Build Phase",
+        "description": "Stop watching tutorials. Start building real production software in a studio environment.",
+        "cta": "Explore more",
+        "features": {
+          "stack": "Full Stack Development (MERN)",
+          "reviews": "Daily Code Reviews",
+          "projects": "3 Production Projects",
+          "arch": "System Architecture"
+        }
+      },
+      "career": {
+        "title": "Career Advancement",
+        "subtitle": "The Launch",
+        "description": "Transition from coder to professional engineer. Focus on scaling, performance, and leadership.",
+        "cta": "Know more",
+        "features": {
+          "ts": "Advanced TypeScript",
+          "devops": "DevOps & CI/CD",
+          "interview": "Interview Preparation",
+          "assurance": "Placement Assurance"
+        }
+      }
+    },
+    "detail": {
+      "level": "Level",
+      "enroll": "Enroll Now",
+      "syllabus": "View Syllabus",
+      "students": "Students",
+      "certificate": "Certificate Included",
+      "learn": "What You'll Learn",
+      "curriculum": "Course Curriculum",
+      "instructors": "Your Instructors",
+      "lessons": "Lessons",
+      "comingSoon": "Detailed learning outcomes coming soon."
+    }
+  },
+  "contact": {
+    "success": {
+      "title": "You're In! 🎉",
+      "message": "Our team will call you within 24 hours to discuss your career goals."
+    },
+    "form": {
+      "title": "Start Your Journey",
+      "subtitle": "Get a free consultation and secure your spot in the next cohort.",
+      "stepTitles": {
+        "basic": "Basic Information",
+        "track": "Select Your Track",
+        "final": "Final Details"
+      },
+      "goalsLabel": "What's your career goal?",
+      "statusPlaceholder": "Select your status",
+      "name": "Full Name",
+      "phone": "Phone Number",
+      "email": "Email Address",
+      "status": "Current Status",
+      "options": {
+        "student": "Student",
+        "graduate": "Graduate (Job Seeking)",
+        "professional": "Working Professional",
+        "other": "Other"
+      },
+      "error": "Something went wrong. Please try again.",
+      "submitting": "Submitting...",
+      "submit": "Reserve My Spot – Free Consultation"
+    }
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "subtitle": "Future Ready Internal System",
+    "emailLabel": "Email address",
+    "passwordLabel": "Password",
+    "submit": "Sign in"
+  },
+  "common": {
+    "back": "Back",
+    "continue": "Continue"
+  },
+  "footer": {
+    "copyright": "Future Ready Tutoring. All rights reserved.",
+    "address": "Model Town, Ludhiana"
+  }
+}

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: future-ready-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3001:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/tutoring
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_TRUST_HOST=true
+      - AUTH_URL=http://localhost:3001
+    depends_on:
+      - db
+    networks:
+      - tutoring-network
+
+  db:
+    container_name: future-ready-db
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tutoring
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - tutoring-network
+
+networks:
+  tutoring-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
