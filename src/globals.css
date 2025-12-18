@@ -4,9 +4,13 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
   --color-accent: var(--accent);
   --color-border: var(--border);
   --color-text-muted: var(--text-muted);
+
+  --color-white: #ffffff;
+  --color-black: #000000;
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -76,8 +80,11 @@ body {
 
 /* Typography and common elements */
 a {
-  color: var(--primary);
   text-decoration: none;
+}
+
+a:hover {
+  opacity: 0.8;
 }
 
 button:focus,

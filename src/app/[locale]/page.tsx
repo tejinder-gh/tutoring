@@ -65,15 +65,15 @@ export default function HomePage() {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-12 divide-y md:divide-y-0 md:divide-x divide-border/30">
             <div className="text-center px-6 py-6 md:py-0">
-              <div className="text-5xl md:text-6xl font-black bg-clip-text text-transparent gradient-primary mb-3">65-75%</div>
+              <div className="text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 mb-3">65-75%</div>
               <div className="text-xs font-semibold uppercase tracking-widest text-text-muted">{t("trust.stats.placementLabel")}</div>
             </div>
             <div className="text-center px-6 py-6 md:py-0">
-              <div className="text-5xl md:text-6xl font-black bg-clip-text text-transparent gradient-primary mb-3">₹4.5L+</div>
+              <div className="text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 mb-3">₹4.5L+</div>
               <div className="text-xs font-semibold uppercase tracking-widest text-text-muted">{t("trust.stats.salaryLabel")}</div>
             </div>
             <div className="text-center px-6 py-6 md:py-0">
-              <div className="text-5xl md:text-6xl font-black bg-clip-text text-transparent gradient-primary mb-3">100%</div>
+              <div className="text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 mb-3">100%</div>
               <div className="text-xs font-semibold uppercase tracking-widest text-text-muted">{t("trust.stats.assuranceLabel")}</div>
             </div>
           </div>
@@ -146,7 +146,7 @@ export default function HomePage() {
           <div className="space-y-16">
             {/* Tier 1 */}
             <div className="rounded-3xl bg-white dark:bg-slate-900 border border-border/50 shadow-elegant overflow-hidden">
-              <div className="p-10 lg:p-12 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 border-b border-border/50">
+              <div className="p-10 lg:p-12 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-b border-border/50">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                   <div>
                     <div className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold mb-4">
@@ -188,7 +188,7 @@ export default function HomePage() {
 
             {/* Tier 2 */}
             <div className="rounded-3xl bg-white dark:bg-slate-900 border border-border/50 shadow-elegant overflow-hidden">
-              <div className="p-10 lg:p-12 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-900 border-b border-border/50">
+              <div className="p-10 lg:p-12 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 border-b border-border/50">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                   <div>
                     <div className="inline-block px-4 py-2 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 text-sm font-bold mb-4">
@@ -230,7 +230,7 @@ export default function HomePage() {
 
             {/* Tier 3 */}
             <div className="rounded-3xl bg-white dark:bg-slate-900 border border-border/50 shadow-elegant overflow-hidden">
-              <div className="p-10 lg:p-12 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-slate-800 dark:to-slate-900 border-b border-border/50">
+              <div className="p-10 lg:p-12 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950 border-b border-border/50">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                   <div>
                     <div className="inline-block px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-bold mb-4">
