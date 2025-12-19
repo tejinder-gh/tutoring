@@ -20,7 +20,7 @@ export default function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-40 h-16 bg-background border-b border-border flex items-center px-6">
       <div className="container flex items-center gap-6">
-        <Link href="/" className="text-lg font-bold text-foreground">
+        <Link href="/" className="font-bold text-primary text-2xl">
           Future Ready
         </Link>
 

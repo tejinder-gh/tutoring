@@ -8,12 +8,12 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/tutoring
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_TRUST_HOST=true
-      - AUTH_URL=http://localhost:3001
+      - AUTH_URL=http://localhost:3000
     depends_on:
       - db
     networks:

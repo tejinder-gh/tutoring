@@ -9,7 +9,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <section className="relative py-20 px-6 bg-accent/5 border-b border-border">
+      <section className="relative py-20 px-6 bg-accent/5 border-border">
         <div className="container mx-auto text-center max-w-3xl">
           <h1 className="text-4xl md:text-5xl font-black mb-6 bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
              {footerT("contact")}

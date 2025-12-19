@@ -14,7 +14,7 @@ export default function CoursesPage() {
     <div className="min-h-screen bg-background py-20 px-6">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-20 max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-black mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">
+          <h1 className="text-4xl md:text-5xl font-black mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary">
             {t("title")}
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed">

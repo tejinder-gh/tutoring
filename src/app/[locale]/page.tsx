@@ -27,7 +27,7 @@ export default function HomePage() {
           </div>
 
           {/* Title */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-10 tracking-tight leading-[1.05] animate-in fade-in slide-in-from-bottom-6 duration-700">
+          <h1 className="text-3xl sm:text-6xl md:text-7xl lg:text-6xl font-black mb-10 tracking-tight leading-[1.05] animate-in fade-in slide-in-from-bottom-6 duration-700">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-foreground/70">
               {t("hero.title")}
             </span>
@@ -42,7 +42,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
             <Link
               href="/register"
-              className="group relative px-10 py-5 rounded-2xl gradient-primary text-white font-bold text-lg shadow-elegant hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden"
+              className="group relative px-10 py-5 rounded-2xl gradient-primary text-white font-bold text-md shadow-elegant hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden"
             >
               <span className="relative z-10 flex items-center gap-2">
                 {t("cta.apply")}
@@ -52,7 +52,7 @@ export default function HomePage() {
 
             <Link
               href="/courses"
-              className="px-10 py-5 rounded-2xl glass hover:bg-accent transition-all duration-300 text-foreground font-bold text-lg shadow-elegant hover:shadow-2xl"
+              className="px-10 py-5 rounded-2xl glass hover:bg-accent transition-all duration-300 text-foreground font-bold text-md shadow-elegant hover:shadow-2xl"
             >
               {t("cta.viewCourses")}
             </Link>
@@ -90,7 +90,7 @@ export default function HomePage() {
 
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Left Side - Where Most Stop */}
-            <div className="group p-10 lg:p-12 rounded-3xl bg-white dark:bg-slate-900 border border-border/50 shadow-elegant hover:shadow-2xl transition-all duration-500">
+            <div className="group p-10 lg:p-12 rounded-3xl bg-white bg-accent/5 border border-border/50 shadow-elegant hover:shadow-2xl transition-all duration-500">
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-14 h-14 rounded-2xl bg-text-muted/10 flex items-center justify-center">
                   <TrendingUp size={28} className="text-text-muted" />
@@ -108,7 +108,7 @@ export default function HomePage() {
             </div>
 
             {/* Right Side - Where We Take You */}
-            <div className="relative p-10 lg:p-12 rounded-3xl gradient-primary text-white shadow-2xl transform lg:-translate-y-6 hover:-translate-y-8 transition-all duration-500 overflow-hidden">
+            <div className="relative p-10 lg:p-12 rounded-3xl gradient-primary text-white shadow-2xl transform lg:-translate-y-12 overflow-hidden">
               {/* Glow Effect */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
@@ -135,7 +135,7 @@ export default function HomePage() {
       </section>
 
       {/* Course Tiers - Comprehensive */}
-      <section className="py-32 px-6">
+      <section className="py-32 px-6 bg-background bg-gradient-to-b from-background to-accent/20">
         <div className="container mx-auto max-w-7xl">
           <div className="text-center max-w-3xl mx-auto mb-20">
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">{t("courses.title")}</h2>

@@ -18,6 +18,8 @@
   --radius-default: 0.75rem;
 }
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 :root {
   /* Apple-inspired Light theme */
   --background: #FAFAFA;
