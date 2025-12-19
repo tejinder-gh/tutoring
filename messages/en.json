@@ -243,6 +243,92 @@
           "details": "Translate technical decisions for non-technical executives. Guide junior engineers and resolve team conflicts effectively."
         },
         "capstone": "Architectural Review and Defense: Present to CTO Panel, Iterate Based on Feedback, Achieve 2/3 Approval"
+      },
+      "ielts": {
+        "title": "IELTS Preparation",
+        "role": "IELTS Masterclass: Strategic Communication & Linguistic Leadership",
+        "description": "Improve your communication skills for international career opportunities. Forge elite communicators capable of navigating high-stakes international environments by mastering the linguistic nuances required for global academic and professional ascendancy. This course transforms language proficiency into a strategic asset, enabling you to translate complex thought into high-impact, evaluative-ready performance.",
+        "experience": "5+ Years Equivalent Experience",
+        "parteneredWith": "IELTS",
+        "modules": [
+          {
+            "code": "M1",
+            "title": "Language Fundamentals",
+            "tech": "Explore high level aspects of language including fundamentals, grammar, and vocabulary.",
+            "outcome": "Familiarity with language fundamentals, grammar, and vocabulary.",
+            "details": "Explore high level aspects of language including fundamentals, grammar, and vocabulary."
+          },
+          {
+            "code": "M2",
+            "title": "Module Introduction",
+            "tech": "",
+            "outcome": "Familiarity with language fundamentals, grammar, and vocabulary.",
+            "details": "Explore high level aspects of language including fundamentals, grammar, and vocabulary."
+          },
+          {
+            "code": "M11",
+            "title": "Advanced Security and Performance",
+            "tech": "Multi-Factor Authentication (MFA), Content Security Policy (CSP), Security Risk Management, Performance Auditing, Core Web Vitals, Optimization Techniques",
+            "outcome": "Security Risk Mitigation Plan + Performance Audit",
+            "details": "Deep dive into security hardening and performance optimization. Make autonomous decisions weighing complex trade-offs."
+          },
+          {
+            "code": "M12",
+            "title": "Executive Leadership and Architectural Defense",
+            "tech": "Technical Debt Management, Quality Standards, Mentorship & Constructive Feedback, Custom API Design, Backend Framework Architecture",
+            "outcome": "Architectural Defense before CTO Panel (2/3 Approval Required)",
+            "details": "Present architecture to 3 real CTOs/Staff Engineers. Document feedback, iterate, and defend until approval—demonstrating organizational influence."
+          }
+        ],
+        "softSkills": {
+          "focus": "Analytical Thinking, Stakeholder Communication, Decision-Making & Risk Mitigation, Mentorship & Conflict Resolution",
+          "assessment": "Technical RFC Writing, Stakeholder Influence Simulations, CTO Panel Defense, Leading Team Code Reviews",
+          "details": "Translate technical decisions for non-technical executives. Guide junior engineers and resolve team conflicts effectively."
+        },
+        "capstone": "Architectural Review and Defense: Present to CTO Panel, Iterate Based on Feedback, Achieve 2/3 Approval"
+      },
+      "accounting": {
+        "title": "Accounting Preparation",
+        "role": "IELTS Masterclass: Strategic Communication & Linguistic Leadership",
+        "description": "Improve your communication skills for international career opportunities. Forge elite communicators capable of navigating high-stakes international environments by mastering the linguistic nuances required for global academic and professional ascendancy. This course transforms language proficiency into a strategic asset, enabling you to translate complex thought into high-impact, evaluative-ready performance.",
+        "experience": "5+ Years Equivalent Experience",
+        "parteneredWith": "Accountant",
+        "modules": [
+          {
+            "code": "M1",
+            "title": "Language Fundamentals",
+            "tech": "Explore high level aspects of language including fundamentals, grammar, and vocabulary.",
+            "outcome": "Familiarity with language fundamentals, grammar, and vocabulary.",
+            "details": "Explore high level aspects of language including fundamentals, grammar, and vocabulary."
+          },
+          {
+            "code": "M2",
+            "title": "Module Introduction",
+            "tech": "",
+            "outcome": "Familiarity with language fundamentals, grammar, and vocabulary.",
+            "details": "Explore high level aspects of language including fundamentals, grammar, and vocabulary."
+          },
+          {
+            "code": "M11",
+            "title": "Advanced Security and Performance",
+            "tech": "Multi-Factor Authentication (MFA), Content Security Policy (CSP), Security Risk Management, Performance Auditing, Core Web Vitals, Optimization Techniques",
+            "outcome": "Security Risk Mitigation Plan + Performance Audit",
+            "details": "Deep dive into security hardening and performance optimization. Make autonomous decisions weighing complex trade-offs."
+          },
+          {
+            "code": "M12",
+            "title": "Executive Leadership and Architectural Defense",
+            "tech": "Technical Debt Management, Quality Standards, Mentorship & Constructive Feedback, Custom API Design, Backend Framework Architecture",
+            "outcome": "Architectural Defense before CTO Panel (2/3 Approval Required)",
+            "details": "Present architecture to 3 real CTOs/Staff Engineers. Document feedback, iterate, and defend until approval—demonstrating organizational influence."
+          }
+        ],
+        "softSkills": {
+          "focus": "Analytical Thinking, Stakeholder Communication, Decision-Making & Risk Mitigation, Mentorship & Conflict Resolution",
+          "assessment": "Technical RFC Writing, Stakeholder Influence Simulations, CTO Panel Defense, Leading Team Code Reviews",
+          "details": "Translate technical decisions for non-technical executives. Guide junior engineers and resolve team conflicts effectively."
+        },
+        "capstone": "Architectural Review and Defense: Present to CTO Panel, Iterate Based on Feedback, Achieve 2/3 Approval"
       }
     },
     "prReview": {
