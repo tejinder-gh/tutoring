@@ -1,166 +1,665 @@
+// =============================================================================
+// TUTORING CENTER OS - PRISMA SCHEMA
+// =============================================================================
+// A comprehensive data model for managing a tutoring center with support for:
+// - Multi-role user management (Admin, Teachers, Students, HR, Payroll, etc.)
+// - Course and curriculum management with roadmaps
+// - Batch and enrollment tracking
+// - Financial management (payments, salaries)
+// - Lead management and marketing campaigns
+// - Audit logging and system configuration
+// =============================================================================
+
 generator client {
   provider = "prisma-client-js"
   output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Lead {
-  id        String   @id @default(cuid())
-  name      String
-  phone     String
-  email     String
-  status    String
-  source    String   @default("contact_form")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  notes     String?
-}
+// =============================================================================
+// ENUMS
+// =============================================================================
 
-model User {
-  id             String          @id @default(cuid())
-  email          String          @unique
-  password       String
-  name           String
-  role           Role            @default(STUDENT)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  announcements  Announcement[]
-  attendance     Attendance[]
-  queries        Query[]
-  studentProfile StudentProfile?
-  submissions    Submission[]
-  teacherProfile TeacherProfile?
-}
-
-model StudentProfile {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  phone          String?
-  enrollmentDate DateTime @default(now())
-  batchId        String?
-  tier           String?  @default("hands-on")
-  batch          Batch?   @relation(fields: [batchId], references: [id])
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model TeacherProfile {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  specialization String?
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courses        Course[] @relation("CourseToTeacherProfile")
-}
-
-model Batch {
-  id        String           @id @default(cuid())
-  name      String
-  startDate DateTime
-  endDate   DateTime?
-  courseId  String
-  course    Course           @relation(fields: [courseId], references: [id])
-  students  StudentProfile[]
-}
-
-model Course {
-  id               String           @id @default(cuid())
-  title            String
-  description      String?
-  slug             String           @unique
-  price            Decimal          @default(0.0)
-  level            String           @default("Beginner")
-  thumbnailUrl     String?
-  published        Boolean          @default(false)
-  metaTitle        String?
-  metaDescription  String?
-  keywords         String?
-  whatYouWillLearn String?
-  features         String?
-  assignments      Assignment[]
-  batches          Batch[]
-  modules          Module[]
-  teachers         TeacherProfile[] @relation("CourseToTeacherProfile")
-}
-
-model Module {
-  id       String   @id @default(cuid())
-  title    String
-  order    Int
-  courseId String
-  lessons  Lesson[]
-  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-}
-
-model Lesson {
-  id       String  @id @default(cuid())
-  title    String
-  content  String?
-  moduleId String
-  module   Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-}
-
-model Assignment {
-  id          String       @id @default(cuid())
-  title       String
-  description String?
-  dueDate     DateTime?
-  courseId    String
-  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  submissions Submission[]
-}
-
-model Submission {
-  id           String     @id @default(cuid())
-  fileUrl      String
-  submittedAt  DateTime   @default(now())
-  grade        Int?
-  feedback     String?
-  studentId    String
-  assignmentId String
-  assignment   Assignment @relation(fields: [assignmentId], references: [id])
-  student      User       @relation(fields: [studentId], references: [id])
-}
-
-model Attendance {
-  id       String           @id @default(cuid())
-  date     DateTime
-  status   AttendanceStatus
-  userId   String
-  markedBy String?
-  user     User             @relation(fields: [userId], references: [id])
-}
-
-model Announcement {
-  id        String   @id @default(cuid())
-  title     String
-  content   String
-  createdAt DateTime @default(now())
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-}
-
-model Query {
-  id        String   @id @default(cuid())
-  subject   String
-  message   String
-  status    String   @default("OPEN")
-  createdAt DateTime @default(now())
-  studentId String
-  student   User     @relation(fields: [studentId], references: [id])
-}
-
+/// User roles in the tutoring center hierarchy
+/// Each role has specific access levels and permissions
 enum Role {
-  ADMIN
-  TEACHER
-  STUDENT
+  DIRECTOR           // Strategic oversight, full access to all modules
+  GENERAL_MANAGER    // Full operational access, reports to Director
+  ADMIN              // System administration, user management
+  HR_MANAGER         // Human resources, staff management, leave
+  PAYROLL_MANAGER    // Salary processing, payment management
+  BUSINESS_ANALYST   // Reporting, analytics, data exports
+  DIGITAL_MARKETING  // Lead management, campaigns, social media
+  TEACHER            // Course delivery, attendance, grading
+  BACKOFFICE         // Day-to-day operations, student support
+  STUDENT            // Learning, assignments, submissions
 }
 
+/// Course difficulty levels
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+/// Student enrollment status in a course
+enum EnrollmentStatus {
+  ACTIVE     // Currently enrolled and studying
+  COMPLETED  // Successfully completed the course
+  DROPPED    // Left the course before completion
+  ON_HOLD    // Temporarily paused enrollment
+}
+
+/// Attendance status for lessons
 enum AttendanceStatus {
   PRESENT
   ABSENT
   LATE
   EXCUSED
+}
+
+/// Payment methods accepted
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  UPI
+  CARD
+  CHEQUE
+}
+
+/// Lead status in the sales pipeline
+enum LeadStatus {
+  NEW           // Just received, not contacted
+  CONTACTED     // Initial contact made
+  QUALIFIED     // Verified interest and fit
+  NEGOTIATION   // Discussing pricing/terms
+  CONVERTED     // Successfully enrolled
+  LOST          // Did not convert
+}
+
+/// Source of lead acquisition
+enum LeadSource {
+  WEBSITE    // Contact form on website
+  FACEBOOK   // Facebook ads or page
+  INSTAGRAM  // Instagram campaigns
+  GOOGLE     // Google Ads or organic search
+  REFERRAL   // Referred by existing student
+  WALK_IN    // Visited the center directly
+  PHONE      // Inbound phone inquiry
+  OTHER      // Other sources
+}
+
+/// Marketing campaign status
+enum CampaignStatus {
+  DRAFT      // Being created
+  SCHEDULED  // Set to launch later
+  ACTIVE     // Currently running
+  PAUSED     // Temporarily stopped
+  COMPLETED  // Finished
+}
+
+/// Student query/support ticket status
+enum QueryStatus {
+  OPEN         // Newly created
+  IN_PROGRESS  // Being addressed
+  RESOLVED     // Solution provided
+  CLOSED       // Confirmed resolved
+}
+
+/// Priority levels for queries and tasks
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+/// Type of lesson resource/attachment
+enum ResourceType {
+  VIDEO
+  DOCUMENT
+  LINK
+  PDF
+  IMAGE
+}
+
+/// Notification types for visual differentiation
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+  REMINDER
+}
+
+// =============================================================================
+// USER MANAGEMENT
+// =============================================================================
+
+/// Core user model - all system users regardless of role
+/// Related profiles store role-specific data
+model User {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  phone       String?   /// Optional phone number
+  password    String    /// Hashed password
+  name        String    /// Full name for display
+  avatar      String?   /// Profile picture URL
+  role        Role      @default(STUDENT)
+  isActive    Boolean   @default(true)  /// Can login to the system
+  isVerified  Boolean   @default(false) /// Email/phone verified
+  isDeleted   Boolean   @default(false) /// Soft delete flag
+  lastLoginAt DateTime? /// Track last login for security
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Role-specific profile relations (only one will be populated based on role)
+  studentProfile StudentProfile?
+  teacherProfile TeacherProfile?
+  staffProfile   StaffProfile?
+
+  // Activity relations
+  announcements      Announcement[]    @relation("AuthoredAnnouncements")
+  attendance         Attendance[]      @relation("AttendanceUser")
+  markedAttendance   Attendance[]      @relation("AttendanceMarker")
+  queries            Query[]           @relation("StudentQueries")
+  resolvedQueries    Query[]           @relation("ResolvedQueries")
+  submissions        Submission[]
+  paymentReceipts    PaymentReceipts[]
+  auditLogs          AuditLog[]
+
+  // Cross-reference relations (as the "other" user in a relationship)
+  discountedStudents StudentProfile[] @relation("DiscountBy")
+  referredTeachers   TeacherProfile[] @relation("ReferredBy")
+
+  @@index([email])
+  @@index([role])
+  @@index([isActive, isDeleted])
+}
+
+/// Student-specific profile data
+/// Linked to User model via one-to-one relation
+model StudentProfile {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollmentDate DateTime  @default(now()) /// When they first enrolled
+  batchId        String?   /// Current primary batch
+  batch          Batch?    @relation(fields: [batchId], references: [id])
+
+  // Discount information (for fee concessions)
+  discount       Decimal?  /// Discount percentage or amount
+  discountedAt   DateTime? /// When discount was applied
+  discountedById String?   /// Admin who approved discount
+  discountedBy   User?     @relation("DiscountBy", fields: [discountedById], references: [id])
+
+  enrollments Enrollment[]
+
+  @@index([batchId])
+}
+
+/// Teacher-specific profile data
+/// Stores teaching domain, qualifications, and course assignments
+model TeacherProfile {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domain        String    /// Primary teaching domain (e.g., "Web Development")
+  bio           String?   /// Short biography for display
+  qualification String?   /// Degrees, certifications
+
+  // Referral tracking
+  referredAt   DateTime?
+  referredById String?
+  referredBy   User?     @relation("ReferredBy", fields: [referredById], references: [id])
+
+  courses  Course[]  @relation("CourseTeachers")
+  salaries Salary[]
+
+  @@index([domain])
+}
+
+/// Staff profile for non-teaching employees
+/// Covers: HR, Payroll, Marketing, Backoffice, Managers
+model StaffProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department  String   /// e.g., "HR", "Finance", "Marketing"
+  designation String   /// Job title
+  joiningDate DateTime @default(now())
+  reportingTo String?  /// userId of their manager
+
+  salaries Salary[]
+
+  @@index([department])
+}
+
+// =============================================================================
+// COURSE & LEARNING MANAGEMENT
+// =============================================================================
+
+/// Learning path that groups multiple courses
+/// Example: "Full Stack Development Roadmap" containing 3 courses
+model Roadmap {
+  id          String   @id @default(cuid())
+  name        String   /// Display name
+  description String?  /// What this roadmap covers
+  order       Int      @default(0) /// Display order
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses Course[] @relation("CourseRoadmaps")
+}
+
+/// Individual course offered by the tutoring center
+model Course {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  slug            String   @unique /// URL-friendly identifier
+  price           Decimal  @default(0.0)
+  level           Level    @default(BEGINNER)
+  duration        Int?     /// Total duration in hours
+  thumbnailUrl    String?  /// Course image
+  isActive        Boolean  @default(true)
+  isFeatured      Boolean  @default(false) /// Show on homepage
+
+  // SEO fields
+  metaTitle       String?
+  metaDescription String?
+  keywords        String?
+
+  // Structured content (stored as JSON arrays)
+  whatYouWillLearn Json? /// ["Learn HTML", "Build websites", ...]
+  features         Json? /// ["24/7 support", "Certificate", ...]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  modules       Module[]
+  batches       Batch[]
+  assignments   Assignment[]
+  teachers      TeacherProfile[] @relation("CourseTeachers")
+  roadmaps      Roadmap[]        @relation("CourseRoadmaps")
+  enrollments   Enrollment[]
+  announcements Announcement[]
+
+  @@index([slug])
+  @@index([isActive, isFeatured])
+}
+
+/// Course module - groups related lessons
+/// Example: "HTML Basics" module in "Web Development" course
+model Module {
+  id        String   @id @default(cuid())
+  title     String
+  order     Int      @default(0) /// Display order within course
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lessons Lesson[]
+
+  @@index([courseId, order])
+}
+
+/// Individual lesson within a module
+model Lesson {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?  /// Lesson content/notes (can be HTML or markdown)
+  videoUrl  String?  /// Video lesson URL
+  order     Int      @default(0) /// Order within module
+  moduleId  String
+  module    Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  resources   LessonResource[]
+  assignments Assignment[]
+  attendance  Attendance[]
+
+  @@index([moduleId, order])
+}
+
+/// Attachments and resources for a lesson
+/// Replaces the previous String[] field which wasn't SQLite/PostgreSQL compatible
+model LessonResource {
+  id       String       @id @default(cuid())
+  lessonId String
+  lesson   Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title    String       /// Display name
+  url      String       /// Resource URL or file path
+  type     ResourceType @default(DOCUMENT)
+
+  @@index([lessonId])
+}
+
+/// Course assignment for students to complete
+model Assignment {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  dueInDays   Int?     /// Days after lesson to submit
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  submissions Submission[]
+
+  @@index([courseId])
+  @@index([lessonId])
+}
+
+/// Student assignment submission
+model Submission {
+  id           String     @id @default(cuid())
+  fileUrl      String     /// Submitted file URL
+  submittedAt  DateTime   @default(now())
+  grade        Int?       /// Score (0-100)
+  feedback     String?    /// Teacher feedback
+  studentId    String
+  student      User       @relation(fields: [studentId], references: [id])
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+
+  @@index([studentId])
+  @@index([assignmentId])
+}
+
+// =============================================================================
+// BATCH & ENROLLMENT MANAGEMENT
+// =============================================================================
+
+/// A batch is a cohort of students studying a course together
+/// Example: "Web Dev Batch Jan 2024"
+model Batch {
+  id          String    @id @default(cuid())
+  name        String    /// Batch identifier
+  startDate   DateTime
+  endDate     DateTime?
+  maxStudents Int       @default(30)
+  schedule    Json?     /// Weekly schedule (e.g., {"mon": "10:00-12:00", ...})
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id])
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  students    StudentProfile[]
+  enrollments Enrollment[]
+
+  @@index([courseId])
+  @@index([isActive])
+}
+
+/// Tracks a student's enrollment in a specific course
+/// Many-to-many relationship between students and courses
+model Enrollment {
+  id               String           @id @default(cuid())
+  studentProfileId String
+  studentProfile   StudentProfile   @relation(fields: [studentProfileId], references: [id])
+  courseId         String
+  course           Course           @relation(fields: [courseId], references: [id])
+  batchId          String?
+  batch            Batch?           @relation(fields: [batchId], references: [id])
+  enrolledAt       DateTime         @default(now())
+  status           EnrollmentStatus @default(ACTIVE)
+  completedAt      DateTime?
+  certificateUrl   String?          /// Generated certificate URL
+
+  @@unique([studentProfileId, courseId]) /// One enrollment per student per course
+  @@index([status])
+}
+
+/// Student attendance for lessons
+model Attendance {
+  id         String           @id @default(cuid())
+  date       DateTime
+  status     AttendanceStatus
+  userId     String
+  user       User             @relation("AttendanceUser", fields: [userId], references: [id])
+  lessonId   String
+  lesson     Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  markedById String?          /// Teacher/staff who marked attendance
+  markedBy   User?            @relation("AttendanceMarker", fields: [markedById], references: [id])
+  notes      String?          /// Reason for absence, etc.
+  createdAt  DateTime         @default(now())
+
+  @@unique([userId, lessonId, date]) /// One attendance record per student per lesson per day
+  @@index([userId])
+  @@index([lessonId])
+  @@index([date])
+}
+
+// =============================================================================
+// FINANCIAL MANAGEMENT
+// =============================================================================
+
+/// Salary configuration for teaching and non-teaching staff
+model Salary {
+  id               String          @id @default(cuid())
+  teacherProfileId String?
+  teacherProfile   TeacherProfile? @relation(fields: [teacherProfileId], references: [id])
+  staffProfileId   String?
+  staffProfile     StaffProfile?   @relation(fields: [staffProfileId], references: [id])
+  baseSalary       Decimal         /// Monthly base salary
+  allowances       Decimal         @default(0) /// Additional allowances
+  deductions       Decimal         @default(0) /// Fixed deductions
+  effectiveFrom    DateTime        /// Start date for this salary structure
+  effectiveTo      DateTime?       /// End date (null if current)
+  isActive         Boolean         @default(true)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  receipts SalaryReceipt[]
+
+  @@index([teacherProfileId])
+  @@index([staffProfileId])
+  @@index([isActive])
+}
+
+/// Record of salary payment made to staff
+model SalaryReceipt {
+  id            String        @id @default(cuid())
+  salaryId      String
+  salary        Salary        @relation(fields: [salaryId], references: [id])
+  amount        Decimal       /// Amount paid
+  paymentDate   DateTime      @default(now())
+  paymentMethod PaymentMethod @default(BANK_TRANSFER)
+  reference     String?       /// Transaction reference number
+  notes         String?
+  createdAt     DateTime      @default(now())
+
+  @@index([salaryId])
+  @@index([paymentDate])
+}
+
+/// Student fee payment records
+model PaymentReceipts {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  amountPaid     Decimal
+  expectedAmount Decimal       /// Total fee amount
+  pendingAmount  Decimal       /// Remaining balance
+  paymentDate    DateTime      @default(now())
+  nextDueDate    DateTime?     /// When next installment is due
+  paymentMethod  PaymentMethod @default(CASH)
+  reference      String?       /// Receipt/transaction number
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([paymentDate])
+}
+
+// =============================================================================
+// LEAD MANAGEMENT & MARKETING
+// =============================================================================
+
+/// Prospective student/customer lead
+model Lead {
+  id             String     @id @default(cuid())
+  name           String
+  phone          String
+  email          String?
+  status         LeadStatus @default(NEW)
+  source         LeadSource @default(WEBSITE)
+  courseInterest String?    /// Which course they're interested in
+  notes          String?
+  assignedTo     String?    /// userId of assigned salesperson
+  followUpAt     DateTime?  /// Scheduled follow-up date
+  convertedAt    DateTime?  /// When they became a student
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  activities LeadActivity[]
+
+  @@index([status])
+  @@index([source])
+  @@index([assignedTo])
+}
+
+/// Activity log for lead interactions
+/// Tracks calls, emails, meetings, and notes
+model LeadActivity {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type      String   /// CALL, EMAIL, MEETING, NOTE, WHATSAPP
+  notes     String
+  createdBy String   /// userId of staff member
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+}
+
+/// Marketing campaign tracking
+model Campaign {
+  id             String         @id @default(cuid())
+  name           String
+  description    String?
+  type           String         /// EMAIL, SMS, SOCIAL, GOOGLE_ADS, FACEBOOK_ADS
+  status         CampaignStatus @default(DRAFT)
+  budget         Decimal?
+  startDate      DateTime?
+  endDate        DateTime?
+  targetAudience Json?          /// Audience criteria
+  metrics        Json?          /// Impressions, clicks, conversions, etc.
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([status])
+}
+
+// =============================================================================
+// COMMUNICATION & SUPPORT
+// =============================================================================
+
+/// System-wide and course-specific announcements
+model Announcement {
+  id        String    @id @default(cuid())
+  title     String
+  content   String
+  type      String    @default("ANNOUNCEMENT") /// ANNOUNCEMENT, NOTICE, ALERT
+  effect    String    @default("ALL") /// ALL, STUDENTS, TEACHERS, SPECIFIC_COURSE
+  expiresAt DateTime? /// Auto-hide after this date
+  courseId  String?   /// If for specific course
+  course    Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User      @relation("AuthoredAnnouncements", fields: [authorId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([courseId])
+  @@index([effect])
+}
+
+/// Student support queries/tickets
+model Query {
+  id           String      @id @default(cuid())
+  subject      String
+  message      String
+  status       QueryStatus @default(OPEN)
+  priority     Priority    @default(NORMAL)
+  studentId    String
+  student      User        @relation("StudentQueries", fields: [studentId], references: [id])
+  resolvedById String?
+  resolvedBy   User?       @relation("ResolvedQueries", fields: [resolvedById], references: [id])
+  resolvedAt   DateTime?
+  response     String?     /// Staff response
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([studentId])
+  @@index([status])
+  @@index([priority])
+}
+
+/// User notifications
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  isRead    Boolean          @default(false)
+  link      String?          /// Link to relevant page
+  createdAt DateTime         @default(now())
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+// =============================================================================
+// SYSTEM & ADMIN
+// =============================================================================
+
+/// Audit log for tracking all important actions
+/// Essential for compliance and debugging
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String   /// CREATE, UPDATE, DELETE, LOGIN, LOGOUT, etc.
+  entity    String   /// Model name (e.g., "User", "Course")
+  entityId  String?  /// ID of the affected record
+  oldValue  Json?    /// Previous state (for updates)
+  newValue  Json?    /// New state (for creates/updates)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+/// System configuration settings
+/// Key-value store for app settings
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique /// Setting identifier (e.g., "site.name")
+  value     Json     /// Setting value (supports any JSON type)
+  category  String   @default("general") /// Group settings (general, email, payment, etc.)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
 }
