@@ -253,89 +253,75 @@
       },
       "ielts": {
         "title": "IELTS Preparation",
-        "role": "IELTS Masterclass: Strategic Communication & Linguistic Leadership",
-        "description": "Improve your communication skills for international career opportunities. Forge elite communicators capable of navigating high-stakes international environments by mastering the linguistic nuances required for global academic and professional ascendancy. This course transforms language proficiency into a strategic asset, enabling you to translate complex thought into high-impact, evaluative-ready performance.",
-        "experience": "5+ Years Equivalent Experience",
+        "role": "IELTS Masterclass: Strategic Communication",
+        "description": "Improve your communication skills for international career opportunities. Master the linguistic nuances required for global academic and professional success.",
+        "experience": "Beginner to Advanced",
         "parteneredWith": "IELTS",
         "modules": [
           {
             "code": "M1",
-            "title": "Language Fundamentals",
-            "tech": "Explore high level aspects of language including fundamentals, grammar, and vocabulary.",
-            "outcome": "Familiarity with language fundamentals, grammar, and vocabulary.",
-            "details": "Explore high level aspects of language including fundamentals, grammar, and vocabulary."
+            "title": "Linguistic Foundations",
+            "tech": "Grammar, Lexical Resource, Cohesion & Coherence",
+            "outcome": "Solidified grammatical accuracy and expanded vocabulary",
+            "details": "Focus on the core pillars of the English language required for high band scores."
           },
           {
             "code": "M2",
-            "title": "Module Introduction",
-            "tech": "",
-            "outcome": "Familiarity with language fundamentals, grammar, and vocabulary.",
-            "details": "Explore high level aspects of language including fundamentals, grammar, and vocabulary."
+            "title": "Strategic Listening & Reading",
+            "tech": "Skimming, Scanning, Keyword Identification, Audio Processing",
+            "outcome": "Proficiency in rapid information retrieval",
+            "details": "Techniques to handle complex academic texts and diverse accents."
           },
           {
-            "code": "M11",
-            "title": "Advanced Security and Performance",
-            "tech": "Multi-Factor Authentication (MFA), Content Security Policy (CSP), Security Risk Management, Performance Auditing, Core Web Vitals, Optimization Techniques",
-            "outcome": "Security Risk Mitigation Plan + Performance Audit",
-            "details": "Deep dive into security hardening and performance optimization. Make autonomous decisions weighing complex trade-offs."
-          },
-          {
-            "code": "M12",
-            "title": "Executive Leadership and Architectural Defense",
-            "tech": "Technical Debt Management, Quality Standards, Mentorship & Constructive Feedback, Custom API Design, Backend Framework Architecture",
-            "outcome": "Architectural Defense before CTO Panel (2/3 Approval Required)",
-            "details": "Present architecture to 3 real CTOs/Staff Engineers. Document feedback, iterate, and defend until approval—demonstrating organizational influence."
+            "code": "M3",
+            "title": "Advanced Writing & Speaking",
+            "tech": "Task Response, Fluency, Pronunciation, Argument Structuring",
+            "outcome": "High-impact essay writing and confident speaking",
+            "details": "Master the art of expressing complex thoughts clearly under exam conditions."
           }
         ],
         "softSkills": {
-          "focus": "Analytical Thinking, Stakeholder Communication, Decision-Making & Risk Mitigation, Mentorship & Conflict Resolution",
-          "assessment": "Technical RFC Writing, Stakeholder Influence Simulations, CTO Panel Defense, Leading Team Code Reviews",
-          "details": "Translate technical decisions for non-technical executives. Guide junior engineers and resolve team conflicts effectively."
+          "focus": "Confident Communication, Cross-Cultural Awareness",
+          "assessment": "Weekly Mock Tests, Speaking Interviews",
+          "details": "Simulate real exam environments to build stamina and confidence."
         },
-        "capstone": "Architectural Review and Defense: Present to CTO Panel, Iterate Based on Feedback, Achieve 2/3 Approval"
+        "capstone": "Full-Length Mock Examination with Detailed Evaluative Feedback"
       },
       "accounting": {
         "title": "Accounting Preparation",
-        "role": "IELTS Masterclass: Strategic Communication & Linguistic Leadership",
-        "description": "Improve your communication skills for international career opportunities. Forge elite communicators capable of navigating high-stakes international environments by mastering the linguistic nuances required for global academic and professional ascendancy. This course transforms language proficiency into a strategic asset, enabling you to translate complex thought into high-impact, evaluative-ready performance.",
-        "experience": "5+ Years Equivalent Experience",
-        "parteneredWith": "Accountant",
+        "role": "Professional Accountant Track",
+        "description": "Master modern accounting principles and software to manage financial health for global businesses.",
+        "experience": "Entry Level to Professional",
+        "parteneredWith": "Professional Accounting Standards",
         "modules": [
           {
             "code": "M1",
-            "title": "Language Fundamentals",
-            "tech": "Explore high level aspects of language including fundamentals, grammar, and vocabulary.",
-            "outcome": "Familiarity with language fundamentals, grammar, and vocabulary.",
-            "details": "Explore high level aspects of language including fundamentals, grammar, and vocabulary."
+            "title": "Financial Foundations",
+            "tech": "Double-entry Bookkeeping, Financial Statements, Ledger Management",
+            "outcome": "Ability to prepare Balance Sheets and P&L Statements",
+            "details": "Learn the bedrock principles of recording and classifying financial transactions."
           },
           {
             "code": "M2",
-            "title": "Module Introduction",
-            "tech": "",
-            "outcome": "Familiarity with language fundamentals, grammar, and vocabulary.",
-            "details": "Explore high level aspects of language including fundamentals, grammar, and vocabulary."
+            "title": "Taxation & Compliance",
+            "tech": "GST/VAT Compliance, Corporate Tax, Regulatory Filings",
+            "outcome": "Tax-ready financial records",
+            "details": "Navigate the complexities of modern tax laws and ensure organizational compliance."
           },
           {
-            "code": "M11",
-            "title": "Advanced Security and Performance",
-            "tech": "Multi-Factor Authentication (MFA), Content Security Policy (CSP), Security Risk Management, Performance Auditing, Core Web Vitals, Optimization Techniques",
-            "outcome": "Security Risk Mitigation Plan + Performance Audit",
-            "details": "Deep dive into security hardening and performance optimization. Make autonomous decisions weighing complex trade-offs."
-          },
-          {
-            "code": "M12",
-            "title": "Executive Leadership and Architectural Defense",
-            "tech": "Technical Debt Management, Quality Standards, Mentorship & Constructive Feedback, Custom API Design, Backend Framework Architecture",
-            "outcome": "Architectural Defense before CTO Panel (2/3 Approval Required)",
-            "details": "Present architecture to 3 real CTOs/Staff Engineers. Document feedback, iterate, and defend until approval—demonstrating organizational influence."
+            "code": "M3",
+            "title": "Modern Accounting Tools",
+            "tech": "TallyPrime, QuickBooks, Advanced Excel for Finance",
+            "outcome": "Software Proficiency Certification",
+            "details": "Digitize accounting workflows using industry-standard software tools."
           }
         ],
         "softSkills": {
-          "focus": "Analytical Thinking, Stakeholder Communication, Decision-Making & Risk Mitigation, Mentorship & Conflict Resolution",
-          "assessment": "Technical RFC Writing, Stakeholder Influence Simulations, CTO Panel Defense, Leading Team Code Reviews",
-          "details": "Translate technical decisions for non-technical executives. Guide junior engineers and resolve team conflicts effectively."
+          "focus": "Attention to Detail, Ethical Decision Making, Analytical Thinking",
+          "assessment": "Case Study Audits, Spreadsheet Stress Tests",
+          "details": "Develop the professional skepticism and precision required for auditing and financial analysis."
         },
-        "capstone": "Architectural Review and Defense: Present to CTO Panel, Iterate Based on Feedback, Achieve 2/3 Approval"
+        "capstone": "Comprehensive Financial Audit Simulation for a Small-to-Medium Enterprise"
       }
     },
     "prReview": {
