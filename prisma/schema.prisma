@@ -187,6 +187,7 @@ model User {
   submissions        Submission[]
   paymentReceipts    PaymentReceipts[]
   auditLogs          AuditLog[]
+  lessonProgress     LessonProgress[]  /// Track lesson completion
 
   // Cross-reference relations (as the "other" user in a relationship)
   discountedStudents StudentProfile[] @relation("DiscountBy")
@@ -340,9 +341,10 @@ model Lesson {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  resources   LessonResource[]
-  assignments Assignment[]
-  attendance  Attendance[]
+  resources      LessonResource[]
+  assignments    Assignment[]
+  attendance     Attendance[]
+  lessonProgress LessonProgress[]
 
   @@index([moduleId, order])
 }
@@ -394,6 +396,23 @@ model Submission {
 
   @@index([studentId])
   @@index([assignmentId])
+}
+
+/// Tracks student progress on individual lessons
+model LessonProgress {
+  id           String    @id @default(cuid())
+  lessonId     String
+  lesson       Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completed    Boolean   @default(false)
+  completedAt  DateTime?
+  watchTime    Int       @default(0) /// Seconds watched if video
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([lessonId, userId])
+  @@index([userId])
 }
 
 // =============================================================================

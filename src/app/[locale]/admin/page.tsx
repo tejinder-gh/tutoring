@@ -15,7 +15,7 @@ export default async function AdminPage() {
   // Fetch users with ROLE = STUDENT
   const students = await prisma.user.findMany({
     where: { role: { name: 'STUDENT' } },
-    include: { studentProfile: true },
+    include: { studentProfile: true, role: true },
     orderBy: { createdAt: 'desc' },
   });
 
@@ -126,7 +126,7 @@ export default async function AdminPage() {
                     <td className="p-4 text-foreground">{student.phone || 'N/A'}</td>
                     <td className="p-4">
                       <span className="px-2 py-1 rounded-full text-xs font-medium bg-secondary/20 text-secondary">
-                        {student.role}
+                        {student.role?.name || 'N/A'}
                       </span>
                     </td>
                     <td className="p-4 text-text-muted text-sm">

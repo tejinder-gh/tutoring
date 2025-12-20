@@ -39,7 +39,7 @@ export default function Sidebar({ role }: SidebarProps) {
     ],
     STUDENT: [
       { href: "/student", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/student/courses", label: "My Learning", icon: GraduationCap },
+      { href: "/student/learn", label: "My Learning", icon: GraduationCap },
       { href: "/student/assignments", label: "Assignments", icon: FileText },
       { href: "/student/queries", label: "My Queries", icon: MessageSquare },
     ],
