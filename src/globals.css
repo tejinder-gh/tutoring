@@ -45,8 +45,8 @@
 }
 
 [data-theme="dark"] {
-  --background: #000000;
-  /* Pure black */
+  --background: #20284a;
+  /* Premium Dark Blue */
   --foreground: #F5F5F7;
   /* Light gray text */
   --primary: #0A84FF;

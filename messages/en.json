@@ -156,7 +156,7 @@
     "tiers": {
       "tier1": {
         "step": "Step 01",
-        "title": "Tier 1: Junior Developer Career Preparation",
+        "title": "Phase 1: Junior Developer Career Preparation",
         "role": "The Executor Track",
         "description": "Enable students to efficiently execute well-defined programming tasks under guidance, while establishing foundational Computer Science knowledge, structured collaboration habits, and reliable persistence skills.",
         "experience": "0–2 Years Equivalent Experience",
@@ -206,7 +206,7 @@
       },
       "tier2": {
         "step": "Step 02",
-        "title": "Tier 2: Intermediate Developer Career Preparation",
+        "title": "Phase 2: Intermediate Developer Career Preparation",
         "role": "The Independent Problem-Solver Track",
         "description": "Produce autonomous full-stack specialists capable of independent execution, mastering system integration, robust quality assurance, and incident management.",
         "experience": "3–5 Years Equivalent Experience",
@@ -249,7 +249,7 @@
       },
       "tier3": {
         "step": "Step 03",
-        "title": "Tier 3: Senior Developer Career Preparation",
+        "title": "Phase 3: Senior Developer Career Preparation",
         "role": "The Architect Track",
         "description": "Develop strategic architects and leaders capable of translating ambiguous business requirements into actionable system architectures and driving organizational impact through influence.",
         "experience": "5+ Years Equivalent Experience",

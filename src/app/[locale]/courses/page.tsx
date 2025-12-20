@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { ArrowRight, BookOpen, Rocket, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle, Rocket, ShieldCheck, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Divider from "../../../components/lib/SectionDivision";
 
@@ -169,14 +169,17 @@ const CourseCard = ({ tierData, t, index }: { tierData: any, t: any, index: numb
          </h3>
          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
             {tierData.modules.map((module: any, idx: number) => (
-               <div key={idx} className={`p-5 rounded-2xl bg-background hover:border-transparent border ${colorScheme.cardBorder} ${colorScheme.cardHover} transition-colors`}>
+               <div key={idx} className="p-6 rounded-2xl glass border border-border/50 hover:shadow-elegant transition-all duration-300">
                   <div className="flex justify-between items-start mb-2">
                      <span className={`text-xs font-black uppercase tracking-wide ${colorScheme.title}`}>{module.code}</span>
                   </div>
-                  <h4 className="font-bold text-lg mb-2">{module.title}</h4>
-                  <div className="space-y-1 text-sm">
-                     <p className="text-muted-foreground"><strong className="text-foreground">Tech:</strong> {module.tech}</p>
-                     <p className="text-muted-foreground"><strong className="text-foreground">Outcome:</strong> {module.outcome}</p>
+                  <h4 className="font-bold text-lg mb-3">{module.title}</h4>
+                  <div className="space-y-2 text-sm">
+                     <p className="text-muted-foreground mb-3">{module.tech}</p>
+                     <div className="text-xs font-bold text-foreground/80 flex items-start gap-2 bg-accent/30 p-2 rounded-lg">
+                        <CheckCircle size={16} className={`mt-0.5 shrink-0 ${colorScheme.iconColor}`} />
+                        <span>{module.outcome}</span>
+                     </div>
                   </div>
                </div>
             ))}
@@ -184,27 +187,29 @@ const CourseCard = ({ tierData, t, index }: { tierData: any, t: any, index: numb
       </div>
 
       {/* Footer Info: Soft Skills & Capstone */}
-      <div className={`p-8 md:p-10 border-t ${colorScheme.softSkillBorder} bg-gradient-to-br ${colorScheme.gradient}`}>
-         <div className="grid md:grid-cols-2 gap-8">
-            <div className="flex gap-4">
-               <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${colorScheme.iconBg}`}>
-                  <Users size={24} />
+      <div className="p-8 md:p-10 border-t border-border/50">
+         <div className="grid md:grid-cols-2 gap-6">
+            {/* Soft Skills Card */}
+            <div className={`p-6 rounded-2xl ${colorScheme.softSkillBg} border ${colorScheme.softSkillBorder}`}>
+               <div className="flex items-center gap-3 mb-3">
+                  <div className={`p-2 rounded-lg ${colorScheme.iconBg}`}>
+                     <Users size={20} className={colorScheme.iconColor} />
+                  </div>
+                  <h5 className="text-lg font-bold">{t("softSkillsFocus")}</h5>
                </div>
-               <div>
-                  <h4 className="font-bold mb-1">{t("softSkillsFocus")}</h4>
-                  <p className="text-sm text-muted-foreground mb-1">{tierData.softSkills.focus}</p>
-                  <p className={`text-xs font-semibold px-2 py-1 rounded inline-block ${colorScheme.badge}`}>Measurable: {tierData.softSkills.assessment}</p>
-               </div>
+               <p className="text-text-muted mb-3 text-sm">{tierData.softSkills.focus}</p>
+               <p className={`text-xs font-bold px-2 py-1 rounded inline-block bg-white/50 dark:bg-black/20 ${colorScheme.softSkillText}`}>Measurable: {tierData.softSkills.assessment}</p>
             </div>
 
-            <div className="flex gap-4">
-               <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${colorScheme.iconBg}`}>
-                  <Rocket size={24} />
+            {/* Capstone Card */}
+            <div className={`p-6 rounded-2xl ${colorScheme.softSkillBg} border ${colorScheme.softSkillBorder}`}>
+               <div className="flex items-center gap-3 mb-3">
+                  <div className={`p-2 rounded-lg ${colorScheme.iconBg}`}>
+                     <Rocket size={20} className={colorScheme.iconColor} />
+                  </div>
+                  <h5 className="text-lg font-bold">{t("capstoneRequirement")}</h5>
                </div>
-               <div>
-                  <h4 className="font-bold mb-1">{t("capstoneRequirement")}</h4>
-                  <p className="text-sm text-muted-foreground">{tierData.capstone}</p>
-               </div>
+               <p className="text-text-muted text-sm">{tierData.capstone}</p>
             </div>
          </div>
       </div>
@@ -228,19 +233,19 @@ export default function CoursesPage() {
                   {t("subtitle")}
                </p>
 
-               {/* Money Back Guarantee Badge */}
-               <div className="inline-flex flex-col md:flex-row items-center gap-4 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-800/50 text-left">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-400">
-                     <ShieldCheck size={24} />
+               {/* Money Back Guarantee Badge - Premium Gold */}
+               <div className="inline-flex flex-col md:flex-row items-center gap-4 p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-700/50 text-left shadow-lg shadow-amber-500/10">
+                  <div className="w-14 h-14 rounded-xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center shrink-0 text-amber-600 dark:text-amber-500">
+                     <ShieldCheck size={28} />
                   </div>
                   <div>
-                     <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-0.5 uppercase tracking-wide">
+                     <div className="text-sm font-bold text-amber-600 dark:text-amber-500 mb-0.5 uppercase tracking-wide">
                         {t("guarantee.badge")}
                      </div>
-                     <div className="font-bold text-foreground">
+                     <div className="font-bold text-xl text-foreground mb-1">
                         {t("guarantee.title")}
                      </div>
-                     <div className="text-sm text-muted-foreground">
+                     <div className="text-sm text-muted-foreground max-w-xl">
                         {t("guarantee.description")}
                      </div>
                   </div>
