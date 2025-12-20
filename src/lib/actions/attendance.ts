@@ -32,7 +32,7 @@ export async function submitAttendance(batchId: string, formData: FormData) {
           });
       } else {
           await prisma.attendance.create({
-              data: { userId, date, status, markedBy: "Teacher" }
+              data: { userId, date, status }
           });
       }
   }

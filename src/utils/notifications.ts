@@ -1,13 +1,7 @@
 // Notification utilities for sending alerts on new leads
 // Configure these with your actual API keys in .env
 
-interface Lead {
-  id: string;
-  name: string;
-  phone: string;
-  email: string;
-  status: string;
-}
+import { Lead } from '@prisma/client';
 
 /**
  * Send email notification using Resend API
@@ -37,7 +31,7 @@ export async function sendEmailNotification(lead: Lead): Promise<void> {
           <h2>New Lead Received!</h2>
           <p><strong>Name:</strong> ${lead.name}</p>
           <p><strong>Phone:</strong> ${lead.phone}</p>
-          <p><strong>Email:</strong> ${lead.email}</p>
+          <p><strong>Email:</strong> ${lead.email || 'N/A'}</p>
           <p><strong>Status:</strong> ${lead.status}</p>
           <p><strong>Time:</strong> ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
           <br>

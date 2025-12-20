@@ -41,12 +41,12 @@ export default async function AdminUsersPage() {
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2 text-sm text-foreground">
-                        <Mail size={14} className="text-text-muted" /> {user.email}
+                      <Mail size={14} className="text-text-muted" /> {user.email}
                     </div>
-                    {(user.studentProfile?.phone) && (
-                        <div className="flex items-center gap-2 text-sm text-text-muted mt-1">
-                            <Phone size={14} /> {user.studentProfile.phone}
-                        </div>
+                    {(user.phone) && (
+                      <div className="flex items-center gap-2 text-sm text-text-muted mt-1">
+                        <Phone size={14} /> {user.phone}
+                      </div>
                     )}
                   </td>
                   <td className="p-4">
@@ -55,15 +55,15 @@ export default async function AdminUsersPage() {
                         ${user.role === 'TEACHER' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' : ''}
                         ${user.role === 'STUDENT' ? 'bg-green-500/10 text-green-500 border-green-500/20' : ''}
                     `}>
-                        <Shield size={12} />
-                        {user.role}
+                      <Shield size={12} />
+                      {user.role}
                     </div>
                   </td>
                   <td className="p-4 text-text-muted text-sm">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className="p-4">
-                     <span className="text-xs bg-accent px-2 py-1 rounded">Active</span>
+                    <span className="text-xs bg-accent px-2 py-1 rounded">Active</span>
                   </td>
                 </tr>
               ))}

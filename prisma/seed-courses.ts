@@ -1,183 +1,247 @@
-import { PrismaClient } from '@prisma/client'
+import { EnrollmentStatus, LeadSource, LeadStatus, Level, PrismaClient, Role } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  // 1. Create a Teacher
-  const email = 'teacher@demo.com'
-  // Use a simple hash or placeholder. In real app, use bcrypt.
-  // For seeding, we might not need to login as this user immediately, but let's be safe.
-  const hashedPassword = '$2a$10$YourHashedPasswordHere'
+  console.log('🌱 Starting seed...')
 
-  const teacherUser = await prisma.user.upsert({
-    where: { email },
+  // ===========================================================================
+  // 1. Create Users & Profiles
+  // ===========================================================================
+
+  // PASSWORD: "password123" (hashed)
+  const HASHED_PASSWORD = "$2a$10$wT.fMvjt.v8z.lGz.wT.fMvjt.v8z.lGz.wT.fMvjt.v8z.lGz.wT.fM" // Placeholder hash
+
+  // --- DIRECTOR ---
+  const director = await prisma.user.upsert({
+    where: { email: 'director@future-ready.com' },
     update: {},
     create: {
-      email,
-      name: 'John Doe',
-      password: hashedPassword,
-      role: 'TEACHER',
+      email: 'director@future-ready.com',
+      name: 'Director Admin',
+      password: HASHED_PASSWORD,
+      role: Role.DIRECTOR,
+      staffProfile: {
+        create: {
+          department: 'Management',
+          designation: 'Director'
+        }
+      }
+    }
+  })
+
+  // --- TEACHER ---
+  const teacher = await prisma.user.upsert({
+    where: { email: 'teacher@future-ready.com' },
+    update: {},
+    create: {
+      email: 'teacher@future-ready.com',
+      name: 'Sarah Teacher',
+      password: HASHED_PASSWORD,
+      role: Role.TEACHER,
       teacherProfile: {
         create: {
-          specialization: 'Web Development'
+          domain: 'Web Development',
+          bio: 'Senior Full Stack Developer with 10 years of experience.',
+          qualification: 'M.S. Computer Science'
         }
       }
     },
     include: { teacherProfile: true }
   })
 
-  const teacherProfileId = teacherUser.teacherProfile?.id
-  if (!teacherProfileId) {
-      // If teacher exists but no profile, create it
-      const newProfile = await prisma.teacherProfile.create({
-          data: {
-              userId: teacherUser.id,
-              specialization: 'Web Development'
-          }
-      })
-      // throw new Error("Teacher profile creation logic check needed")
-      console.log('Created missing teacher profile')
-  }
+  if (!teacher.teacherProfile) throw new Error("Teacher profile not created")
 
-  // 2. Create Courses (Offerings)
+  // --- STUDENT ---
+  const student = await prisma.user.upsert({
+    where: { email: 'student@future-ready.com' },
+    update: {},
+    create: {
+      email: 'student@future-ready.com',
+      name: 'Alex Student',
+      password: HASHED_PASSWORD,
+      role: Role.STUDENT,
+      studentProfile: {
+        create: {
+          enrollmentDate: new Date()
+        }
+      }
+    },
+    include: { studentProfile: true }
+  })
+  if (!student.studentProfile) throw new Error("Student profile not created")
+
+  console.log('✅ Users created')
+
+  // ===========================================================================
+  // 2. Create Courses
+  // ===========================================================================
+
   const offerings = [
     {
-        title: 'Fundamentals of Web Development',
-        slug: 'fundamentals',
-        price: 45000,
-        level: 'Beginner',
-        thumbnailUrl: '/images/courses/fundamentals.png',
-        description: 'Build a rock-solid base. Master the syntax, logic, and core principles that every engineer needs.',
-        metaTitle: 'Programming Fundamentals Course - Future Ready',
-        metaDescription: 'Master the basics of programming with JavaScript, PHP, Git and Algorithms. The perfect start for your engineering journey.',
-        keywords: ['programming basics', 'javascript', 'php', 'git', 'algorithms'],
-        whatYouWillLearn: [
-            'Master JavaScript & PHP Syntax',
-            'Understand Core Data Structures',
-            'Develop Algorithmic Thinking',
-            'Learn Version Control with Git'
-        ],
-        features: [
-            'Language Basics (JS/PHP)',
-            'Data Structures Introduction',
-            'Algorithmic Thinking',
-            'Version Control (Git)'
-        ],
-        modules: [
-            { title: 'Programming Logic', lessons: ['Variables & Loops', 'Functions & Scope'] },
-            { title: 'Version Control', lessons: ['Git Basics', 'GitHub Workflow'] }
-        ]
+      title: 'Fundamentals of Web Development',
+      slug: 'fundamentals',
+      price: 45000,
+      level: Level.BEGINNER,
+      thumbnailUrl: '/images/courses/fundamentals.png',
+      description: 'Build a rock-solid base. Master the syntax, logic, and core principles that every engineer needs.',
+      whatYouWillLearn: [
+        'Master JavaScript & PHP Syntax',
+        'Understand Core Data Structures',
+        'Develop Algorithmic Thinking',
+        'Learn Version Control with Git'
+      ],
+      features: [
+        'Language Basics (JS/PHP)',
+        'Data Structures Introduction',
+        'Algorithmic Thinking',
+        'Version Control (Git)'
+      ],
+      modules: [
+        { title: 'Programming Logic', lessons: ['Variables & Loops', 'Functions & Scope'] },
+        { title: 'Version Control', lessons: ['Git Basics', 'GitHub Workflow'] }
+      ]
     },
     {
-        title: 'Full Stack Hands-on Training',
-        slug: 'full-stack-training',
-        price: 95000,
-        level: 'Intermediate',
-        thumbnailUrl: '/images/courses/full-stack.png',
-        description: 'Stop watching tutorials. Start building real production software in a studio environment.',
-        metaTitle: 'MERN Stack Training Bootcamp - Future Ready',
-        metaDescription: 'Outcome-driven MERN stack training. Build 3 production projects and master React, Node.js, and System Architecture.',
-        keywords: ['mern stack', 'react course', 'nodejs', 'full stack developer', 'project based learning'],
-        whatYouWillLearn: [
-            'Build Full Stack Apps with MERN',
-            'Master React Hooks & State Management',
-            'Design Scalable Backend APIs',
-            'Deploy to Production'
-        ],
-        features: [
-            'Full Stack Development (MERN)',
-            'Daily Code Reviews',
-            '3 Production Projects',
-            'System Architecture'
-        ],
-        modules: [
-            { title: 'React Deep Dive', lessons: ['Hooks & Context', 'Performance Optimization'] },
-            { title: 'Backend Engineering', lessons: ['RESTful APIs', 'Database Design'] }
-        ]
+      title: 'Full Stack Hands-on Training',
+      slug: 'full-stack-training',
+      price: 95000,
+      level: Level.INTERMEDIATE,
+      thumbnailUrl: '/images/courses/full-stack.png',
+      description: 'Stop watching tutorials. Start building real production software in a studio environment.',
+      whatYouWillLearn: [
+        'Build Full Stack Apps with MERN',
+        'Master React Hooks & State Management',
+        'Design Scalable Backend APIs',
+        'Deploy to Production'
+      ],
+      features: [
+        'Full Stack Development (MERN)',
+        'Daily Code Reviews',
+        '3 Production Projects',
+        'System Architecture'
+      ],
+      modules: [
+        { title: 'React Deep Dive', lessons: ['Hooks & Context', 'Performance Optimization'] },
+        { title: 'Backend Engineering', lessons: ['RESTful APIs', 'Database Design'] }
+      ]
     },
     {
-        title: 'Career Advancement & Placement',
-        slug: 'career-advancement',
-        price: 135000,
-        level: 'Advanced',
-        thumbnailUrl: '/images/courses/career.png',
-        description: 'Transition from coder to professional engineer. Focus on scaling, performance, and leadership.',
-        metaTitle: 'Career Advancement for Engineers - Future Ready',
-        metaDescription: 'Prepare for top-tier engineering roles. Advanced TypeScript, DevOps, CI/CD, and Placement Assurance.',
-        keywords: ['interview prep', 'system design', 'devops', 'typescript', 'career coaching'],
-        features: [
-            'Advanced TypeScript',
-            'DevOps & CI/CD',
-            'Interview Preparation',
-            'Placement Assurance'
-        ],
-        whatYouWillLearn: [
-            'Write Type-Safe Code with TypeScript',
-            'Implement CI/CD Pipelines',
-            'Master System Design Interviews',
-            'Secure a High-Paying Job'
-        ],
-        modules: [
-            { title: 'Advanced Engineering', lessons: ['TypeScript Patterns', 'Microservices'] },
-            { title: 'Career Prep', lessons: ['Mock Interviews', 'Resume Review'] }
-        ]
+      title: 'Career Advancement & Placement',
+      slug: 'career-advancement',
+      price: 135000,
+      level: Level.ADVANCED,
+      thumbnailUrl: '/images/courses/career.png',
+      description: 'Transition from coder to professional engineer. Focus on scaling, performance, and leadership.',
+      features: [
+        'Advanced TypeScript',
+        'DevOps & CI/CD',
+        'Interview Preparation',
+        'Placement Assurance'
+      ],
+      whatYouWillLearn: [
+        'Write Type-Safe Code with TypeScript',
+        'Implement CI/CD Pipelines',
+        'Master System Design Interviews',
+        'Secure a High-Paying Job'
+      ],
+      modules: [
+        { title: 'Advanced Engineering', lessons: ['TypeScript Patterns', 'Microservices'] },
+        { title: 'Career Prep', lessons: ['Mock Interviews', 'Resume Review'] }
+      ]
     }
   ]
 
-  // Basic check for teacher profile again just in case
-  const finalTeacher = await prisma.user.findUnique({
-      where: { email },
-      include: { teacherProfile: true }
-  })
-
-  if (!finalTeacher?.teacherProfile) throw new Error("Failed to ensure teacher profile")
-
   for (const offering of offerings) {
-      await prisma.course.upsert({
-        where: { slug: offering.slug },
-        update: {
-            price: offering.price,
-            published: true,
-            thumbnailUrl: offering.thumbnailUrl,
-            keywords: offering.keywords?.join(','),
-            whatYouWillLearn: offering.whatYouWillLearn?.join(','),
-            features: offering.features?.join(','),
-            teachers: {
-                connect: { id: finalTeacher.teacherProfile.id }
-            }
-        },
-        create: {
-          title: offering.title,
-          slug: offering.slug,
-          description: offering.description,
-          price: offering.price,
-          level: offering.level,
-          published: true,
-          thumbnailUrl: offering.thumbnailUrl,
-          metaTitle: offering.metaTitle,
-          metaDescription: offering.metaDescription,
-          keywords: offering.keywords?.join(','),
-          whatYouWillLearn: offering.whatYouWillLearn?.join(','),
-          features: offering.features?.join(','),
-          teachers: {
-            connect: { id: finalTeacher.teacherProfile.id }
-          },
-          modules: {
-            create: offering.modules.map((mod, idx) => ({
-                title: mod.title,
-                order: idx + 1,
-                lessons: {
-                    create: mod.lessons.map(lessonTitle => ({
-                        title: lessonTitle,
-                        content: 'Lesson content placeholder'
-                    }))
-                }
-            }))
-          }
+    const course = await prisma.course.upsert({
+      where: { slug: offering.slug },
+      update: {
+        price: offering.price,
+        level: offering.level,
+        isActive: true,
+        features: offering.features, // JSON array
+        whatYouWillLearn: offering.whatYouWillLearn, // JSON array
+        teachers: {
+          connect: { id: teacher.teacherProfile.id }
         }
-      })
-      console.log(`Seeding completed for Course: ${offering.title}`)
+      },
+      create: {
+        title: offering.title,
+        slug: offering.slug,
+        description: offering.description,
+        price: offering.price,
+        level: offering.level,
+        isActive: true, // Replaces 'published'
+        thumbnailUrl: offering.thumbnailUrl,
+        features: offering.features,
+        whatYouWillLearn: offering.whatYouWillLearn,
+        teachers: {
+          connect: { id: teacher.teacherProfile.id }
+        },
+        modules: {
+          create: offering.modules.map((mod, idx) => ({
+            title: mod.title,
+            order: idx + 1,
+            lessons: {
+              create: mod.lessons.map((lessonTitle, lIdx) => ({
+                title: lessonTitle,
+                order: lIdx + 1,
+                content: '<h1>Lesson Content</h1><p>Placeholder content...</p>'
+              }))
+            }
+          }))
+        }
+      }
+    })
+    console.log(`✅ Course synced: ${course.title}`)
   }
+
+  // ===========================================================================
+  // 3. Create Leads (Marketing Test)
+  // ===========================================================================
+  const demoLead = await prisma.lead.create({
+    data: {
+      name: 'Interested Prospect',
+      phone: '1234567890',
+      email: 'prospect@gmail.com',
+      status: LeadStatus.NEW,
+      source: LeadSource.WEBSITE,
+      courseInterest: 'full-stack-training'
+    }
+  })
+  console.log('✅ Demo lead created')
+
+  // ===========================================================================
+  // 4. Enroll Student (Test Enrollment)
+  // ===========================================================================
+  const fullStackCourse = await prisma.course.findUnique({ where: { slug: 'full-stack-training' } })
+
+  if (fullStackCourse && student.studentProfile) {
+    // Create a batch
+    const batch = await prisma.batch.create({
+      data: {
+        name: 'FS-Web-Jan-2025',
+        startDate: new Date(),
+        courseId: fullStackCourse.id,
+        students: {
+            connect: { id: student.studentProfile.id }
+        }
+      }
+    })
+
+    // Enroll student
+    await prisma.enrollment.create({
+      data: {
+        studentProfileId: student.studentProfile.id,
+        courseId: fullStackCourse.id,
+        batchId: batch.id,
+        status: EnrollmentStatus.ACTIVE
+      }
+    })
+    console.log('✅ Student enrolled in Full Stack batch')
+  }
+
+  console.log('🏁 Seeding completed successfully')
 }
 
 main()

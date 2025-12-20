@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
         name,
         phone,
         email,
-        status: status || 'student',
-        source: 'contact_form',
+        status: 'NEW',
+        source: 'WEBSITE',
       },
     });
 

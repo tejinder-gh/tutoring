@@ -151,40 +151,40 @@ export default async function CoursePage({ params }: Props) {
 
             <div className="relative">
               <div className="relative rounded-3xl overflow-hidden border border-border bg-accent/10 shadow-3xl aspect-video group">
-                 {course.thumbnailUrl ? (
-                    <Image
-                      src={course.thumbnailUrl}
-                      alt={course.title}
-                      fill
-                      className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                    />
-                 ) : (
-                    <div className="w-full h-full bg-accent/20 flex items-center justify-center">
-                        <span className="text-text-muted font-bold italic">No Visual Available</span>
-                    </div>
-                 )}
-                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/10 transition-colors">
-                    <button className="w-20 h-20 rounded-full bg-white/10 backdrop-blur-xl border border-white/30 flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-2xl">
-                        <PlayCircle className="w-10 h-10 text-white fill-current" />
-                    </button>
-                 </div>
+                {course.thumbnailUrl ? (
+                  <Image
+                    src={course.thumbnailUrl}
+                    alt={course.title}
+                    fill
+                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-accent/20 flex items-center justify-center">
+                    <span className="text-text-muted font-bold italic">No Visual Available</span>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/10 transition-colors">
+                  <button className="w-20 h-20 rounded-full bg-white/10 backdrop-blur-xl border border-white/30 flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-2xl">
+                    <PlayCircle className="w-10 h-10 text-white fill-current" />
+                  </button>
+                </div>
               </div>
 
               {/* Stats Badge */}
               <div className="absolute -bottom-8 -right-8 bg-background p-6 rounded-3xl border border-border shadow-2xl hidden md:block animate-bounce-slow">
-                 <div className="flex items-center gap-4">
-                    <div className="flex -space-x-3">
-                        {[1,2,3,4].map((i) => (
-                            <div key={i} className={`w-10 h-10 rounded-full border-4 border-background bg-accent flex items-center justify-center text-xs font-black shadow-sm`}>
-                                {i}
-                            </div>
-                        ))}
-                    </div>
-                    <div>
-                        <p className="font-black text-sm text-foreground">Join 50+ peers</p>
-                        <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Enrolled this month</p>
-                    </div>
-                 </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex -space-x-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className={`w-10 h-10 rounded-full border-4 border-background bg-accent flex items-center justify-center text-xs font-black shadow-sm`}>
+                        {i}
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <p className="font-black text-sm text-foreground">Join 50+ peers</p>
+                    <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Enrolled this month</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -194,80 +194,80 @@ export default async function CoursePage({ params }: Props) {
       {/* What you'll learn */}
       <section className="py-24 bg-accent/5 border-y border-border">
         <div className="container mx-auto px-6">
-            <h2 className="text-4xl font-black mb-16 text-center">{t("learn")}</h2>
-            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-                {(typeof (course.whatYouWillLearn as any) === 'string'
-                  ? (course.whatYouWillLearn as any).split(',')
-                  : (course.whatYouWillLearn as unknown as string[]) || []
-                ).map((item: string, idx: number) => (
-                    <div key={idx} className="flex items-start gap-4 p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition-all group">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 transition-colors group-hover:bg-primary group-hover:text-black">
-                         <CheckCircle2 size={14} />
-                        </div>
-                        <span className="text-foreground/90 font-medium">{item}</span>
-                    </div>
-                ))}
-                {(!course.whatYouWillLearn || course.whatYouWillLearn.length === 0) && (
-                     <p className="text-text-muted col-span-2 text-center font-medium italic">{t("comingSoon")}</p>
-                )}
-            </div>
+          <h2 className="text-4xl font-black mb-16 text-center">{t("learn")}</h2>
+          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {(typeof (course.whatYouWillLearn as any) === 'string'
+              ? (course.whatYouWillLearn as any).split(',')
+              : (course.whatYouWillLearn as unknown as string[]) || []
+            ).map((item: string, idx: number) => (
+              <div key={idx} className="flex items-start gap-4 p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition-all group">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 transition-colors group-hover:bg-primary group-hover:text-black">
+                  <CheckCircle2 size={14} />
+                </div>
+                <span className="text-foreground/90 font-medium">{item}</span>
+              </div>
+            ))}
+            {(!course.whatYouWillLearn || (course.whatYouWillLearn as unknown as any[]).length === 0) && (
+              <p className="text-text-muted col-span-2 text-center font-medium italic">{t("comingSoon")}</p>
+            )}
+          </div>
         </div>
       </section>
 
       {/* Curriculum */}
       <section className="py-32">
-         <div className="container mx-auto px-6 max-w-5xl">
-            <h2 className="text-4xl font-black mb-16">{t("curriculum")}</h2>
-            <div className="space-y-6">
-                {course.modules.map((module) => (
-                    <div key={module.id} className="border border-border rounded-3xl overflow-hidden bg-accent/5 backdrop-blur-sm">
-                        <div className="p-8 flex items-center justify-between bg-accent/10">
-                            <h3 className="text-xl font-black flex items-center gap-3">
-                                <BookOpen className="w-6 h-6 text-primary" />
-                                {module.title}
-                            </h3>
-                            <span className="text-xs font-bold uppercase tracking-widest text-text-muted bg-background px-4 py-1.5 rounded-full border border-border">
-                              {module.lessons.length} {t("lessons")}
-                            </span>
-                        </div>
-                        <div className="p-4 space-y-2">
-                            {module.lessons.map((lesson) => (
-                                <div key={lesson.id} className="flex items-center justify-between p-4 rounded-2xl hover:bg-background hover:shadow-sm transition-all group">
-                                    <div className="flex items-center gap-4">
-                                        <PlayCircle className="w-5 h-5 text-text-muted group-hover:text-primary transition-colors" />
-                                        <span className="text-sm font-semibold text-text-muted group-hover:text-foreground transition-all">{lesson.title}</span>
-                                    </div>
-                                    <span className="text-[10px] font-black uppercase tracking-tighter text-text-muted border border-border px-3 py-1 rounded-lg">Video</span>
-                                </div>
-                            ))}
-                            {module.lessons.length === 0 && (
-                                <p className="text-sm text-text-muted pl-12 italic opacity-60">Session details pending.</p>
-                            )}
-                        </div>
+        <div className="container mx-auto px-6 max-w-5xl">
+          <h2 className="text-4xl font-black mb-16">{t("curriculum")}</h2>
+          <div className="space-y-6">
+            {course.modules.map((module) => (
+              <div key={module.id} className="border border-border rounded-3xl overflow-hidden bg-accent/5 backdrop-blur-sm">
+                <div className="p-8 flex items-center justify-between bg-accent/10">
+                  <h3 className="text-xl font-black flex items-center gap-3">
+                    <BookOpen className="w-6 h-6 text-primary" />
+                    {module.title}
+                  </h3>
+                  <span className="text-xs font-bold uppercase tracking-widest text-text-muted bg-background px-4 py-1.5 rounded-full border border-border">
+                    {module.lessons.length} {t("lessons")}
+                  </span>
+                </div>
+                <div className="p-4 space-y-2">
+                  {module.lessons.map((lesson) => (
+                    <div key={lesson.id} className="flex items-center justify-between p-4 rounded-2xl hover:bg-background hover:shadow-sm transition-all group">
+                      <div className="flex items-center gap-4">
+                        <PlayCircle className="w-5 h-5 text-text-muted group-hover:text-primary transition-colors" />
+                        <span className="text-sm font-semibold text-text-muted group-hover:text-foreground transition-all">{lesson.title}</span>
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-tighter text-text-muted border border-border px-3 py-1 rounded-lg">Video</span>
                     </div>
-                ))}
-            </div>
-         </div>
+                  ))}
+                  {module.lessons.length === 0 && (
+                    <p className="text-sm text-text-muted pl-12 italic opacity-60">Session details pending.</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Instructors */}
       <section className="py-32 border-t border-border bg-accent/5">
         <div className="container mx-auto px-6 max-w-5xl">
-            <h2 className="text-4xl font-black mb-16">{t("instructors")}</h2>
-            <div className="grid md:grid-cols-2 gap-10">
-                {course.teachers.map((teacher) => (
-                    <div key={teacher.id} className="flex items-center gap-8 p-8 rounded-3xl bg-background border border-border shadow-xl shadow-black/5 group hover:border-primary/30 transition-all">
-                        <div className="w-24 h-24 rounded-2xl bg-primary flex items-center justify-center text-4xl font-black text-black shadow-lg shadow-primary/20 shrink-0 transform group-hover:rotate-3 transition-transform">
-                            {teacher.user.name.charAt(0)}
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-black text-foreground mb-1">{teacher.user.name}</h3>
-                            <p className="text-primary font-bold text-sm mb-4 uppercase tracking-widest">{teacher.specialization}</p>
-                            <p className="text-sm text-text-muted leading-relaxed font-medium">Industry veteran with deep expertise in full-stack engineering and product architecture.</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
+          <h2 className="text-4xl font-black mb-16">{t("instructors")}</h2>
+          <div className="grid md:grid-cols-2 gap-10">
+            {course.teachers.map((teacher) => (
+              <div key={teacher.id} className="flex items-center gap-8 p-8 rounded-3xl bg-background border border-border shadow-xl shadow-black/5 group hover:border-primary/30 transition-all">
+                <div className="w-24 h-24 rounded-2xl bg-primary flex items-center justify-center text-4xl font-black text-black shadow-lg shadow-primary/20 shrink-0 transform group-hover:rotate-3 transition-transform">
+                  {teacher.user.name.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-foreground mb-1">{teacher.user.name}</h3>
+                  <p className="text-primary font-bold text-sm mb-4 uppercase tracking-widest">{teacher.domain}</p>
+                  <p className="text-sm text-text-muted leading-relaxed font-medium">Industry veteran with deep expertise in full-stack engineering and product architecture.</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

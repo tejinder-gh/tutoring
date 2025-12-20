@@ -78,15 +78,16 @@ export async function addLesson(moduleId: string, courseId: string, formData: Fo
 export async function createAssignment(courseId: string, formData: FormData) {
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
-    const dueDateStr = formData.get("dueDate") as string; // YYYY-MM-DD
+    const dueInDaysStr = formData.get("dueInDays") as string;
 
-    const dueDate = dueDateStr ? new Date(dueDateStr) : null;
+    // Parse dueInDays to integer, default to null if not provided
+    const dueInDays = dueInDaysStr ? parseInt(dueInDaysStr) : null;
 
     await prisma.assignment.create({
         data: {
             title,
             description: description || "",
-            dueDate,
+            dueInDays: isNaN(dueInDays as number) ? null : dueInDays,
             courseId
         }
     });

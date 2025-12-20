@@ -18,7 +18,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
         },
       },
       assignments: {
-        orderBy: { dueDate: 'asc' }
+        orderBy: { createdAt: 'desc' }
       }
     },
   });
@@ -97,11 +97,11 @@ export default async function CourseDetailPage({ params }: PageProps) {
                         className="flex-1 bg-background border border-border rounded px-3 py-1 text-sm"
                       />
                       <input
-                          type="text"
-                          name="content" // Simplified: URL or text
-                          placeholder="Content URL / Text"
-                          className="flex-1 bg-background border border-border rounded px-3 py-1 text-sm"
-                        />
+                        type="text"
+                        name="content" // Simplified: URL or text
+                        placeholder="Content URL / Text"
+                        className="flex-1 bg-background border border-border rounded px-3 py-1 text-sm"
+                      />
                       <button
                         type="submit"
                         className="bg-secondary text-black text-xs font-bold px-3 py-1 rounded hover:opacity-90"
@@ -119,74 +119,74 @@ export default async function CourseDetailPage({ params }: PageProps) {
           <div className="border border-dashed border-border rounded-xl p-6 text-center">
             <h3 className="text-lg font-semibold mb-4">Add New Module</h3>
             <form action={addModule.bind(null, course.id)} className="max-w-md mx-auto flex gap-2">
-                <input
-                    type="text"
-                    name="title"
-                    placeholder="Module Title (e.g. Introduction to React)"
-                    required
-                    className="flex-1 bg-background border border-border rounded-lg px-4 py-2"
-                />
-                <button type="submit" className="bg-primary text-black font-bold px-4 py-2 rounded-lg">
-                    Add Module
-                </button>
+              <input
+                type="text"
+                name="title"
+                placeholder="Module Title (e.g. Introduction to React)"
+                required
+                className="flex-1 bg-background border border-border rounded-lg px-4 py-2"
+              />
+              <button type="submit" className="bg-primary text-black font-bold px-4 py-2 rounded-lg">
+                Add Module
+              </button>
             </form>
           </div>
         </div>
 
         {/* Sidebar: Assignments & Course Stats */}
         <div className="space-y-6">
-            <div className="bg-accent/20 border border-border p-6 rounded-xl">
-                <h3 className="font-bold mb-4">Assignments</h3>
-                <div className="space-y-4">
-                     {course.assignments.map((assignment: any) => (
-                        <div key={assignment.id} className="p-3 bg-background rounded-lg border border-border">
-                            <h4 className="font-semibold text-sm">{assignment.title}</h4>
-                            <p className="text-xs text-text-muted mt-1 truncate">{assignment.description}</p>
-                            <div className="mt-2 text-xs flex justify-between">
-                                <span className={assignment.dueDate ? "text-primary" : "text-text-muted"}>
-                                    Due: {assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'No date'}
-                                </span>
-                            </div>
-                        </div>
-                     ))}
-                     {course.assignments.length === 0 && <p className="text-sm text-text-muted">No assignments yet.</p>}
+          <div className="bg-accent/20 border border-border p-6 rounded-xl">
+            <h3 className="font-bold mb-4">Assignments</h3>
+            <div className="space-y-4">
+              {course.assignments.map((assignment: any) => (
+                <div key={assignment.id} className="p-3 bg-background rounded-lg border border-border">
+                  <h4 className="font-semibold text-sm">{assignment.title}</h4>
+                  <p className="text-xs text-text-muted mt-1 truncate">{assignment.description}</p>
+                  <div className="mt-2 text-xs flex justify-between">
+                    <span className={assignment.dueInDays ? "text-primary" : "text-text-muted"}>
+                      Due: {assignment.dueInDays ? `In ${assignment.dueInDays} days` : 'No deadline'}
+                    </span>
+                  </div>
                 </div>
-
-                <div className="mt-6 pt-6 border-t border-border">
-                    <h4 className="text-sm font-semibold mb-3">Create Assignment</h4>
-                    <form action={createAssignment.bind(null, course.id)} className="space-y-3">
-                        <input
-                            type="text" name="title" placeholder="Title" required
-                            className="w-full bg-background border border-border rounded px-3 py-2 text-sm"
-                        />
-                         <textarea
-                            name="description" placeholder="Instructions..."
-                            className="w-full bg-background border border-border rounded px-3 py-2 text-sm h-20"
-                        />
-                        <input
-                            type="date" name="dueDate"
-                            className="w-full bg-background border border-border rounded px-3 py-2 text-sm"
-                        />
-                        <button type="submit" className="w-full bg-primary text-black font-bold py-2 rounded text-sm hover:opacity-90">
-                            Create Assignment
-                        </button>
-                    </form>
-                </div>
+              ))}
+              {course.assignments.length === 0 && <p className="text-sm text-text-muted">No assignments yet.</p>}
             </div>
 
-            <div className="bg-accent/20 border border-border p-6 rounded-xl">
-                <h3 className="font-bold mb-4">Course Info</h3>
-                <div className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                        <span className="text-text-muted">Modules</span>
-                        <span>{course.modules.length}</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-text-muted">Total Lessons</span>
-                        <span>{course.modules.reduce((acc: number, m: any) => acc + m.lessons.length, 0)}</span>
-                    </div>
-                </div>
+            <div className="mt-6 pt-6 border-t border-border">
+              <h4 className="text-sm font-semibold mb-3">Create Assignment</h4>
+              <form action={createAssignment.bind(null, course.id)} className="space-y-3">
+                <input
+                  type="text" name="title" placeholder="Title" required
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-sm"
+                />
+                <textarea
+                  name="description" placeholder="Instructions..."
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-sm h-20"
+                />
+                <input
+                  type="number" name="dueInDays" placeholder="Due in (days)"
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-sm"
+                />
+                <button type="submit" className="w-full bg-primary text-black font-bold py-2 rounded text-sm hover:opacity-90">
+                  Create Assignment
+                </button>
+              </form>
             </div>
+          </div>
+
+          <div className="bg-accent/20 border border-border p-6 rounded-xl">
+            <h3 className="font-bold mb-4">Course Info</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-text-muted">Modules</span>
+                <span>{course.modules.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Total Lessons</span>
+                <span>{course.modules.reduce((acc: number, m: any) => acc + m.lessons.length, 0)}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

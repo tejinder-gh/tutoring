@@ -9,7 +9,7 @@ const TeacherSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(6),
-  specialization: z.string().optional(),
+  domain: z.string().min(2),
 });
 
 export async function createTeacher(formData: FormData) {
@@ -17,7 +17,7 @@ export async function createTeacher(formData: FormData) {
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
-    specialization: formData.get("specialization"),
+    domain: formData.get("domain"),
   };
 
   const validation = TeacherSchema.safeParse(rawData);
@@ -27,7 +27,7 @@ export async function createTeacher(formData: FormData) {
     return;
   }
 
-  const { name, email, password, specialization } = validation.data;
+  const { name, email, password, domain } = validation.data;
 
   // Check existing user
   const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -47,7 +47,7 @@ export async function createTeacher(formData: FormData) {
           role: "TEACHER",
           teacherProfile: {
               create: {
-                  specialization
+                  domain
               }
           }
       }

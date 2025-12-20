@@ -355,8 +355,8 @@ model Assignment {
   updatedAt   DateTime @updatedAt
   courseId    String
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessonId    String
-  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId    String?
+  lesson      Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   submissions Submission[]
 
@@ -432,8 +432,8 @@ model Attendance {
   status     AttendanceStatus
   userId     String
   user       User             @relation("AttendanceUser", fields: [userId], references: [id])
-  lessonId   String
-  lesson     Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId   String?
+  lesson     Lesson?          @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   markedById String?          /// Teacher/staff who marked attendance
   markedBy   User?            @relation("AttendanceMarker", fields: [markedById], references: [id])
   notes      String?          /// Reason for absence, etc.

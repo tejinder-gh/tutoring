@@ -37,10 +37,11 @@ export async function POST(request: NextRequest) {
         name,
         password: hashedPassword,
         role: 'STUDENT',
+        phone, // Add phone to User
         studentProfile: {
           create: {
-            phone: phone,
-            tier: tier
+            // TODO: Create Enrollment record based on tier
+            // tier: tier
           }
         }
       },

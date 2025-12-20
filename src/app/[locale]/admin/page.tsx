@@ -21,8 +21,8 @@ export default async function AdminPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-           <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-           <p className="text-text-muted">Welcome back, {session?.user?.name}</p>
+          <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+          <p className="text-text-muted">Welcome back, {session?.user?.name}</p>
         </div>
       </div>
 
@@ -39,9 +39,9 @@ export default async function AdminPage() {
         <div className="bg-primary/10 rounded-xl p-6 border border-primary/30">
           <div className="text-4xl font-bold text-primary mb-2">
             {(() => {
-                // eslint-disable-next-line react-hooks/purity
-                const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
-                return leads.filter(l => new Date(l.createdAt) > cutoff).length;
+              // eslint-disable-next-line react-hooks/purity
+              const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+              return leads.filter(l => new Date(l.createdAt) > cutoff).length;
             })()}
           </div>
           <div className="text-text-muted">Leads (Last 24h)</div>
@@ -121,7 +121,7 @@ export default async function AdminPage() {
                   <tr key={student.id} className="border-t border-border hover:bg-accent/10">
                     <td className="p-4 text-foreground font-medium">{student.name}</td>
                     <td className="p-4 text-foreground">{student.email}</td>
-                    <td className="p-4 text-foreground">{student.studentProfile?.phone || 'N/A'}</td>
+                    <td className="p-4 text-foreground">{student.phone || 'N/A'}</td>
                     <td className="p-4">
                       <span className="px-2 py-1 rounded-full text-xs font-medium bg-secondary/20 text-secondary">
                         {student.role}
