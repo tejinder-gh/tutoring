@@ -3,6 +3,16 @@
     "title": "Industry-Level Experience. Real Skills. Real Results.",
     "subtitle": "Master production-grade engineering through hands-on projects, structured mentorship, and proven career outcomes."
   },
+  "usp": {
+    "badge": "100% Job Placement Guarantee",
+    "title": "We Don't Just Teach. We Place You.",
+    "subtitle": "Our commitment is simple: You finish the roadmap, you get hired. Or we refund every penny.",
+    "features": {
+      "1": "Guaranteed minimum package of ₹4.5 LPA",
+      "2": "Interview opportunities until you're hired",
+      "3": "Resume & Portfolio building included"
+    }
+  },
   "cta": {
     "apply": "Apply Now",
     "viewCourses": "Explore Curriculum",
@@ -32,6 +42,27 @@
       "1": "Excellence in Teaching",
       "2": "Student-Centric Approach",
       "3": "Industry Relevance"
+    },
+    "team": {
+      "title": "Meet Your Mentors",
+      "subtitle": "Learn from industry veterans who have walked the path.",
+      "members": {
+        "1": {
+          "name": "Dr. Sarah Johnson",
+          "role": "Chief Instructor & Principal Engineer",
+          "bio": "Ex-Google Staff Engineer with 12+ years of experience. Ph.D. in Computer Science. Passionate about distributed systems and mentorship."
+        },
+        "2": {
+          "name": "Amit Patel",
+          "role": "Senior Technical Mentor",
+          "bio": "Full-stack wizard with deep expertise in the React ecosystem and Node.js. Successfully scaled startups from 0 to 1M+ users."
+        },
+        "3": {
+          "name": "Elena Rodriguez",
+          "role": "Career Success Coach",
+          "bio": "Specialized in technical recruiting and soft skills development. Helped 500+ students secure offers at top-tier companies."
+        }
+      }
     }
   },
   "careers": {
@@ -109,6 +140,11 @@
   "courses": {
     "title": "The Engineer's Roadmap",
     "subtitle": "A structured path from 'Hello World' to your first offer letter. We don't sell courses; we build careers.",
+    "guarantee": {
+      "title": "Money Back Guarantee",
+      "description": "Complete Tiers 1-3 with an 85% score or higher, and we guarantee job placement within 6 months of graduation, or your full tuition is refunded.",
+      "badge": "Placement Protected"
+    },
     "viewDetails": "View Full Curriculum",
     "knowMore": "Know More",
     "startYourJourney": "Start Your Journey",
@@ -119,6 +155,7 @@
     "partneredTiers": "Partnered Tiers",
     "tiers": {
       "tier1": {
+        "step": "Step 01",
         "title": "Tier 1: Junior Developer Career Preparation",
         "role": "The Executor Track",
         "description": "Enable students to efficiently execute well-defined programming tasks under guidance, while establishing foundational Computer Science knowledge, structured collaboration habits, and reliable persistence skills.",
@@ -168,6 +205,7 @@
         "capstone": "Personal Portfolio Website + API Integration Project with Production Deployment"
       },
       "tier2": {
+        "step": "Step 02",
         "title": "Tier 2: Intermediate Developer Career Preparation",
         "role": "The Independent Problem-Solver Track",
         "description": "Produce autonomous full-stack specialists capable of independent execution, mastering system integration, robust quality assurance, and incident management.",
@@ -210,6 +248,7 @@
         "capstone": "Robust Full-Stack Service with Critical Path Test Coverage + Complex External Service Integration"
       },
       "tier3": {
+        "step": "Step 03",
         "title": "Tier 3: Senior Developer Career Preparation",
         "role": "The Architect Track",
         "description": "Develop strategic architects and leaders capable of translating ambiguous business requirements into actionable system architectures and driving organizational impact through influence.",
@@ -251,6 +290,153 @@
         },
         "capstone": "Architectural Review and Defense: Present to CTO Panel, Iterate Based on Feedback, Achieve 2/3 Approval"
       },
+      "tier4": {
+        "title": "Tier 4: Staff Engineer Career Preparation",
+        "role": "The Systems Architect & Technical Lead Track",
+        "description": "Transform senior engineers into organizational force multipliers who architect cross-team systems, establish engineering standards, and solve ambiguous problems spanning organizational boundaries while maintaining hands-on technical excellence.",
+        "experience": "6–8 Years Equivalent Experience",
+        "modules": [
+          {
+            "code": "M13",
+            "title": "Advanced System Architecture & Database Mastery",
+            "tech": "PostgreSQL (Advanced Indexing, Query Optimization, Partitioning, Replication), MongoDB (Sharding, Aggregation Pipelines, Change Streams), Redis (Pub/Sub, Distributed Locks), Database Migration Strategies, Read/Write Splitting, CQRS Pattern",
+            "outcome": "Multi-Database Architecture Design (SQL + NoSQL + Cache Layer) with Migration Plan",
+            "details": "Master production-grade database architecture. Design polyglot persistence strategies choosing optimal storage for each use case. Implement zero-downtime migrations at scale."
+          },
+          {
+            "code": "M14",
+            "title": "Platform Engineering & Developer Productivity",
+            "tech": "Internal Developer Platforms (Backstage.io), Service Mesh Architecture, API Gateway (Kong/NGINX), GraphQL Federation, Monorepo Management (Nx/Turborepo), Component Libraries (Storybook), Design Systems",
+            "outcome": "Internal Developer Platform Proposal + Component Library with 20+ Components",
+            "details": "Build infrastructure that scales team productivity. Design self-service platforms reducing deployment friction by 50%+. Establish golden paths for common workflows."
+          },
+          {
+            "code": "M15",
+            "title": "Computer Science Fundamentals Deep Dive",
+            "tech": "OSI Model & Network Protocols (TCP/IP, HTTP/2, WebSockets), Operating Systems (Process Management, Memory Management, I/O), Object-Oriented Design Patterns (SOLID, GoF Patterns), Functional Programming Principles, Concurrency Models (Event Loop, Worker Threads)",
+            "outcome": "Technical Deep-Dive Series: 5 Blog Posts Explaining Complex CS Concepts",
+            "details": "Master theoretical foundations underlying modern web development. Understand why technologies work, not just how to use them. Debug production issues at protocol and OS level."
+          },
+          {
+            "code": "M15.5",
+            "title": "Advanced DSA & Interview Mastery",
+            "tech": "Advanced Algorithms (Dynamic Programming, Greedy, Backtracking, Advanced Graph Algorithms), System Design Patterns, Behavioral Interview Frameworks (STAR Method), Salary Negotiation",
+            "outcome": "Weekly: 3 LeetCode Medium + 1 Hard. Biweekly: 90-min System Design Mock + Behavioral Mock",
+            "details": "Grind to FAANG-level interview competency. 100+ problems across all patterns. Mock interviews with actual Staff+ engineers from top companies."
+          },
+          {
+            "code": "M16",
+            "title": "Technical Leadership & Cross-Team Collaboration",
+            "tech": "Architectural Decision Records (ADRs), RFC Process, Technical Roadmapping, Dependency Mapping, Conway's Law Application, Engineering Metrics (DORA, SPACE), FinOps & Cost Optimization",
+            "outcome": "Multi-Team RFC (3+ teams) + Technical Roadmap (6-month) + Cost Optimization Report",
+            "details": "Drive technical strategy across organizational boundaries. Build consensus through written proposals. Measure and communicate engineering impact to executives."
+          }
+        ],
+        "softSkills": {
+          "focus": "Strategic Thinking, Cross-Team Collaboration, Technical Writing, Influencing Without Authority, Teaching & Mentorship at Scale",
+          "assessment": "Leading Multi-Team Design Reviews, Publishing Technical RFCs, Mentoring 3+ Junior Engineers Simultaneously, Technical Blog Post Series (5+ posts)",
+          "details": "Operate beyond single team scope. Influence technical direction through persuasion and data. Multiply impact through mentorship and documentation."
+        },
+        "capstone": "Cross-Team Platform Initiative: Design, Build, and Deploy Internal Tool Used by 3+ Engineering Teams + Published Technical Documentation"
+      },
+      "tier5": {
+        "title": "Tier 5: Principal Engineer Career Preparation",
+        "role": "The Technical Visionary & Standards Bearer Track",
+        "description": "Cultivate principal-level engineers who define organizational technical direction, establish engineering culture and standards, own critical infrastructure, and solve the hardest technical problems while maintaining deep hands-on expertise.",
+        "experience": "10+ Years Equivalent Experience",
+        "modules": [
+          {
+            "code": "M17",
+            "title": "Advanced Distributed Systems & Real-Time Architecture",
+            "tech": "Event-Driven Architecture (Kafka, RabbitMQ), Event Sourcing & CQRS, Saga Pattern, Distributed Transactions, WebSockets at Scale, Server-Sent Events (SSE), Real-Time Collaboration (Operational Transforms, CRDTs)",
+            "outcome": "Real-Time Collaborative Application with Event Sourcing (Think: Google Docs-like)",
+            "details": "Build systems handling millions of concurrent connections. Master eventual consistency and conflict resolution. Design event-driven architectures for complex business workflows."
+          },
+          {
+            "code": "M18",
+            "title": "SDLC Mastery & Engineering Excellence",
+            "tech": "Software Development Lifecycle Models (Agile, Scrum, Kanban), Trunk-Based Development, Feature Flags, Blue-Green Deployments, Canary Releases, Chaos Engineering (Chaos Monkey), Site Reliability Engineering (SRE), Incident Management, Blameless Post-Mortems",
+            "outcome": "Complete SDLC Documentation + Chaos Engineering Test Suite + Incident Response Playbook",
+            "details": "Design end-to-end development processes optimizing for velocity and quality. Implement advanced deployment strategies. Build organizational resilience through chaos testing."
+          },
+          {
+            "code": "M19",
+            "title": "Advanced Performance Engineering & Optimization",
+            "tech": "React Performance (Concurrent Mode, Suspense, React Server Components), Node.js Performance (Profiling, Memory Leaks, Event Loop Optimization), Database Query Optimization, CDN Strategies, Edge Computing (Cloudflare Workers, Lambda@Edge), Advanced Caching Strategies",
+            "outcome": "Performance Optimization Case Study: Improve Application Performance by 5x (Documented)",
+            "details": "Master performance at every layer of the stack. Profile and optimize React rendering, Node.js execution, database queries, and network delivery. Achieve sub-second page loads globally."
+          },
+          {
+            "code": "M19.5",
+            "title": "Expert-Level DSA & System Design",
+            "tech": "Competitive Programming Techniques, Advanced System Design (Design Instagram, Design Uber, Design Netflix), Scalability Patterns, Trade-off Analysis, Back-of-Envelope Calculations, Component Design",
+            "outcome": "Weekly: 2 LeetCode Hard + 1 System Design. Monthly: Full-Day Interview Simulation (4 rounds)",
+            "details": "Achieve top 5% problem-solving ability. Design systems handling billions of requests. Practice until system design becomes second nature."
+          },
+          {
+            "code": "M20",
+            "title": "Technical Vision & Organizational Impact",
+            "tech": "Multi-Year Technical Strategy, Build vs Buy vs Partner Analysis, Technology Evaluation Frameworks, Engineering Hiring & Interviewing, Technical Due Diligence, Open Source Strategy, Developer Relations",
+            "outcome": "3-Year Technical Vision Document + Technology Evaluation Framework + Hiring Plan",
+            "details": "Define multi-year technical direction balancing innovation with pragmatism. Build and scale engineering organizations. Establish engineering culture and standards."
+          }
+        ],
+        "softSkills": {
+          "focus": "Visionary Thinking, Executive Communication, Building Engineering Culture, Conflict Resolution at Scale, Technical Evangelism, Industry Thought Leadership",
+          "assessment": "Quarterly Technical Strategy Presentations, Conference Speaking, Open Source Contributions, Hiring Committee Leadership, Engineering Culture Initiatives",
+          "details": "Operate at executive level influencing company-wide technical decisions. Build external reputation attracting top talent. Shape industry direction through thought leadership."
+        },
+        "capstone": "Technical Vision Defense: Present 3-Year Technical Roadmap to Executive Team (CEO/CTO/CPO) + Implement First Major Initiative with Measurable Business Impact"
+      },
+      "tier6": {
+        "title": "Tier 6: Engineering Management Career Preparation",
+        "role": "The Technical Leader & People Manager Track",
+        "description": "Transition exceptional engineers into high-impact engineering managers who build and scale high-performing teams, balance technical excellence with business outcomes, and multiply organizational impact through effective people leadership.",
+        "experience": "5+ Years Engineering + Management Aspiration",
+        "modules": [
+          {
+            "code": "M21",
+            "title": "Foundations of Engineering Management",
+            "tech": "1-on-1 Frameworks, Performance Management, Goal Setting (OKRs), Career Development Planning, Feedback Models (SBI, Radical Candor), Coaching Techniques, Team Health Metrics",
+            "outcome": "Personalized Management Philosophy Document + 90-Day Management Plan",
+            "details": "Master the fundamentals of people management. Transition from individual contributor to team multiplier. Develop authentic leadership style grounded in technical credibility."
+          },
+          {
+            "code": "M22",
+            "title": "Building High-Performing Engineering Teams",
+            "tech": "Technical Recruiting & Interviewing, Onboarding Programs, Team Dynamics (Tuckman Model), Psychological Safety, Engineering Team Metrics, Sprint Planning, Agile Facilitation, Retrospectives",
+            "outcome": "Complete Hiring Process Design + Team Charter + Onboarding Program (30-60-90 Day)",
+            "details": "Build teams that consistently ship. Design hiring processes attracting top talent. Create team culture optimizing for autonomy, mastery, and purpose."
+          },
+          {
+            "code": "M23",
+            "title": "Technical Project Management & Delivery",
+            "tech": "Agile/Scrum Mastery, Risk Management, Resource Allocation, Technical Debt Management, Stakeholder Management, Project Estimation Techniques, Roadmap Planning, Cross-Functional Collaboration",
+            "outcome": "Major Project Delivery Simulation (3-month timeline, ambiguous requirements, changing priorities)",
+            "details": "Deliver complex technical projects predictably. Navigate ambiguity and changing requirements. Balance engineering excellence with business deadlines."
+          },
+          {
+            "code": "M24",
+            "title": "Engineering Strategy & Business Alignment",
+            "tech": "Business Model Understanding (SaaS Metrics, Unit Economics), Technical ROI Calculation, Build vs Buy Decisions, Vendor Management, Budget Planning, Engineering OKRs, Data-Driven Decision Making",
+            "outcome": "Engineering Strategy Document Aligned with Business Goals + Budget Proposal",
+            "details": "Translate business objectives into engineering execution. Speak both technical and business languages fluently. Make strategic technical investments with measurable business impact."
+          },
+          {
+            "code": "M25",
+            "title": "Advanced Leadership & Organizational Design",
+            "tech": "Difficult Conversations, Performance Improvement Plans, Team Scaling Strategies, Organizational Design Principles, Change Management, Engineering Culture Design, Diversity & Inclusion",
+            "outcome": "Leadership Crisis Simulation (handle: underperformance, team conflict, organizational change) + Organizational Design Proposal",
+            "details": "Navigate the hardest parts of management: performance issues, team conflicts, organizational change. Design team structures that scale. Build inclusive, high-trust cultures."
+          }
+        ],
+        "softSkills": {
+          "focus": "Empathy & Emotional Intelligence, Difficult Conversations, Strategic Thinking, Executive Presence, Change Leadership, Authentic Communication",
+          "assessment": "Monthly Simulated 1-on-1s (Scored by Actual EMs), Performance Review Practice, Conflict Resolution Scenarios, Budget Defense to Mock Executives, Team Health Surveys",
+          "details": "Master the art of leadership through people. Build trust and psychological safety. Navigate organizational politics with integrity. Balance advocacy for team with business needs."
+        },
+        "capstone": "Full Management Simulation: Manage Virtual Team for 3 Months (hire, onboard, deliver project, handle performance issue, present results to executives) + 360 Feedback from Simulated Reports"
+      },
       "ielts": {
         "title": "IELTS Preparation",
         "role": "IELTS Masterclass: Strategic Communication",
@@ -286,42 +472,6 @@
           "details": "Simulate real exam environments to build stamina and confidence."
         },
         "capstone": "Full-Length Mock Examination with Detailed Evaluative Feedback"
-      },
-      "accounting": {
-        "title": "Accounting Preparation",
-        "role": "Professional Accountant Track",
-        "description": "Master modern accounting principles and software to manage financial health for global businesses.",
-        "experience": "Entry Level to Professional",
-        "parteneredWith": "Professional Accounting Standards",
-        "modules": [
-          {
-            "code": "M1",
-            "title": "Financial Foundations",
-            "tech": "Double-entry Bookkeeping, Financial Statements, Ledger Management",
-            "outcome": "Ability to prepare Balance Sheets and P&L Statements",
-            "details": "Learn the bedrock principles of recording and classifying financial transactions."
-          },
-          {
-            "code": "M2",
-            "title": "Taxation & Compliance",
-            "tech": "GST/VAT Compliance, Corporate Tax, Regulatory Filings",
-            "outcome": "Tax-ready financial records",
-            "details": "Navigate the complexities of modern tax laws and ensure organizational compliance."
-          },
-          {
-            "code": "M3",
-            "title": "Modern Accounting Tools",
-            "tech": "TallyPrime, QuickBooks, Advanced Excel for Finance",
-            "outcome": "Software Proficiency Certification",
-            "details": "Digitize accounting workflows using industry-standard software tools."
-          }
-        ],
-        "softSkills": {
-          "focus": "Attention to Detail, Ethical Decision Making, Analytical Thinking",
-          "assessment": "Case Study Audits, Spreadsheet Stress Tests",
-          "details": "Develop the professional skepticism and precision required for auditing and financial analysis."
-        },
-        "capstone": "Comprehensive Financial Audit Simulation for a Small-to-Medium Enterprise"
       }
     },
     "prReview": {
@@ -366,6 +516,14 @@
       "phone": "Phone Number",
       "email": "Email Address",
       "status": "Current Status",
+      "tierLabel": "Which stage are you at?",
+      "tierPlaceholder": "Select your experience level",
+      "tierOptions": {
+        "tier1": "Beginner (0-2 Yrs) - Tier 1",
+        "tier2": "Intermediate (3-5 Yrs) - Tier 2",
+        "tier3": "Advanced (5+ Yrs) - Tier 3",
+        "ielts": "IELTS / Communication"
+      },
       "options": {
         "student": "Student",
         "graduate": "Graduate (Job Seeking)",

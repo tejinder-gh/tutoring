@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { ArrowRight, BookOpen, Rocket, Users } from "lucide-react";
+import { ArrowRight, BookOpen, Rocket, ShieldCheck, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Divider from "../../../components/lib/SectionDivision";
 
@@ -224,9 +224,27 @@ export default function CoursesPage() {
                <h1 className="text-4xl md:text-5xl font-black mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary">
                   {t("title")}
                </h1>
-               <p className="text-xl text-muted-foreground leading-relaxed">
+               <p className="text-xl text-muted-foreground leading-relaxed mb-8">
                   {t("subtitle")}
                </p>
+
+               {/* Money Back Guarantee Badge */}
+               <div className="inline-flex flex-col md:flex-row items-center gap-4 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-800/50 text-left">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-400">
+                     <ShieldCheck size={24} />
+                  </div>
+                  <div>
+                     <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-0.5 uppercase tracking-wide">
+                        {t("guarantee.badge")}
+                     </div>
+                     <div className="font-bold text-foreground">
+                        {t("guarantee.title")}
+                     </div>
+                     <div className="text-sm text-muted-foreground">
+                        {t("guarantee.description")}
+                     </div>
+                  </div>
+               </div>
             </div>
 
             <div className="space-y-16">
@@ -236,7 +254,27 @@ export default function CoursesPage() {
                   if (tier.parteneredWith) {
                      partneredTiers.push(tier);
                   } else
-                     return <CourseCard key={index} tierData={tier} t={t} index={index} />
+                     return (
+                        <div key={index} className="relative">
+                           {/* Roadmap Connector */}
+                           {index > 0 && (
+                              <div className="absolute -top-16 left-1/2 -translate-x-1/2 h-16 w-1 bg-gradient-to-b from-border/0 via-primary/20 to-border/0 flex items-center justify-center">
+                                 <div className="w-3 h-3 rounded-full bg-primary/20" />
+                              </div>
+                           )}
+
+                           {/* Step Label */}
+                           {tier.step && (
+                              <div className="absolute -top-5 left-8 z-10">
+                                 <span className="bg-background border border-border px-3 py-1 rounded-full text-xs font-bold text-muted-foreground uppercase tracking-widest shadow-sm">
+                                    {tier.step}
+                                 </span>
+                              </div>
+                           )}
+
+                           <CourseCard tierData={tier} t={t} index={index} />
+                        </div>
+                     )
                })}
             </div>
             {partneredTiers.length > 0 && <Divider title={t("partneredTiers")} />}

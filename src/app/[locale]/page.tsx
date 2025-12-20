@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { ArrowRight, CheckCircle2, Sparkles, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, TrendingUp, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function HomePage() {
@@ -56,6 +56,31 @@ export default function HomePage() {
             >
               {t("cta.viewCourses")}
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* USP Section - Job Placement Guarantee */}
+      <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-10" />
+        <div className="container mx-auto px-6 text-center relative z-10">
+          <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-sm mb-8 animate-pulse">
+            <ShieldCheck size={18} />
+            {t("usp.badge")}
+          </div>
+
+          <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-white">{t("usp.title")}</h2>
+          <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto mb-16 leading-relaxed">{t("usp.subtitle")}</p>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {[1, 2, 3].map((num) => (
+              <div key={num} className="p-8 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mx-auto mb-6 text-white">
+                  <CheckCircle2 size={32} />
+                </div>
+                <p className="text-xl font-bold text-white leading-tight">{t(`usp.features.${num}`)}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

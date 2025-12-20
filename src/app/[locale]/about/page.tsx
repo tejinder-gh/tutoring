@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Trophy, Users } from "lucide-react";
+import { CheckCircle2, Trophy, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function AboutPage() {
@@ -50,11 +50,25 @@ export default function AboutPage() {
 
       {/* Stats/Team Placeholder */}
       <section className="py-20 px-6 bg-accent/5 border-t border-border">
-         <div className="container mx-auto text-center">
-            <Users size={48} className="mx-auto text-muted-foreground mb-6" />
-            <h2 className="text-2xl font-bold mb-4">Meet the Team</h2>
-            <p className="text-muted-foreground">Coming soon...</p>
-         </div>
+        <div className="container mx-auto text-center max-w-6xl">
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold mb-4">{t("team.title")}</h2>
+            <p className="text-muted-foreground text-lg">{t("team.subtitle")}</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((num) => (
+              <div key={num} className="p-8 rounded-3xl bg-card border border-border shadow-sm hover:shadow-elegant transition-all duration-300">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mx-auto mb-6 flex items-center justify-center">
+                  <User size={40} className="text-foreground/70" />
+                </div>
+                <h3 className="text-xl font-bold mb-1">{t(`team.members.${num}.name`)}</h3>
+                <div className="text-sm font-semibold text-primary mb-4">{t(`team.members.${num}.role`)}</div>
+                <p className="text-muted-foreground">{t(`team.members.${num}.bio`)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     </div>
   );
