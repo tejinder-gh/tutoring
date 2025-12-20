@@ -1,6 +1,10 @@
-import { auth } from '@/../auth';
+import { getAdminAnalytics } from '@/app/actions/analytics';
+import { auth } from '@/auth';
+import { SimpleBarChart, SimpleLineChart } from '@/components/Analytics/Charts';
+import StatCard from '@/components/Analytics/StatCard';
 import { requirePermission } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
+import { BadgeIndianRupee, Users } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,16 +12,15 @@ export default async function AdminPage() {
   await requirePermission('read', 'user');
   const session = await auth();
 
-  const leads = await prisma.lead.findMany({
-    orderBy: { createdAt: 'desc' },
-  });
-
-  // Fetch users with ROLE = STUDENT
-  const students = await prisma.user.findMany({
-    where: { role: { name: 'STUDENT' } },
-    include: { studentProfile: true, role: true },
-    orderBy: { createdAt: 'desc' },
-  });
+  const [leads, students, analytics] = await Promise.all([
+    prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
+    prisma.user.findMany({
+      where: { role: { name: 'STUDENT' } },
+      include: { studentProfile: true, role: true },
+      orderBy: { createdAt: 'desc' },
+    }),
+    getAdminAnalytics()
+  ]);
 
   return (
     <div>
@@ -29,15 +32,14 @@ export default async function AdminPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div className="bg-accent/20 rounded-xl p-6 border border-border">
-          <div className="text-4xl font-bold text-foreground mb-2">{leads.length}</div>
-          <div className="text-text-muted">Total Leads</div>
-        </div>
-        <div className="bg-accent/20 rounded-xl p-6 border border-border">
-          <div className="text-4xl font-bold text-foreground mb-2">{students.length}</div>
-          <div className="text-text-muted">Enrolled Students</div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <StatCard title="Total Leads" value={leads.length} icon={Users} trend="neutral" />
+        {analytics && (
+          <>
+            <StatCard title="Total Revenue" value={`₹${analytics.overview.totalRevenue.toLocaleString()}`} icon={BadgeIndianRupee} trend="up" />
+            <StatCard title="Total Courses" value={analytics.overview.totalCourses} icon={BadgeIndianRupee} trend="neutral" />
+          </>
+        )}
         <div className="bg-primary/10 rounded-xl p-6 border border-primary/30">
           <div className="text-4xl font-bold text-primary mb-2">
             {(() => {
@@ -49,6 +51,23 @@ export default async function AdminPage() {
           <div className="text-text-muted">Leads (Last 24h)</div>
         </div>
       </div>
+
+      {analytics && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold mb-6">Revenue Trend (Last 6 Months)</h3>
+            <div className="h-64">
+              <SimpleLineChart data={analytics.revenueData} xKey="name" yKey="revenue" color="#10B981" />
+            </div>
+          </div>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold mb-6">Popular Courses</h3>
+            <div className="h-64">
+              <SimpleBarChart data={analytics.popularCourses} xKey="name" yKey="students" color="#3B82F6" />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Leads Table */}
       <div className="bg-accent/10 rounded-xl border border-border overflow-hidden mb-12">

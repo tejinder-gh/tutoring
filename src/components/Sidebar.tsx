@@ -37,12 +37,15 @@ export default function Sidebar({ role }: SidebarProps) {
       { href: "/teacher/courses", label: "My Courses", icon: BookOpen },
       { href: "/teacher/assignments", label: "Assignments", icon: FileText },
       { href: "/teacher/attendance", label: "Attendance", icon: Calendar },
+      { href: "/teacher/schedule", label: "Schedule", icon: Calendar },
     ],
     STUDENT: [
       { href: "/student", label: "Dashboard", icon: LayoutDashboard },
       { href: "/student/learn", label: "My Learning", icon: GraduationCap },
       { href: "/student/assignments", label: "Assignments", icon: FileText },
       { href: "/student/queries", label: "My Queries", icon: MessageSquare },
+      { href: "/student/schedule", label: "My Schedule", icon: Calendar },
+      { href: "/student/payments", label: "Payments", icon: FileText }, // Reusing FileText for basic icon
     ],
   };
 

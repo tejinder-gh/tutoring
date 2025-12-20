@@ -1,8 +1,11 @@
-import { auth } from "@/../auth";
+import { getStudentAnalytics } from "@/app/actions/analytics";
+import { auth } from "@/auth";
+import { SimpleBarChart } from "@/components/Analytics/Charts";
+import StatCard from "@/components/Analytics/StatCard";
 import ProgressBar from "@/components/ProgressBar";
 import { getEnrolledCourses } from "@/lib/actions/progress";
 import { prisma } from "@/lib/prisma";
-import { BookOpen, GraduationCap } from "lucide-react";
+import { Award, BookOpen, Clock, GraduationCap } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +14,7 @@ export default async function StudentDashboard() {
     const session = await auth();
     if (!session?.user) return <div>Unauthorized</div>;
 
-    const [profile, announcements, enrolledCourses] = await Promise.all([
+    const [profile, announcements, enrolledCourses, analytics] = await Promise.all([
         prisma.studentProfile.findUnique({
             where: { userId: session.user.id },
             include: {
@@ -23,7 +26,8 @@ export default async function StudentDashboard() {
             orderBy: { createdAt: 'desc' },
             include: { author: { select: { name: true } } }
         }),
-        getEnrolledCourses()
+        getEnrolledCourses(),
+        getStudentAnalytics()
     ]);
 
     return (
@@ -36,6 +40,41 @@ export default async function StudentDashboard() {
                     </p>
                 )}
             </div>
+
+            {/* Analytics Overview */}
+            {analytics && (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <StatCard
+                        title="Completed Courses"
+                        value={analytics.overview.completedCourses}
+                        icon={Award}
+                        trend="neutral"
+                    />
+                    <StatCard
+                        title="Active Courses"
+                        value={analytics.overview.activeCourses}
+                        icon={BookOpen}
+                        trend="neutral"
+                    />
+                    <StatCard
+                        title="Attendance"
+                        value={`${analytics.overview.attendanceRate}%`}
+                        icon={Clock}
+                        trend="neutral"
+                    />
+                    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col justify-center">
+                        <p className="text-sm font-medium text-slate-500 mb-2">Quiz Performance</p>
+                        <div className="h-24">
+                            <SimpleBarChart
+                                data={analytics.recentQuizScores}
+                                xKey="name"
+                                yKey="score"
+                                color="#8B5CF6"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Continue Learning Section */}
             {enrolledCourses.length > 0 && (
@@ -50,7 +89,7 @@ export default async function StudentDashboard() {
                         </Link>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {enrolledCourses.slice(0, 2).map((course) => (
+                        {enrolledCourses.slice(0, 2).map((course: any) => (
                             <Link
                                 key={course.id}
                                 href={`/student/learn/${course.courseId}`}
@@ -82,7 +121,7 @@ export default async function StudentDashboard() {
                 <div className="bg-accent/20 border border-border p-6 rounded-xl">
                     <h3 className="font-bold text-xl mb-4">Latest Announcements</h3>
                     <div className="space-y-4">
-                        {announcements.map(ann => (
+                        {announcements.map((ann: any) => (
                             <div key={ann.id} className="border-b border-border/50 pb-4 last:border-0 last:pb-0">
                                 <h4 className="font-semibold">{ann.title}</h4>
                                 <p className="text-sm text-text-muted mt-1">{ann.content}</p>

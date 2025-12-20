@@ -1,4 +1,4 @@
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import { getQuizForStudent, startQuizAttempt } from "@/lib/actions/quiz";
 import { notFound, redirect } from "next/navigation";
 import QuizTaker from "./QuizTaker";

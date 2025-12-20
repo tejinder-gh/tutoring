@@ -1,5 +1,6 @@
 "use client";
 
+import NotificationBell from "@/components/NotificationBell";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { Languages, Moon, Sun } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -57,6 +58,7 @@ export default function Navbar() {
           </Link>
 
           <div className="flex items-center gap-2 border-l border-border pl-4">
+            <NotificationBell />
             <button
               onClick={toggleLanguage}
               aria-label="Toggle language"

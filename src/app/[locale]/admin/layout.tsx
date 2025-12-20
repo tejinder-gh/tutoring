@@ -1,4 +1,4 @@
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import AdminHeader from "@/components/AdminHeader";
 import Sidebar from "@/components/Sidebar";
 import { SessionProvider } from "next-auth/react";

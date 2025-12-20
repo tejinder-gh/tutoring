@@ -1,4 +1,4 @@
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import { getQuizResult } from "@/lib/actions/quiz";
 import { ArrowLeft, CheckCircle, Home, Trophy, XCircle } from "lucide-react";
 import Link from "next/link";

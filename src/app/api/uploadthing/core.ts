@@ -1,4 +1,4 @@
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 const f = createUploadthing();

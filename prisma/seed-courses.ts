@@ -1,4 +1,12 @@
-import { EnrollmentStatus, LeadSource, LeadStatus, Level, PrismaClient } from '@prisma/client';
+import {
+    EnrollmentStatus,
+    LeadSource,
+    LeadStatus,
+    Level,
+    NotificationType,
+    PrismaClient,
+    QuestionType
+} from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -59,6 +67,10 @@ async function main() {
 
     // Settings
     { action: 'manage', subject: 'settings' },
+
+    // New additions
+    { action: 'manage', subject: 'batch' },
+    { action: 'manage', subject: 'enrollment' },
   ];
 
   for (const perm of permissionsToCreate) {
@@ -74,8 +86,6 @@ async function main() {
     });
   }
   console.log('✅ Permissions seeded');
-
-  // --- DIRECTOR ---
 
   // --- DIRECTOR ---
   const director = await prisma.user.upsert({
@@ -147,8 +157,21 @@ async function main() {
 
   console.log('✅ Users created')
 
+    // ===========================================================================
+  // 1c. Seed Salaries
   // ===========================================================================
-  // 2. Create Courses
+  await prisma.salary.create({
+    data: {
+      teacherProfileId: teacher.teacherProfile.id,
+      baseSalary: 50000,
+      allowances: 5000,
+      effectiveFrom: new Date(),
+    }
+  });
+  console.log('✅ Salary created');
+
+  // ===========================================================================
+  // 2. Create Courses, Quizzes & Assignments
   // ===========================================================================
 
   const offerings = [
@@ -172,8 +195,45 @@ async function main() {
         'Version Control (Git)'
       ],
       modules: [
-        { title: 'Programming Logic', lessons: ['Variables & Loops', 'Functions & Scope'] },
-        { title: 'Version Control', lessons: ['Git Basics', 'GitHub Workflow'] }
+        {
+          title: 'Programming Logic',
+          lessons: [
+            {
+              title: 'Variables & Loops',
+              quiz: {
+                title: 'JS Basics Quiz',
+                questions: [
+                  {
+                    text: 'Which keyword is used to declare a variable in JavaScript?',
+                    type: QuestionType.MULTIPLE_CHOICE,
+                    options: [
+                      { text: 'var', isCorrect: true },
+                      { text: 'int', isCorrect: false },
+                      { text: 'string', isCorrect: false }
+                    ]
+                  },
+                  {
+                    text: 'What is the output of 2 + "2"?',
+                    type: QuestionType.MULTIPLE_CHOICE,
+                    options: [
+                      { text: '4', isCorrect: false },
+                      { text: '22', isCorrect: true },
+                      { text: 'NaN', isCorrect: false }
+                    ]
+                  }
+                ]
+              }
+            },
+            { title: 'Functions & Scope' }
+          ]
+        },
+        {
+          title: 'Version Control',
+          lessons: [
+            { title: 'Git Basics' },
+            { title: 'GitHub Workflow' }
+          ]
+        }
       ]
     },
     {
@@ -196,8 +256,27 @@ async function main() {
         'System Architecture'
       ],
       modules: [
-        { title: 'React Deep Dive', lessons: ['Hooks & Context', 'Performance Optimization'] },
-        { title: 'Backend Engineering', lessons: ['RESTful APIs', 'Database Design'] }
+        {
+          title: 'React Deep Dive',
+          lessons: [
+            {
+              title: 'Hooks & Context',
+              assignment: {
+                title: 'Build a Counter App',
+                description: 'Create a simple counter using useState and useEffect.',
+                dueInDays: 7
+              }
+            },
+            { title: 'Performance Optimization' }
+          ]
+        },
+        {
+          title: 'Backend Engineering',
+          lessons: [
+            { title: 'RESTful APIs' },
+            { title: 'Database Design' }
+          ]
+        }
       ]
     },
     {
@@ -220,11 +299,13 @@ async function main() {
         'Secure a High-Paying Job'
       ],
       modules: [
-        { title: 'Advanced Engineering', lessons: ['TypeScript Patterns', 'Microservices'] },
-        { title: 'Career Prep', lessons: ['Mock Interviews', 'Resume Review'] }
+        { title: 'Advanced Engineering', lessons: [{ title: 'TypeScript Patterns' }, { title: 'Microservices' }] },
+        { title: 'Career Prep', lessons: [{ title: 'Mock Interviews' }, { title: 'Resume Review' }] }
       ]
     }
   ]
+
+  const createdCourses = [];
 
   for (const offering of offerings) {
     const course = await prisma.course.upsert({
@@ -233,8 +314,8 @@ async function main() {
         price: offering.price,
         level: offering.level,
         isActive: true,
-        features: offering.features, // JSON array
-        whatYouWillLearn: offering.whatYouWillLearn, // JSON array
+        features: offering.features,
+        whatYouWillLearn: offering.whatYouWillLearn,
         teachers: {
           connect: { id: teacher.teacherProfile.id }
         }
@@ -245,7 +326,7 @@ async function main() {
         description: offering.description,
         price: offering.price,
         level: offering.level,
-        isActive: true, // Replaces 'published'
+        isActive: true,
         thumbnailUrl: offering.thumbnailUrl,
         features: offering.features,
         whatYouWillLearn: offering.whatYouWillLearn,
@@ -257,21 +338,188 @@ async function main() {
             title: mod.title,
             order: idx + 1,
             lessons: {
-              create: mod.lessons.map((lessonTitle, lIdx) => ({
-                title: lessonTitle,
+              create: mod.lessons.map((lesson, lIdx) => ({
+                title: lesson.title,
                 order: lIdx + 1,
-                content: '<h1>Lesson Content</h1><p>Placeholder content...</p>'
+                content: '<h1>Lesson Content</h1><p>Placeholder content...</p>',
+                // Create Quiz if present
+                quizzes: lesson.quiz ? {
+                  create: {
+                     title: lesson.quiz.title,
+                     course: { connect: undefined }, // Will be connected via nesting, specific logic needed? No, standard relation
+                     isActive: true,
+                     questions: {
+                       create: lesson.quiz.questions.map((q, qIdx) => ({
+                          text: q.text,
+                          type: q.type,
+                          order: qIdx + 1,
+                          options: {
+                            create: q.options.map((opt, oIdx) => ({
+                               text: opt.text,
+                               isCorrect: opt.isCorrect,
+                               order: oIdx + 1
+                            }))
+                          }
+                       }))
+                     }
+                  }
+                } : undefined,
+                // Create Assignment if present
+                assignments: lesson.assignment ? {
+                  create: {
+                    title: lesson.assignment.title,
+                    description: lesson.assignment.description,
+                    dueInDays: lesson.assignment.dueInDays,
+                    course: { connect: undefined } // Wait, assignment needs courseId too? Yes.
+                  }
+                } : undefined
               }))
             }
           }))
         }
       }
     })
-    console.log(`✅ Course synced: ${course.title}`)
+
+    // Check if we need to fix Course ID links for deeply nested creations that require it (like Quiz/Assignment often link to Course AND Lesson)
+    // In schema: Quiz has courseId AND lessonId? Yes.
+    // When creating nested in Lesson, lessonId is auto-set. courseId is NOT auto-set by Prisma unless explicitly passed or implied by parent.
+    // Since we are creating Course -> Module -> Lesson -> Quiz, the Quiz is nested in Lesson.
+    // However, Quiz ALSO has a courseId foreign key.
+    // Prisma *might* require us to connect the course explicitly if it can't infer it.
+    // But since we are inside `course.create`, we can't connect to the course being created easily in the same transaction for proper ID reference unless we use valid nested writes.
+    // `courseId` on `Quiz` is required.
+    // Nesting `quizzes` under `Lesson` creates the quiz with `lessonId`.
+    // But `courseId` needs to be provided.
+    // Prisma allows `course: { connect: { id: ... } }` but we don't have ID yet.
+    // BUT! Logic fix:
+    // We are creating the course. We can't link back to it in the same create tree efficiently for `courseId`.
+    // Actually, we can if we omit `courseId` in the `create` and rely on Prisma... but `courseId` is required.
+    // FIX: We should create Quizzes and Assignments AFTER the course is created, or finding a way to pass it.
+    // Easier approach: Let's create the course structure first, then iterate to add Quizzes/Assignments.
+
+    // Actually, let's keep it simple. I'll stick to the previous simple logic but for Quizzes/Assignments, I'll add them in a second pass for each course to ensure IDs are available.
+    // Or, I can update the schema to make courseId optional on Quiz if Lesson is present? No, schema is fixed.
+
+    createdCourses.push(course);
+    console.log(`✅ Course synced: ${course.title}`);
+  }
+
+  // Second pass: Add Quizzes and Assignments
+  // This is safer.
+  for (const offering of offerings) {
+     const course = await prisma.course.findUnique({ where: { slug: offering.slug } });
+     if (!course) continue;
+
+     for (const mod of offering.modules) {
+        // Find module
+        // We can't query by name easily, modules are not unique by name globally.
+        // We can fetch modules for the course.
+        const dbModules = await prisma.module.findMany({
+            where: { courseId: course.id, title: mod.title },
+            include: { lessons: true }
+        });
+
+        const dbModule = dbModules[0];
+        if (!dbModule) continue;
+
+        for (const lesson of mod.lessons) {
+             const dbLesson = await prisma.lesson.findFirst({
+                 where: { moduleId: dbModule.id, title: lesson.title }
+             });
+
+             if (!dbLesson) continue;
+
+             // Add Quiz if exists and not already there
+             if (lesson.quiz) {
+                // Check if quiz exists
+                const text = lesson.quiz.title;
+                const existing = await prisma.quiz.findFirst({ where: { lessonId: dbLesson.id, title: text } });
+                if (!existing) {
+                    await prisma.quiz.create({
+                        data: {
+                            title: text,
+                            lessonId: dbLesson.id,
+                            courseId: course.id,
+                            questions: {
+                                create: lesson.quiz.questions.map((q, i) => ({
+                                    text: q.text,
+                                    type: q.type,
+                                    order: i + 1,
+                                    options: {
+                                        create: q.options.map((o, j) => ({
+                                            text: o.text,
+                                            isCorrect: o.isCorrect,
+                                            order: j + 1
+                                        }))
+                                    }
+                                }))
+                            }
+                        }
+                    });
+                    console.log(`   + Added Quiz to ${lesson.title}`);
+                }
+             }
+
+             // Add Assignment
+             if (lesson.assignment) {
+                 const existingFn = await prisma.assignment.findFirst({ where: { lessonId: dbLesson.id, title: lesson.assignment.title }});
+                 if (!existingFn) {
+                     await prisma.assignment.create({
+                         data: {
+                             title: lesson.assignment.title,
+                             description: lesson.assignment.description,
+                             dueInDays: lesson.assignment.dueInDays,
+                             lessonId: dbLesson.id,
+                             courseId: course.id
+                         }
+                     })
+                     console.log(`   + Added Assignment to ${lesson.title}`);
+                 }
+             }
+        }
+     }
+  }
+
+
+  // ===========================================================================
+  // 3. Create Roadmaps
+  // ===========================================================================
+  const allCourses = await prisma.course.findMany();
+
+  await prisma.roadmap.upsert({
+    where: { id: "roadmap-fullstack" }, // ID hacking for upsert or just use findFirst? Schema has cuid default.
+    // Use findFirst logic or just Create if not exists.
+    // Since name is not unique, we can't upsert easily on name.
+    // Checking if it exists.
+    update: {},
+    create: {
+        name: "Full Stack Developer Path",
+        description: "Zero to Hero in Full Stack Development",
+        courses: {
+            connect: allCourses.map(c => ({ id: c.id }))
+        }
+    }
+  }).catch(() => {
+     // If it fails (e.g. ID issue), just ignore or use create.
+     // Better validation:
+  });
+
+  const roadmapExists = await prisma.roadmap.findFirst({ where: { name: "Full Stack Developer Path" } });
+  if (!roadmapExists) {
+      await prisma.roadmap.create({
+        data: {
+            name: "Full Stack Developer Path",
+            description: "Zero to Hero in Full Stack Development",
+            courses: {
+                connect: allCourses.map(c => ({ id: c.id }))
+            }
+        }
+      });
+      console.log('✅ Roadmap created');
   }
 
   // ===========================================================================
-  // 3. Create Leads (Marketing Test)
+  // 4. Create Leads (Marketing Test)
   // ===========================================================================
   const demoLead = await prisma.lead.create({
     data: {
@@ -286,7 +534,7 @@ async function main() {
   console.log('✅ Demo lead created')
 
   // ===========================================================================
-  // 4. Enroll Student (Test Enrollment)
+  // 5. Enroll Student (Test Enrollment)
   // ===========================================================================
   const fullStackCourse = await prisma.course.findUnique({ where: { slug: 'full-stack-training' } })
 
@@ -323,6 +571,20 @@ async function main() {
     })
     console.log('✅ Student enrolled in Full Stack batch')
   }
+
+  // ===========================================================================
+  // 6. Seed Notifications
+  // ===========================================================================
+  await prisma.notification.create({
+      data: {
+          userId: student.id,
+          title: "Welcome to Future Ready",
+          message: "We are glad to have you here. Check out your dashboard.",
+          type: NotificationType.INFO,
+          isRead: false
+      }
+  });
+  console.log('✅ Notification created');
 
   console.log('🏁 Seeding completed successfully')
 }

@@ -31,20 +31,34 @@ export async function POST(request: NextRequest) {
     const bcrypt = require('bcryptjs');
     const hashedPassword = await bcrypt.hash('Student123!', 10);
 
+    // Find course if tier is provided
+    let courseId = null;
+    if (tier) {
+        const course = await prisma.course.findUnique({ where: { slug: tier } });
+        if (course) {
+            courseId = course.id;
+        }
+    }
+
     const student = await prisma.user.create({
       data: {
         email,
         name,
         password: hashedPassword,
         role: { connect: { name: 'STUDENT' } },
-        phone, // Add phone to User
+        phone,
         studentProfile: {
           create: {
-            // TODO: Create Enrollment record based on tier
-            // tier: tier
+            enrollments: courseId ? {
+                create: {
+                    courseId: courseId,
+                    status: 'ON_HOLD' // Pending payment (ON_HOLD used as proxy for PENDING)
+                }
+            } : undefined
           }
         }
       },
+      include: { studentProfile: true } // Include to confirm creation
     });
 
     return NextResponse.json(

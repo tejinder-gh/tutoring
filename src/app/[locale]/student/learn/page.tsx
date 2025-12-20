@@ -1,4 +1,4 @@
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import ProgressBar from "@/components/ProgressBar";
 import { getEnrolledCourses } from "@/lib/actions/progress";
 import { BookOpen, GraduationCap, PlayCircle } from "lucide-react";

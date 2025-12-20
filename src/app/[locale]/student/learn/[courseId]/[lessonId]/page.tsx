@@ -1,4 +1,4 @@
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import CourseSidebar from "@/components/CourseSidebar";
 import LessonContent from "@/components/LessonContent";
 import VideoPlayer from "@/components/VideoPlayer";

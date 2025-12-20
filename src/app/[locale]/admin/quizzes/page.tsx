@@ -1,4 +1,4 @@
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import { getAllQuizzes } from "@/lib/actions/quiz";
 import { requirePermission } from "@/lib/permissions";
 import { ClipboardList, Plus } from "lucide-react";

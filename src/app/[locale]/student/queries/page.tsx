@@ -1,4 +1,4 @@
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import { createQuery } from "@/lib/actions/communication";
 import { prisma } from "@/lib/prisma";
 import { MessageSquare } from "lucide-react";

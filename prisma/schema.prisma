@@ -325,6 +325,7 @@ model Course {
   enrollments   Enrollment[]
   announcements Announcement[]
   quizzes       Quiz[]
+  paymentReceipts PaymentReceipts[]
 
   @@index([slug])
   @@index([isActive, isFeatured])
@@ -636,6 +637,8 @@ model PaymentReceipts {
   id             String        @id @default(cuid())
   userId         String
   user           User          @relation(fields: [userId], references: [id])
+  courseId       String?
+  course         Course?       @relation(fields: [courseId], references: [id])
   amountPaid     Decimal
   expectedAmount Decimal       /// Total fee amount
   pendingAmount  Decimal       /// Remaining balance
@@ -648,6 +651,7 @@ model PaymentReceipts {
   updatedAt      DateTime      @updatedAt
 
   @@index([userId])
+  @@index([courseId])
   @@index([paymentDate])
 }
 

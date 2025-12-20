@@ -79,7 +79,7 @@ export function hasPermission(
 
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import { auth } from '../../auth';
+import { auth } from '@/auth';
 
 export async function requirePermission(
   action: PermissionAction,

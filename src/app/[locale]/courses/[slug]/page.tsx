@@ -1,4 +1,4 @@
-import { Link } from '@/i18n/routing'
+import CheckoutButton from '@/components/Payment/CheckoutButton'
 import { prisma } from '@/lib/prisma'
 import { Award, BookOpen, CheckCircle2, PlayCircle, Users } from 'lucide-react'
 import { Metadata } from 'next'
@@ -122,12 +122,11 @@ export default async function CoursePage({ params }: Props) {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-5">
-                <Link
-                  href={`/register?tier=${selectedTier}`}
-                  className="px-10 py-5 bg-primary text-black font-black rounded-2xl hover:scale-[1.03] active:scale-[0.97] transition-all shadow-xl shadow-primary/20 flex items-center justify-center"
-                >
-                  {t("enroll")} — ₹{course.price.toString()}
-                </Link>
+                <CheckoutButton
+                  courseId={course.id}
+                  courseTitle={course.title}
+                  amount={Number(course.price)}
+                />
                 <button className="px-10 py-5 bg-accent/50 backdrop-blur-md border border-border text-foreground font-bold rounded-2xl hover:bg-accent transition-all">
                   {t("syllabus")}
                 </button>
