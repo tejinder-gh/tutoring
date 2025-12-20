@@ -44,7 +44,7 @@ export async function createTeacher(formData: FormData) {
           name,
           email,
           password: hashedPassword,
-          role: "TEACHER",
+          role: { connect: { name: "TEACHER" } },
           teacherProfile: {
               create: {
                   domain

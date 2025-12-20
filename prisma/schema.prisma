@@ -26,18 +26,33 @@ datasource db {
 
 /// User roles in the tutoring center hierarchy
 /// Each role has specific access levels and permissions
-enum Role {
-  DIRECTOR           // Strategic oversight, full access to all modules
-  GENERAL_MANAGER    // Full operational access, reports to Director
-  ADMIN              // System administration, user management
-  HR_MANAGER         // Human resources, staff management, leave
-  PAYROLL_MANAGER    // Salary processing, payment management
-  BUSINESS_ANALYST   // Reporting, analytics, data exports
-  DIGITAL_MARKETING  // Lead management, campaigns, social media
-  TEACHER            // Course delivery, attendance, grading
-  BACKOFFICE         // Day-to-day operations, student support
-  STUDENT            // Learning, assignments, submissions
+// Role enum removed in favor of Role model
+
+model Role {
+  id          String       @id @default(cuid())
+  name        String       @unique // e.g. DIRECTOR, ADMIN, TEACHER
+  description String?
+  isSystem    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  users       User[]
+  permissions Permission[]
 }
+
+model Permission {
+  id          String   @id @default(cuid())
+  action      String   // create, read, update, delete, manage
+  subject     String   // user, course, finance, all
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roles       Role[]
+
+  @@unique([action, subject])
+}
+
 
 /// Course difficulty levels
 enum Level {
@@ -149,7 +164,8 @@ model User {
   password    String    /// Hashed password
   name        String    /// Full name for display
   avatar      String?   /// Profile picture URL
-  role        Role      @default(STUDENT)
+  roleId      String?
+  role        Role?     @relation(fields: [roleId], references: [id])
   isActive    Boolean   @default(true)  /// Can login to the system
   isVerified  Boolean   @default(false) /// Email/phone verified
   isDeleted   Boolean   @default(false) /// Soft delete flag
@@ -177,7 +193,7 @@ model User {
   referredTeachers   TeacherProfile[] @relation("ReferredBy")
 
   @@index([email])
-  @@index([role])
+  @@index([roleId])
   @@index([isActive, isDeleted])
 }
 

@@ -5,6 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import { authConfig } from "./auth.config";
 
+
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
   providers: [
@@ -19,6 +20,11 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 
           const user = await prisma.user.findUnique({
             where: { email },
+            include: {
+              role: {
+                include: { permissions: true }
+              }
+            }
           });
 
           if (!user) return null;

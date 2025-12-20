@@ -12,6 +12,7 @@ function LoginButton() {
 
   return (
     <button
+      type="submit"
       className="w-full flex justify-center items-center gap-2 rounded-xl bg-primary px-3.5 py-4 text-center text-sm font-bold text-black shadow-lg shadow-primary/20 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
       aria-disabled={pending}
     >
@@ -29,9 +30,9 @@ export default function LoginPage() {
     <div className="flex min-h-[calc(100vh-4rem)] flex-col justify-center px-6 py-12 lg:px-8 bg-background">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center text-primary shadow-inner">
-                <Lock size={32} />
-            </div>
+          <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center text-primary shadow-inner">
+            <Lock size={32} />
+          </div>
         </div>
         <h2 className="mt-2 text-center text-3xl font-extrabold leading-9 tracking-tight text-foreground">
           {t("title")}

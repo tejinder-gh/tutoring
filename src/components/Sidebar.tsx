@@ -1,14 +1,15 @@
 "use client";
 
 import {
-    BookOpen,
-    Calendar,
-    FileText,
-    GraduationCap,
-    LayoutDashboard,
-    LogOut,
-    MessageSquare,
-    Users
+  BookOpen,
+  Calendar,
+  FileText,
+  GraduationCap,
+  LayoutDashboard,
+  LogOut,
+  MessageSquare,
+  Shield,
+  Users
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
@@ -28,6 +29,7 @@ export default function Sidebar({ role }: SidebarProps) {
       { href: "/admin/courses", label: "Curriculum", icon: BookOpen },
       { href: "/admin/batches", label: "Batches", icon: Calendar },
       { href: "/admin/finance", label: "Finance", icon: FileText },
+      { href: "/admin/settings/roles", label: "Roles", icon: Shield },
     ],
     TEACHER: [
       { href: "/teacher", label: "Dashboard", icon: LayoutDashboard },

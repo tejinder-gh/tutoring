@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/components/AuthProvider";
 import FloatingCTA from "@/components/FloatingCTA";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
@@ -36,9 +37,9 @@ export default async function RootLayout({
   params
 }: Readonly<{
   children: React.ReactNode;
-  params: Promise<{locale: string}>;
+  params: Promise<{ locale: string }>;
 }>) {
-  const {locale} = await params;
+  const { locale } = await params;
 
   // Ensure that the incoming `locale` is valid
   if (!routing.locales.includes(locale as any)) {
@@ -55,16 +56,18 @@ export default async function RootLayout({
         suppressHydrationWarning
       >
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider>
-            <Navbar />
-            <div className="flex flex-col min-h-screen">
-              <main className="flex-grow pt-16">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <FloatingCTA seatsLeft={12} />
-          </ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              <Navbar />
+              <div className="flex flex-col min-h-screen">
+                <main className="flex-grow pt-16">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+              <FloatingCTA seatsLeft={12} />
+            </ThemeProvider>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

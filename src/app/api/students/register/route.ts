@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         email,
         name,
         password: hashedPassword,
-        role: 'STUDENT',
+        role: { connect: { name: 'STUDENT' } },
         phone, // Add phone to User
         studentProfile: {
           create: {

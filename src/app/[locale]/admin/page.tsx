@@ -1,9 +1,11 @@
 import { auth } from '@/../auth';
+import { requirePermission } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
+  await requirePermission('read', 'user');
   const session = await auth();
 
   const leads = await prisma.lead.findMany({
@@ -12,7 +14,7 @@ export default async function AdminPage() {
 
   // Fetch users with ROLE = STUDENT
   const students = await prisma.user.findMany({
-    where: { role: 'STUDENT' },
+    where: { role: { name: 'STUDENT' } },
     include: { studentProfile: true },
     orderBy: { createdAt: 'desc' },
   });

@@ -1,4 +1,4 @@
-import { EnrollmentStatus, LeadSource, LeadStatus, Level, PrismaClient, Role } from '@prisma/client'
+import { EnrollmentStatus, LeadSource, LeadStatus, Level, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -10,17 +10,85 @@ async function main() {
   // ===========================================================================
 
   // PASSWORD: "password123" (hashed)
-  const HASHED_PASSWORD = "$2a$10$wT.fMvjt.v8z.lGz.wT.fMvjt.v8z.lGz.wT.fMvjt.v8z.lGz.wT.fM" // Placeholder hash
+  const HASHED_PASSWORD = "$2b$10$ZpMeeu9BpOIiKFVAHt7kEuQXKZP8Nl3TChHgxaDfqXF8o7DyKHxNm"
+
+  // ===========================================================================
+  // 1a. Create Roles & Permissions
+  // ===========================================================================
+  const ROLES = [
+    'DIRECTOR', 'GENERAL_MANAGER', 'ADMIN', 'HR_MANAGER', 'PAYROLL_MANAGER',
+    'BUSINESS_ANALYST', 'DIGITAL_MARKETING', 'TEACHER', 'BACKOFFICE', 'STUDENT'
+  ];
+
+  for (const roleName of ROLES) {
+    await prisma.role.upsert({
+      where: { name: roleName },
+      update: {},
+      create: { name: roleName, description: `Default ${roleName} role` }
+    });
+  }
+  console.log('✅ Roles seeded');
+
+  // ===========================================================================
+  // 1b. Create Permissions
+  // ===========================================================================
+  const permissionsToCreate = [
+    // User management
+    { action: 'read', subject: 'user' },
+    { action: 'create', subject: 'user' },
+    { action: 'update', subject: 'user' },
+    { action: 'delete', subject: 'user' },
+    { action: 'manage', subject: 'user' },
+
+    // Course management
+    { action: 'read', subject: 'course' },
+    { action: 'create', subject: 'course' },
+    { action: 'update', subject: 'course' },
+    { action: 'delete', subject: 'course' },
+    { action: 'manage', subject: 'course' },
+
+    // Finance
+    { action: 'read', subject: 'finance' },
+    { action: 'manage', subject: 'finance' },
+
+    // Reports
+    { action: 'read', subject: 'report' },
+
+    // Marketing
+    { action: 'manage', subject: 'marketing' },
+
+    // Settings
+    { action: 'manage', subject: 'settings' },
+  ];
+
+  for (const perm of permissionsToCreate) {
+    await prisma.permission.upsert({
+      where: {
+        action_subject: {
+          action: perm.action,
+          subject: perm.subject
+        }
+      },
+      update: {},
+      create: perm
+    });
+  }
+  console.log('✅ Permissions seeded');
+
+  // --- DIRECTOR ---
 
   // --- DIRECTOR ---
   const director = await prisma.user.upsert({
     where: { email: 'director@future-ready.com' },
-    update: {},
+    update: {
+      password: HASHED_PASSWORD,
+      role: { connect: { name: 'DIRECTOR' } }
+    },
     create: {
       email: 'director@future-ready.com',
       name: 'Director Admin',
       password: HASHED_PASSWORD,
-      role: Role.DIRECTOR,
+      role: { connect: { name: 'DIRECTOR' } },
       staffProfile: {
         create: {
           department: 'Management',
@@ -33,12 +101,15 @@ async function main() {
   // --- TEACHER ---
   const teacher = await prisma.user.upsert({
     where: { email: 'teacher@future-ready.com' },
-    update: {},
+    update: {
+      password: HASHED_PASSWORD,
+      role: { connect: { name: 'TEACHER' } }
+    },
     create: {
       email: 'teacher@future-ready.com',
       name: 'Sarah Teacher',
       password: HASHED_PASSWORD,
-      role: Role.TEACHER,
+      role: { connect: { name: 'TEACHER' } },
       teacherProfile: {
         create: {
           domain: 'Web Development',
@@ -55,12 +126,15 @@ async function main() {
   // --- STUDENT ---
   const student = await prisma.user.upsert({
     where: { email: 'student@future-ready.com' },
-    update: {},
+    update: {
+      password: HASHED_PASSWORD,
+      role: { connect: { name: 'STUDENT' } }
+    },
     create: {
       email: 'student@future-ready.com',
       name: 'Alex Student',
       password: HASHED_PASSWORD,
-      role: Role.STUDENT,
+      role: { connect: { name: 'STUDENT' } },
       studentProfile: {
         create: {
           enrollmentDate: new Date()
@@ -230,8 +304,17 @@ async function main() {
     })
 
     // Enroll student
-    await prisma.enrollment.create({
-      data: {
+    await prisma.enrollment.upsert({
+      where: {
+        studentProfileId_courseId: {
+          studentProfileId: student.studentProfile.id,
+          courseId: fullStackCourse.id
+        }
+      },
+      update: {
+        status: EnrollmentStatus.ACTIVE
+      },
+      create: {
         studentProfileId: student.studentProfile.id,
         courseId: fullStackCourse.id,
         batchId: batch.id,
