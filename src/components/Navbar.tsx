@@ -21,7 +21,7 @@ export default function Navbar() {
     <header className="fixed inset-x-0 top-0 z-40 h-16 bg-background border-b border-border flex items-center px-6">
       <div className="container flex items-center gap-6">
         <Link href="/" className="font-bold text-primary text-2xl">
-          Future Ready
+          Skill-ed
         </Link>
 
         <nav className="ml-auto flex items-center gap-4">
@@ -37,7 +37,7 @@ export default function Navbar() {
           >
             {t("about")}
           </Link>
-           <Link
+          <Link
             href="/contact"
             className="text-text-muted hover:text-foreground transition"
           >

@@ -110,6 +110,13 @@
     "title": "The Engineer's Roadmap",
     "subtitle": "A structured path from 'Hello World' to your first offer letter. We don't sell courses; we build careers.",
     "viewDetails": "View Full Curriculum",
+    "knowMore": "Know More",
+    "startYourJourney": "Start Your Journey",
+    "experienceEquivalent": "Experience equivalent",
+    "modulesAndOutcomes": "Modules & Outcomes",
+    "softSkillsFocus": "Soft Skills Focus",
+    "capstoneRequirement": "Capstone Requirement",
+    "partneredTiers": "Partnered Tiers",
     "tiers": {
       "tier1": {
         "title": "Tier 1: Junior Developer Career Preparation",
