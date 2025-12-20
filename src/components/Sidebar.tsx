@@ -27,6 +27,7 @@ export default function Sidebar({ role }: SidebarProps) {
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
       { href: "/admin/users", label: "Users & Staff", icon: Users },
       { href: "/admin/courses", label: "Curriculum", icon: BookOpen },
+      { href: "/admin/quizzes", label: "Quizzes", icon: FileText },
       { href: "/admin/batches", label: "Batches", icon: Calendar },
       { href: "/admin/finance", label: "Finance", icon: FileText },
       { href: "/admin/settings/roles", label: "Roles", icon: Shield },

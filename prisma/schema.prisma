@@ -151,6 +151,21 @@ enum NotificationType {
   REMINDER
 }
 
+/// Question types for quizzes
+enum QuestionType {
+  MULTIPLE_CHOICE   // Single correct answer
+  MULTIPLE_SELECT   // Multiple correct answers
+  TRUE_FALSE
+  SHORT_ANSWER      // Manual grading required
+}
+
+/// Status of a leave request
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 // =============================================================================
 // USER MANAGEMENT
 // =============================================================================
@@ -188,6 +203,9 @@ model User {
   paymentReceipts    PaymentReceipts[]
   auditLogs          AuditLog[]
   lessonProgress     LessonProgress[]  /// Track lesson completion
+  quizAttempts       QuizAttempt[]     /// Quiz attempts by this user
+  leaves             Leave[]           @relation("UserLeaves")
+  approvedLeaves     Leave[]           @relation("LeaveApprover")
 
   // Cross-reference relations (as the "other" user in a relationship)
   discountedStudents StudentProfile[] @relation("DiscountBy")
@@ -306,6 +324,7 @@ model Course {
   roadmaps      Roadmap[]        @relation("CourseRoadmaps")
   enrollments   Enrollment[]
   announcements Announcement[]
+  quizzes       Quiz[]
 
   @@index([slug])
   @@index([isActive, isFeatured])
@@ -345,6 +364,7 @@ model Lesson {
   assignments    Assignment[]
   attendance     Attendance[]
   lessonProgress LessonProgress[]
+  quizzes        Quiz[]
 
   @@index([moduleId, order])
 }
@@ -413,6 +433,94 @@ model LessonProgress {
 
   @@unique([lessonId, userId])
   @@index([userId])
+}
+
+// =============================================================================
+// QUIZ & ASSESSMENT
+// =============================================================================
+
+/// Quiz associated with a lesson or course
+model Quiz {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonId     String?
+  lesson       Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  duration     Int?     /// Minutes allowed (null = unlimited)
+  passingScore Int      @default(70) /// Percentage required to pass
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  questions Question[]
+  attempts  QuizAttempt[]
+
+  @@index([courseId])
+  @@index([lessonId])
+}
+
+/// Question within a quiz
+model Question {
+  id          String       @id @default(cuid())
+  quizId      String
+  quiz        Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  text        String       /// Question text
+  type        QuestionType @default(MULTIPLE_CHOICE)
+  points      Int          @default(1)
+  order       Int          @default(0)
+  explanation String?      /// Shown after answering
+
+  options   QuestionOption[]
+  responses QuestionResponse[]
+
+  @@index([quizId, order])
+}
+
+/// Answer option for MCQ questions
+model QuestionOption {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text       String
+  isCorrect  Boolean  @default(false)
+  order      Int      @default(0)
+
+  @@index([questionId])
+}
+
+/// Student's quiz attempt
+model QuizAttempt {
+  id          String    @id @default(cuid())
+  quizId      String
+  quiz        Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startedAt   DateTime  @default(now())
+  submittedAt DateTime?
+  score       Int?      /// Calculated score (0-100)
+  passed      Boolean?
+
+  responses QuestionResponse[]
+
+  @@index([quizId])
+  @@index([userId])
+}
+
+/// Student's response to individual question
+model QuestionResponse {
+  id           String      @id @default(cuid())
+  attemptId    String
+  attempt      QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId   String
+  question     Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedIds  String[]    /// Array of selected QuestionOption IDs
+  textAnswer   String?     /// For SHORT_ANSWER type
+  isCorrect    Boolean?
+  pointsEarned Int         @default(0)
+
+  @@unique([attemptId, questionId])
 }
 
 // =============================================================================
@@ -659,6 +767,29 @@ model Notification {
 
   @@index([userId, isRead])
   @@index([createdAt])
+}
+
+// =============================================================================
+// LEAVE MANAGEMENT
+// =============================================================================
+
+/// Leave requests for students and teachers
+model Leave {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation("UserLeaves", fields: [userId], references: [id], onDelete: Cascade)
+  startDate    DateTime
+  endDate      DateTime
+  reason       String
+  status       LeaveStatus @default(PENDING)
+  approvedById String?
+  approvedBy   User?       @relation("LeaveApprover", fields: [approvedById], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([startDate, endDate])
 }
 
 // =============================================================================
