@@ -1,7 +1,9 @@
 import { auth } from "@/auth";
+import AnnotationsWrapper from "@/components/AnnotationsWrapper";
+import BookmarkButton from "@/components/BookmarkButton";
 import CourseSidebar from "@/components/CourseSidebar";
-import LessonContent from "@/components/LessonContent";
 import VideoPlayer from "@/components/VideoPlayer";
+import { getHighlightsByLesson, getLessonBookmark } from "@/lib/actions/annotations";
 import { getCourseWithProgress, getLesson } from "@/lib/actions/progress";
 import {
   ArrowLeft,
@@ -36,9 +38,11 @@ export default async function LessonViewerPage({ params }: Props) {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const [lesson, course] = await Promise.all([
+  const [lesson, course, highlights, bookmark] = await Promise.all([
     getLesson(lessonId),
     getCourseWithProgress(courseId),
+    getHighlightsByLesson(lessonId),
+    getLessonBookmark(lessonId),
   ]);
 
   if (!lesson || !course) notFound();
@@ -103,16 +107,26 @@ export default async function LessonViewerPage({ params }: Props) {
                     {lesson.title}
                   </h1>
                 </div>
-                <MarkCompleteButton
-                  lessonId={lessonId}
-                  completed={lesson.completed}
-                />
+                <div className="flex items-center gap-2">
+                  <BookmarkButton
+                    lessonId={lessonId}
+                    initialIsBookmarked={!!bookmark}
+                  />
+                  <MarkCompleteButton
+                    lessonId={lessonId}
+                    completed={lesson.completed}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Lesson Content */}
+            {/* Lesson Content - using AnnotationsWrapper */}
             <div className="mb-10">
-              <LessonContent content={lesson.content} />
+              <AnnotationsWrapper
+                lessonId={lessonId}
+                initialHighlights={highlights}
+                content={lesson.content || ""}
+              />
             </div>
 
             {/* Resources */}
@@ -122,7 +136,7 @@ export default async function LessonViewerPage({ params }: Props) {
                   Resources
                 </h3>
                 <div className="space-y-3">
-                  {lesson.resources.map((resource) => {
+                  {lesson.resources.map((resource: any) => {
                     const Icon = resourceIcons[resource.type] || FileText;
                     return (
                       <a

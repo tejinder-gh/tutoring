@@ -29,12 +29,12 @@ datasource db {
 // Role enum removed in favor of Role model
 
 model Role {
-  id          String   @id @default(cuid())
-  name        String   @unique // e.g. DIRECTOR, ADMIN, TEACHER
+  id          String       @id @default(cuid())
+  name        String       @unique // e.g. DIRECTOR, ADMIN, TEACHER
   description String?
-  isSystem    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isSystem    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   users       User[]
   permissions Permission[]
@@ -42,16 +42,17 @@ model Role {
 
 model Permission {
   id          String   @id @default(cuid())
-  action      String // create, read, update, delete, manage
-  subject     String // user, course, finance, all
+  action      String   // create, read, update, delete, manage
+  subject     String   // user, course, finance, all
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  roles Role[]
+  roles       Role[]
 
   @@unique([action, subject])
 }
+
 
 /// Course difficulty levels
 enum Level {
@@ -62,10 +63,10 @@ enum Level {
 
 /// Student enrollment status in a course
 enum EnrollmentStatus {
-  ACTIVE // Currently enrolled and studying
-  COMPLETED // Successfully completed the course
-  DROPPED // Left the course before completion
-  ON_HOLD // Temporarily paused enrollment
+  ACTIVE     // Currently enrolled and studying
+  COMPLETED  // Successfully completed the course
+  DROPPED    // Left the course before completion
+  ON_HOLD    // Temporarily paused enrollment
 }
 
 /// Attendance status for lessons
@@ -87,41 +88,41 @@ enum PaymentMethod {
 
 /// Lead status in the sales pipeline
 enum LeadStatus {
-  NEW // Just received, not contacted
-  CONTACTED // Initial contact made
-  QUALIFIED // Verified interest and fit
-  NEGOTIATION // Discussing pricing/terms
-  CONVERTED // Successfully enrolled
-  LOST // Did not convert
+  NEW           // Just received, not contacted
+  CONTACTED     // Initial contact made
+  QUALIFIED     // Verified interest and fit
+  NEGOTIATION   // Discussing pricing/terms
+  CONVERTED     // Successfully enrolled
+  LOST          // Did not convert
 }
 
 /// Source of lead acquisition
 enum LeadSource {
-  WEBSITE // Contact form on website
-  FACEBOOK // Facebook ads or page
-  INSTAGRAM // Instagram campaigns
-  GOOGLE // Google Ads or organic search
-  REFERRAL // Referred by existing student
-  WALK_IN // Visited the center directly
-  PHONE // Inbound phone inquiry
-  OTHER // Other sources
+  WEBSITE    // Contact form on website
+  FACEBOOK   // Facebook ads or page
+  INSTAGRAM  // Instagram campaigns
+  GOOGLE     // Google Ads or organic search
+  REFERRAL   // Referred by existing student
+  WALK_IN    // Visited the center directly
+  PHONE      // Inbound phone inquiry
+  OTHER      // Other sources
 }
 
 /// Marketing campaign status
 enum CampaignStatus {
-  DRAFT // Being created
-  SCHEDULED // Set to launch later
-  ACTIVE // Currently running
-  PAUSED // Temporarily stopped
-  COMPLETED // Finished
+  DRAFT      // Being created
+  SCHEDULED  // Set to launch later
+  ACTIVE     // Currently running
+  PAUSED     // Temporarily stopped
+  COMPLETED  // Finished
 }
 
 /// Student query/support ticket status
 enum QueryStatus {
-  OPEN // Newly created
-  IN_PROGRESS // Being addressed
-  RESOLVED // Solution provided
-  CLOSED // Confirmed resolved
+  OPEN         // Newly created
+  IN_PROGRESS  // Being addressed
+  RESOLVED     // Solution provided
+  CLOSED       // Confirmed resolved
 }
 
 /// Priority levels for queries and tasks
@@ -152,10 +153,10 @@ enum NotificationType {
 
 /// Question types for quizzes
 enum QuestionType {
-  MULTIPLE_CHOICE // Single correct answer
-  MULTIPLE_SELECT // Multiple correct answers
+  MULTIPLE_CHOICE   // Single correct answer
+  MULTIPLE_SELECT   // Multiple correct answers
   TRUE_FALSE
-  SHORT_ANSWER // Manual grading required
+  SHORT_ANSWER      // Manual grading required
 }
 
 /// Status of a leave request
@@ -174,13 +175,13 @@ enum LeaveStatus {
 model User {
   id          String    @id @default(cuid())
   email       String    @unique
-  phone       String? /// Optional phone number
-  password    String /// Hashed password
-  name        String /// Full name for display
-  avatar      String? /// Profile picture URL
+  phone       String?   /// Optional phone number
+  password    String    /// Hashed password
+  name        String    /// Full name for display
+  avatar      String?   /// Profile picture URL
   roleId      String?
   role        Role?     @relation(fields: [roleId], references: [id])
-  isActive    Boolean   @default(true) /// Can login to the system
+  isActive    Boolean   @default(true)  /// Can login to the system
   isVerified  Boolean   @default(false) /// Email/phone verified
   isDeleted   Boolean   @default(false) /// Soft delete flag
   lastLoginAt DateTime? /// Track last login for security
@@ -193,23 +194,23 @@ model User {
   staffProfile   StaffProfile?
 
   // Activity relations
-  announcements    Announcement[]    @relation("AuthoredAnnouncements")
-  attendance       Attendance[]      @relation("AttendanceUser")
-  markedAttendance Attendance[]      @relation("AttendanceMarker")
-  queries          Query[]           @relation("StudentQueries")
-  resolvedQueries  Query[]           @relation("ResolvedQueries")
-  submissions      Submission[]
-  paymentReceipts  PaymentReceipts[]
-  auditLogs        AuditLog[]
-  lessonProgress   LessonProgress[] /// Track lesson completion
-  quizAttempts     QuizAttempt[] /// Quiz attempts by this user
-  leaves           Leave[]           @relation("UserLeaves")
-  approvedLeaves   Leave[]           @relation("LeaveApprover")
+  announcements      Announcement[]    @relation("AuthoredAnnouncements")
+  attendance         Attendance[]      @relation("AttendanceUser")
+  markedAttendance   Attendance[]      @relation("AttendanceMarker")
+  queries            Query[]           @relation("StudentQueries")
+  resolvedQueries    Query[]           @relation("ResolvedQueries")
+  submissions        Submission[]
+  paymentReceipts    PaymentReceipts[]
+  auditLogs          AuditLog[]
+  lessonProgress     LessonProgress[]  /// Track lesson completion
+  quizAttempts       QuizAttempt[]     /// Quiz attempts by this user
+  leaves             Leave[]           @relation("UserLeaves")
+  approvedLeaves     Leave[]           @relation("LeaveApprover")
 
   // Resource & annotation relations
-  uploadedResources Resource[]        @relation("UploadedResources")
-  highlights        LessonHighlight[]
-  bookmarks         LessonBookmark[]
+  uploadedResources  Resource[]        @relation("UploadedResources")
+  highlights         LessonHighlight[]
+  bookmarks          LessonBookmark[]
 
   // Cross-reference relations (as the "other" user in a relationship)
   discountedStudents StudentProfile[] @relation("DiscountBy")
@@ -223,17 +224,17 @@ model User {
 /// Student-specific profile data
 /// Linked to User model via one-to-one relation
 model StudentProfile {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  enrollmentDate DateTime @default(now()) /// When they first enrolled
-  batchId        String? /// Current primary batch
-  batch          Batch?   @relation(fields: [batchId], references: [id])
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollmentDate DateTime  @default(now()) /// When they first enrolled
+  batchId        String?   /// Current primary batch
+  batch          Batch?    @relation(fields: [batchId], references: [id])
 
   // Discount information (for fee concessions)
-  discount       Decimal? /// Discount percentage or amount
+  discount       Decimal?  /// Discount percentage or amount
   discountedAt   DateTime? /// When discount was applied
-  discountedById String? /// Admin who approved discount
+  discountedById String?   /// Admin who approved discount
   discountedBy   User?     @relation("DiscountBy", fields: [discountedById], references: [id])
 
   enrollments Enrollment[]
@@ -244,19 +245,19 @@ model StudentProfile {
 /// Teacher-specific profile data
 /// Stores teaching domain, qualifications, and course assignments
 model TeacherProfile {
-  id            String  @id @default(cuid())
-  userId        String  @unique
-  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  domain        String /// Primary teaching domain (e.g., "Web Development")
-  bio           String? /// Short biography for display
-  qualification String? /// Degrees, certifications
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domain        String    /// Primary teaching domain (e.g., "Web Development")
+  bio           String?   /// Short biography for display
+  qualification String?   /// Degrees, certifications
 
   // Referral tracking
   referredAt   DateTime?
   referredById String?
   referredBy   User?     @relation("ReferredBy", fields: [referredById], references: [id])
 
-  courses  Course[] @relation("CourseTeachers")
+  courses  Course[]  @relation("CourseTeachers")
   salaries Salary[]
 
   @@index([domain])
@@ -268,10 +269,10 @@ model StaffProfile {
   id          String   @id @default(cuid())
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  department  String /// e.g., "HR", "Finance", "Marketing"
-  designation String /// Job title
+  department  String   /// e.g., "HR", "Finance", "Marketing"
+  designation String   /// Job title
   joiningDate DateTime @default(now())
-  reportingTo String? /// userId of their manager
+  reportingTo String?  /// userId of their manager
 
   salaries Salary[]
 
@@ -286,8 +287,8 @@ model StaffProfile {
 /// Example: "Full Stack Development Roadmap" containing 3 courses
 model Roadmap {
   id          String   @id @default(cuid())
-  name        String /// Display name
-  description String? /// What this roadmap covers
+  name        String   /// Display name
+  description String?  /// What this roadmap covers
   order       Int      @default(0) /// Display order
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -298,16 +299,16 @@ model Roadmap {
 
 /// Individual course offered by the tutoring center
 model Course {
-  id           String  @id @default(cuid())
-  title        String
-  description  String?
-  slug         String  @unique /// URL-friendly identifier
-  price        Decimal @default(0.0)
-  level        Level   @default(BEGINNER)
-  duration     Int? /// Total duration in hours
-  thumbnailUrl String? /// Course image
-  isActive     Boolean @default(true)
-  isFeatured   Boolean @default(false) /// Show on homepage
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  slug            String   @unique /// URL-friendly identifier
+  price           Decimal  @default(0.0)
+  level           Level    @default(BEGINNER)
+  duration        Int?     /// Total duration in hours
+  thumbnailUrl    String?  /// Course image
+  isActive        Boolean  @default(true)
+  isFeatured      Boolean  @default(false) /// Show on homepage
 
   // SEO fields
   metaTitle       String?
@@ -321,16 +322,16 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  modules         Module[]
-  batches         Batch[]
-  assignments     Assignment[]
-  teachers        TeacherProfile[]  @relation("CourseTeachers")
-  roadmaps        Roadmap[]         @relation("CourseRoadmaps")
-  enrollments     Enrollment[]
-  announcements   Announcement[]
-  quizzes         Quiz[]
+  modules       Module[]
+  batches       Batch[]
+  assignments   Assignment[]
+  teachers      TeacherProfile[] @relation("CourseTeachers")
+  roadmaps      Roadmap[]        @relation("CourseRoadmaps")
+  enrollments   Enrollment[]
+  announcements Announcement[]
+  quizzes       Quiz[]
   paymentReceipts PaymentReceipts[]
-  resources       Resource[]
+  resources     Resource[]
 
   @@index([slug])
   @@index([isActive, isFeatured])
@@ -355,32 +356,31 @@ model Module {
 
 /// Individual lesson within a module
 model Lesson {
-  id    String @id @default(cuid())
-  title String
+  id          String   @id @default(cuid())
+  title       String
 
   // File-based content storage
-  contentUrl  String? /// URL to MDX/markdown file (UploadThing)
-  contentType String  @default("markdown") /// "markdown", "mdx", "html", "text"
+  contentUrl  String?  /// URL to MDX/markdown file (UploadThing)
+  contentType String   @default("markdown") /// "markdown", "mdx", "html", "text"
 
   // Deprecated: Will be removed after migration
-  content String? /// Lesson content/notes (can be HTML or markdown)
+  content     String?  /// Lesson content/notes (can be HTML or markdown)
 
-  videoUrl  String? /// Video lesson URL
-  order     Int      @default(0) /// Order within module
-  moduleId  String
-  module    Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  videoUrl    String?  /// Video lesson URL
+  order       Int      @default(0) /// Order within module
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  resources        LessonResource[]
-  assignments      Assignment[]
-  attendance       Attendance[]
-  lessonProgress   LessonProgress[]
-  quizzes          Quiz[]
-  highlights       LessonHighlight[]
-  managedResources Resource[] /// Shared resource library items
-  lessonBookmarks  LessonBookmark[]
+  resources      LessonResource[]
+  assignments    Assignment[]
+  attendance     Attendance[]
+  lessonProgress LessonProgress[]
+  quizzes        Quiz[]
+  highlights     LessonHighlight[]
+  bookmarks      LessonBookmark[]
 
   @@index([moduleId, order])
 }
@@ -391,8 +391,8 @@ model LessonResource {
   id       String       @id @default(cuid())
   lessonId String
   lesson   Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  title    String /// Display name
-  url      String /// Resource URL or file path
+  title    String       /// Display name
+  url      String       /// Resource URL or file path
   type     ResourceType @default(DOCUMENT)
 
   @@index([lessonId])
@@ -403,7 +403,7 @@ model Assignment {
   id          String   @id @default(cuid())
   title       String
   description String?
-  dueInDays   Int? /// Days after lesson to submit
+  dueInDays   Int?     /// Days after lesson to submit
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -422,10 +422,10 @@ model Assignment {
 /// Student assignment submission
 model Submission {
   id           String     @id @default(cuid())
-  fileUrl      String /// Submitted file URL
+  fileUrl      String     /// Submitted file URL
   submittedAt  DateTime   @default(now())
-  grade        Int? /// Score (0-100)
-  feedback     String? /// Teacher feedback
+  grade        Int?       /// Score (0-100)
+  feedback     String?    /// Teacher feedback
   studentId    String
   student      User       @relation(fields: [studentId], references: [id])
   assignmentId String
@@ -437,16 +437,16 @@ model Submission {
 
 /// Tracks student progress on individual lessons
 model LessonProgress {
-  id          String    @id @default(cuid())
-  lessonId    String
-  lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  completed   Boolean   @default(false)
-  completedAt DateTime?
-  watchTime   Int       @default(0) /// Seconds watched if video
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  lessonId     String
+  lesson       Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completed    Boolean   @default(false)
+  completedAt  DateTime?
+  watchTime    Int       @default(0) /// Seconds watched if video
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@unique([lessonId, userId])
   @@index([userId])
@@ -465,7 +465,7 @@ model Quiz {
   course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessonId     String?
   lesson       Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  duration     Int? /// Minutes allowed (null = unlimited)
+  duration     Int?     /// Minutes allowed (null = unlimited)
   passingScore Int      @default(70) /// Percentage required to pass
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
@@ -484,11 +484,11 @@ model Question {
   id          String       @id @default(cuid())
   quizId      String
   quiz        Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  text        String /// Question text
+  text        String       /// Question text
   type        QuestionType @default(MULTIPLE_CHOICE)
   points      Int          @default(1)
   order       Int          @default(0)
-  explanation String? /// Shown after answering
+  explanation String?      /// Shown after answering
 
   options   QuestionOption[]
   responses QuestionResponse[]
@@ -517,7 +517,7 @@ model QuizAttempt {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   startedAt   DateTime  @default(now())
   submittedAt DateTime?
-  score       Int? /// Calculated score (0-100)
+  score       Int?      /// Calculated score (0-100)
   passed      Boolean?
 
   responses QuestionResponse[]
@@ -533,8 +533,8 @@ model QuestionResponse {
   attempt      QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
   questionId   String
   question     Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  selectedIds  String[] /// Array of selected QuestionOption IDs
-  textAnswer   String? /// For SHORT_ANSWER type
+  selectedIds  String[]    /// Array of selected QuestionOption IDs
+  textAnswer   String?     /// For SHORT_ANSWER type
   isCorrect    Boolean?
   pointsEarned Int         @default(0)
 
@@ -549,11 +549,11 @@ model QuestionResponse {
 /// Example: "Web Dev Batch Jan 2024"
 model Batch {
   id          String    @id @default(cuid())
-  name        String /// Batch identifier
+  name        String    /// Batch identifier
   startDate   DateTime
   endDate     DateTime?
   maxStudents Int       @default(30)
-  schedule    Json? /// Weekly schedule (e.g., {"mon": "10:00-12:00", ...})
+  schedule    Json?     /// Weekly schedule (e.g., {"mon": "10:00-12:00", ...})
   courseId    String
   course      Course    @relation(fields: [courseId], references: [id])
   isActive    Boolean   @default(true)
@@ -580,7 +580,7 @@ model Enrollment {
   enrolledAt       DateTime         @default(now())
   status           EnrollmentStatus @default(ACTIVE)
   completedAt      DateTime?
-  certificateUrl   String? /// Generated certificate URL
+  certificateUrl   String?          /// Generated certificate URL
 
   @@unique([studentProfileId, courseId]) /// One enrollment per student per course
   @@index([status])
@@ -595,9 +595,9 @@ model Attendance {
   user       User             @relation("AttendanceUser", fields: [userId], references: [id])
   lessonId   String?
   lesson     Lesson?          @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  markedById String? /// Teacher/staff who marked attendance
+  markedById String?          /// Teacher/staff who marked attendance
   markedBy   User?            @relation("AttendanceMarker", fields: [markedById], references: [id])
-  notes      String? /// Reason for absence, etc.
+  notes      String?          /// Reason for absence, etc.
   createdAt  DateTime         @default(now())
 
   @@unique([userId, lessonId, date]) /// One attendance record per student per lesson per day
@@ -617,11 +617,11 @@ model Salary {
   teacherProfile   TeacherProfile? @relation(fields: [teacherProfileId], references: [id])
   staffProfileId   String?
   staffProfile     StaffProfile?   @relation(fields: [staffProfileId], references: [id])
-  baseSalary       Decimal /// Monthly base salary
+  baseSalary       Decimal         /// Monthly base salary
   allowances       Decimal         @default(0) /// Additional allowances
   deductions       Decimal         @default(0) /// Fixed deductions
-  effectiveFrom    DateTime /// Start date for this salary structure
-  effectiveTo      DateTime? /// End date (null if current)
+  effectiveFrom    DateTime        /// Start date for this salary structure
+  effectiveTo      DateTime?       /// End date (null if current)
   isActive         Boolean         @default(true)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
@@ -638,10 +638,10 @@ model SalaryReceipt {
   id            String        @id @default(cuid())
   salaryId      String
   salary        Salary        @relation(fields: [salaryId], references: [id])
-  amount        Decimal /// Amount paid
+  amount        Decimal       /// Amount paid
   paymentDate   DateTime      @default(now())
   paymentMethod PaymentMethod @default(BANK_TRANSFER)
-  reference     String? /// Transaction reference number
+  reference     String?       /// Transaction reference number
   notes         String?
   createdAt     DateTime      @default(now())
 
@@ -657,12 +657,12 @@ model PaymentReceipts {
   courseId       String?
   course         Course?       @relation(fields: [courseId], references: [id])
   amountPaid     Decimal
-  expectedAmount Decimal /// Total fee amount
-  pendingAmount  Decimal /// Remaining balance
+  expectedAmount Decimal       /// Total fee amount
+  pendingAmount  Decimal       /// Remaining balance
   paymentDate    DateTime      @default(now())
-  nextDueDate    DateTime? /// When next installment is due
+  nextDueDate    DateTime?     /// When next installment is due
   paymentMethod  PaymentMethod @default(CASH)
-  reference      String? /// Receipt/transaction number
+  reference      String?       /// Receipt/transaction number
   notes          String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
@@ -684,11 +684,11 @@ model Lead {
   email          String?
   status         LeadStatus @default(NEW)
   source         LeadSource @default(WEBSITE)
-  courseInterest String? /// Which course they're interested in
+  courseInterest String?    /// Which course they're interested in
   notes          String?
-  assignedTo     String? /// userId of assigned salesperson
-  followUpAt     DateTime? /// Scheduled follow-up date
-  convertedAt    DateTime? /// When they became a student
+  assignedTo     String?    /// userId of assigned salesperson
+  followUpAt     DateTime?  /// Scheduled follow-up date
+  convertedAt    DateTime?  /// When they became a student
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
@@ -705,9 +705,9 @@ model LeadActivity {
   id        String   @id @default(cuid())
   leadId    String
   lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  type      String /// CALL, EMAIL, MEETING, NOTE, WHATSAPP
+  type      String   /// CALL, EMAIL, MEETING, NOTE, WHATSAPP
   notes     String
-  createdBy String /// userId of staff member
+  createdBy String   /// userId of staff member
   createdAt DateTime @default(now())
 
   @@index([leadId])
@@ -718,13 +718,13 @@ model Campaign {
   id             String         @id @default(cuid())
   name           String
   description    String?
-  type           String /// EMAIL, SMS, SOCIAL, GOOGLE_ADS, FACEBOOK_ADS
+  type           String         /// EMAIL, SMS, SOCIAL, GOOGLE_ADS, FACEBOOK_ADS
   status         CampaignStatus @default(DRAFT)
   budget         Decimal?
   startDate      DateTime?
   endDate        DateTime?
-  targetAudience Json? /// Audience criteria
-  metrics        Json? /// Impressions, clicks, conversions, etc.
+  targetAudience Json?          /// Audience criteria
+  metrics        Json?          /// Impressions, clicks, conversions, etc.
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
@@ -743,7 +743,7 @@ model Announcement {
   type      String    @default("ANNOUNCEMENT") /// ANNOUNCEMENT, NOTICE, ALERT
   effect    String    @default("ALL") /// ALL, STUDENTS, TEACHERS, SPECIFIC_COURSE
   expiresAt DateTime? /// Auto-hide after this date
-  courseId  String? /// If for specific course
+  courseId  String?   /// If for specific course
   course    Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   authorId  String
   author    User      @relation("AuthoredAnnouncements", fields: [authorId], references: [id])
@@ -766,7 +766,7 @@ model Query {
   resolvedById String?
   resolvedBy   User?       @relation("ResolvedQueries", fields: [resolvedById], references: [id])
   resolvedAt   DateTime?
-  response     String? /// Staff response
+  response     String?     /// Staff response
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -783,7 +783,7 @@ model Notification {
   message   String
   type      NotificationType @default(INFO)
   isRead    Boolean          @default(false)
-  link      String? /// Link to relevant page
+  link      String?          /// Link to relevant page
   createdAt DateTime         @default(now())
 
   @@index([userId, isRead])
@@ -823,11 +823,11 @@ model AuditLog {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  action    String /// CREATE, UPDATE, DELETE, LOGIN, LOGOUT, etc.
-  entity    String /// Model name (e.g., "User", "Course")
-  entityId  String? /// ID of the affected record
-  oldValue  Json? /// Previous state (for updates)
-  newValue  Json? /// New state (for creates/updates)
+  action    String   /// CREATE, UPDATE, DELETE, LOGIN, LOGOUT, etc.
+  entity    String   /// Model name (e.g., "User", "Course")
+  entityId  String?  /// ID of the affected record
+  oldValue  Json?    /// Previous state (for updates)
+  newValue  Json?    /// New state (for creates/updates)
   ipAddress String?
   userAgent String?
   createdAt DateTime @default(now())
@@ -843,7 +843,7 @@ model AuditLog {
 model Setting {
   id        String   @id @default(cuid())
   key       String   @unique /// Setting identifier (e.g., "site.name")
-  value     Json /// Setting value (supports any JSON type)
+  value     Json     /// Setting value (supports any JSON type)
   category  String   @default("general") /// Group settings (general, email, payment, etc.)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -859,29 +859,29 @@ model Setting {
 /// Can be linked to courses, lessons, quizzes, and assignments
 model Resource {
   id          String       @id @default(cuid())
-  title       String /// Display name
-  description String? /// Optional description
-  url         String /// File URL or external link
+  title       String       /// Display name
+  description String?      /// Optional description
+  url         String       /// File URL or external link
   type        ResourceType /// VIDEO, DOCUMENT, PDF, LINK, IMAGE
-  fileSize    Int? /// Size in bytes (for uploads)
-  mimeType    String? /// MIME type for uploads
+  fileSize    Int?         /// Size in bytes (for uploads)
+  mimeType    String?      /// MIME type for uploads
 
   // Entity relationships (optional - can link to multiple)
   courseId     String?
-  course       Course?     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course       Course?      @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessonId     String?
-  lesson       Lesson?     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lesson       Lesson?      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   quizId       String?
-  quiz         Quiz?       @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quiz         Quiz?        @relation(fields: [quizId], references: [id], onDelete: Cascade)
   assignmentId String?
-  assignment   Assignment? @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  assignment   Assignment?  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
 
   // Metadata
-  uploadedById String? /// User who created/uploaded
-  uploadedBy   User?    @relation("UploadedResources", fields: [uploadedById], references: [id])
-  isPublic     Boolean  @default(false) /// Visible to students
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  uploadedById String?      /// User who created/uploaded
+  uploadedBy   User?        @relation("UploadedResources", fields: [uploadedById], references: [id])
+  isPublic     Boolean      @default(false) /// Visible to students
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   @@index([courseId])
   @@index([lessonId])
@@ -897,21 +897,21 @@ model Resource {
 
 /// User text selections with notes and colors
 model LessonHighlight {
-  id       String @id @default(cuid())
-  lessonId String
-  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  lessonId       String
+  lesson         Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Highlight data
-  selectedText String /// The highlighted text content
-  startOffset  Int /// Character offset where highlight starts
-  endOffset    Int /// Character offset where highlight ends
-  color        String  @default("#FFD700") /// Highlight color (hex)
-  note         String? /// Optional user note
+  selectedText   String   /// The highlighted text content
+  startOffset    Int      /// Character offset where highlight starts
+  endOffset      Int      /// Character offset where highlight ends
+  color          String   @default("#FFD700") /// Highlight color (hex)
+  note           String?  /// Optional user note
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@unique([lessonId, userId, startOffset, endOffset])
   @@index([userId])
@@ -920,15 +920,15 @@ model LessonHighlight {
 
 /// Quick reference bookmarks for lessons
 model LessonBookmark {
-  id       String @id @default(cuid())
-  lessonId String
-  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  title    String? /// Optional bookmark title
-  note     String? /// Optional note about why bookmarked
-  position Int     @default(0) /// Scroll position or section reference
+  title     String?  /// Optional bookmark title
+  note      String?  /// Optional note about why bookmarked
+  position  Int      @default(0) /// Scroll position or section reference
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
