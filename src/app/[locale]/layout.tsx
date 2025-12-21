@@ -1,7 +1,6 @@
 import { AuthProvider } from "@/components/AuthProvider";
-import FloatingCTA from "@/components/FloatingCTA";
+import ConditionalLayout from "@/components/ConditionalLayout";
 import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeContext";
 import { routing } from '@/i18n/routing';
 import type { Metadata } from "next";
@@ -58,14 +57,10 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
             <ThemeProvider>
-              <Navbar />
-              <div className="flex flex-col min-h-screen">
-                <main className="flex-grow pt-16">
-                  {children}
-                </main>
-                <Footer />
-              </div>
-              <FloatingCTA seatsLeft={12} />
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
+              <Footer />
             </ThemeProvider>
           </AuthProvider>
         </NextIntlClientProvider>

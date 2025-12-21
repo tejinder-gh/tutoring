@@ -1,16 +1,17 @@
-import { getAdminAnalytics } from '@/app/actions/analytics';
 import { auth } from '@/auth';
 import { SimpleBarChart, SimpleLineChart } from '@/components/Analytics/Charts';
 import StatCard from '@/components/Analytics/StatCard';
 import { requirePermission } from '@/lib/permissions';
-import { prisma } from '@/lib/prisma';
 import { BadgeIndianRupee, Users } from 'lucide-react';
+import { prisma } from '../../../lib/prisma';
+import { getAdminAnalytics } from '../../actions/analytics';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
   await requirePermission('read', 'user');
   const session = await auth();
+  console.log("🔍 ~ AdminPage ~ session:", session);
 
   const [leads, students, analytics] = await Promise.all([
     prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),

@@ -174,7 +174,52 @@ async function main() {
   // 2. Create Courses, Quizzes & Assignments
   // ===========================================================================
 
-  const offerings = [
+  interface SeedOption {
+      text: string;
+      isCorrect: boolean;
+  }
+
+  interface SeedQuestion {
+      text: string;
+      type: QuestionType;
+      options: SeedOption[];
+  }
+
+  interface SeedQuiz {
+      title: string;
+      questions: SeedQuestion[];
+  }
+
+  interface SeedAssignment {
+      title: string;
+      description: string;
+      dueInDays: number;
+  }
+
+  interface SeedLesson {
+      title: string;
+      quiz?: SeedQuiz;
+      assignment?: SeedAssignment;
+  }
+
+  interface SeedModule {
+      title: string;
+      lessons: SeedLesson[];
+  }
+
+  interface SeedOffering {
+      title: string;
+      slug: string;
+      price: number;
+      level: Level;
+      thumbnailUrl: string;
+      description: string;
+      whatYouWillLearn: string[];
+      features: string[];
+      modules: SeedModule[];
+  }
+
+  const offerings: SeedOffering[] = [
     {
       title: 'Fundamentals of Web Development',
       slug: 'fundamentals',
@@ -342,37 +387,8 @@ async function main() {
                 title: lesson.title,
                 order: lIdx + 1,
                 content: '<h1>Lesson Content</h1><p>Placeholder content...</p>',
-                // Create Quiz if present
-                quizzes: lesson.quiz ? {
-                  create: {
-                     title: lesson.quiz.title,
-                     course: { connect: undefined }, // Will be connected via nesting, specific logic needed? No, standard relation
-                     isActive: true,
-                     questions: {
-                       create: lesson.quiz.questions.map((q, qIdx) => ({
-                          text: q.text,
-                          type: q.type,
-                          order: qIdx + 1,
-                          options: {
-                            create: q.options.map((opt, oIdx) => ({
-                               text: opt.text,
-                               isCorrect: opt.isCorrect,
-                               order: oIdx + 1
-                            }))
-                          }
-                       }))
-                     }
-                  }
-                } : undefined,
-                // Create Assignment if present
-                assignments: lesson.assignment ? {
-                  create: {
-                    title: lesson.assignment.title,
-                    description: lesson.assignment.description,
-                    dueInDays: lesson.assignment.dueInDays,
-                    course: { connect: undefined } // Wait, assignment needs courseId too? Yes.
-                  }
-                } : undefined
+                // Removed nested creation of quizzes/assignments to avoid missing courseId error.
+                // These are handled in the Second Pass below.
               }))
             }
           }))
