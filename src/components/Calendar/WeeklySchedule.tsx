@@ -11,6 +11,7 @@ interface Event {
   endTime: string;   // ISO string
   color?: string;
   type?: 'CLASS' | 'LEAVE' | 'OTHER';
+  status?: string;
 }
 
 interface WeeklyScheduleProps {
@@ -138,7 +139,9 @@ export default function WeeklySchedule({ events, onDateChange, currentUserRole }
                         key={event.id}
                         className={`p-2 rounded text-xs mb-1 shadow-sm border leading-tight cursor-pointer overflow-hidden
                                     ${event.type === 'LEAVE'
-                            ? 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/50 dark:text-red-200 dark:border-red-800'
+                            ? event.status === 'PENDING'
+                              ? 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:border-orange-800'
+                              : 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/50 dark:text-red-200 dark:border-red-800'
                             : 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-800'
                           }`}
                         title={`${event.title} (${format(parseISO(event.startTime), 'h:mm a')} - ${format(parseISO(event.endTime), 'h:mm a')})`}

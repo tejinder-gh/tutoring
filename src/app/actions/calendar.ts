@@ -18,7 +18,7 @@ export async function getMySchedule(date: Date) {
   const leaves = await prisma.leave.findMany({
     where: {
       userId: userId,
-      status: 'APPROVED',
+      status: { in: ['APPROVED', 'PENDING'] },
       OR: [
         { startDate: { lte: endDate }, endDate: { gte: startDate } }
       ]
@@ -27,10 +27,11 @@ export async function getMySchedule(date: Date) {
 
   const leaveEvents = leaves.map(leave => ({
     id: leave.id,
-    title: `Leave: ${leave.reason}`,
+    title: `Leave: ${leave.reason} (${leave.status})`,
     startTime: leave.startDate.toISOString(),
     endTime: leave.endDate.toISOString(),
     type: 'LEAVE',
+    status: leave.status
   }));
 
   // 2. Fetch Classes (Enrollments -> Batch -> Schedule)

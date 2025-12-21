@@ -90,6 +90,16 @@ export async function updateLeaveStatus(leaveId: string, status: 'APPROVED' | 'R
                 subject: `Leave Request ${status}`,
                 html: `<p>Your leave request for ${leave.startDate.toLocaleDateString()} to ${leave.endDate.toLocaleDateString()} has been <strong>${status}</strong>.</p>`
             });
+
+            await prisma.notification.create({
+                data: {
+                    userId: leave.userId,
+                    title: `Leave Request ${status}`,
+                    message: `Your leave request for ${leave.startDate.toLocaleDateString()} has been ${status.toLowerCase()}.`,
+                    type: status === 'APPROVED' ? 'SUCCESS' : 'ERROR',
+                    link: '/student/schedule'
+                }
+            });
         }
         revalidatePath("/admin/leaves"); // Assuming admin page
         return { success: true };
