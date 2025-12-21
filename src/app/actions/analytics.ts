@@ -100,13 +100,14 @@ export async function getAdminAnalytics() {
         take: 5
     });
 
-    const enrichedPopularCourses = await Promise.all(popularCourses.map(async (item) => {
+    const enrichedPopularCourses = (await Promise.all(popularCourses.map(async (item) => {
+        if (!item.courseId) return null;
         const course = await prisma.course.findUnique({ where: { id: item.courseId }, select: { title: true } });
         return {
             name: course?.title || 'Unknown',
             students: item._count.courseId
         };
-    }));
+    }))).filter((item): item is NonNullable<typeof item> => item !== null);
 
     return {
         revenueData,

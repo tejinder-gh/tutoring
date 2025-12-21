@@ -4,10 +4,11 @@ import { ArrowLeft, FileText, Video } from "lucide-react";
 import Link from "next/link";
 
 interface PageProps {
-  params: { courseId: string };
+  params: Promise<{ courseId: string }>;
 }
 
-export default async function CourseDetailPage({ params }: PageProps) {
+export default async function CourseDetailPage(props: PageProps) {
+  const params = await props.params;
   const course = await prisma.course.findUnique({
     where: { id: params.courseId },
     include: {

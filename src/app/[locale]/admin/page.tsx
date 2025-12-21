@@ -11,7 +11,6 @@ export const dynamic = 'force-dynamic';
 export default async function AdminPage() {
   await requirePermission('read', 'user');
   const session = await auth();
-  console.log("🔍 ~ AdminPage ~ session:", session);
 
   const [leads, students, analytics] = await Promise.all([
     prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
