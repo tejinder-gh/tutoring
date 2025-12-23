@@ -1,8 +1,10 @@
 "use server";
 
 import { auth } from "@/auth";
+import { emailTemplates, sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
+import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import Razorpay from "razorpay";
 
@@ -132,6 +134,44 @@ export async function verifyPayment(
       });
 
       revalidatePath("/student/payments");
+
+      // 3. Send Email & Create Notification (Side Effects)
+      // fetch locale from somewhere or default to en?
+      // Since it's a server action, `next-intl` might auto-detect from headers if middleware passes it.
+      // But for robustness, we can try to assume 'en' or fetch user preference later.
+      const t = await getTranslations("notifications");
+      const tEmail = await getTranslations("email");
+
+      // Send Email
+      const emailSubject = tEmail("paymentSubject", { course: course.title });
+      if (session.user.email) {
+        await sendEmail({
+          to: session.user.email,
+          subject: emailSubject,
+          html: emailTemplates.paymentReceipt(
+              session.user.name || "Student",
+              course.title,
+              Number(course.price),
+              paymentId
+          )
+        });
+      }
+
+      // Create Notification
+      const notifTitle = t("paymentSuccess.title");
+      const notifMessage = t("paymentSuccess.message", { course: course.title });
+
+      await prisma.notification.create({
+        data: {
+          userId: session.user.id,
+          title: notifTitle,
+          message: notifMessage,
+          type: "SUCCESS",
+          link: `/student/learn/${course.id}`,
+          isRead: false
+        }
+      });
+
       return { success: true };
 
   } catch (error) {

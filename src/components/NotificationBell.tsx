@@ -113,28 +113,56 @@ export default function NotificationBell() {
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    onClick={() => handleMarkAsRead(notification.id, notification.isRead)}
+                    onClick={() => {
+                      handleMarkAsRead(notification.id, notification.isRead);
+                      if (notification.link) {
+                        // Using window.location to ensure full refresh or router push depending on context.
+                        // Since this is client component, we use Link wrapper or router.
+                      }
+                    }}
                     className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${!notification.isRead ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''
                       }`}
                   >
-                    <div className="flex gap-3">
-                      <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!notification.isRead ? 'bg-blue-500' : 'bg-transparent'
-                        }`} />
-                      <div className="space-y-1">
-                        <p className={`text-sm ${!notification.isRead
-                          ? 'text-slate-900 dark:text-white font-medium'
-                          : 'text-slate-600 dark:text-slate-400'
-                          }`}>
-                          {notification.title}
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-500 line-clamp-2">
-                          {notification.message}
-                        </p>
-                        <p className="text-[10px] text-slate-400">
-                          {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
-                        </p>
+                    {notification.link ? (
+                      <Link href={notification.link} className="flex gap-3">
+                        {/* Icon */}
+                        <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!notification.isRead ? 'bg-blue-500' : 'bg-transparent'
+                          }`} />
+                        <div className="space-y-1">
+                          <p className={`text-sm ${!notification.isRead
+                            ? 'text-slate-900 dark:text-white font-medium'
+                            : 'text-slate-600 dark:text-slate-400'
+                            }`}>
+                            {notification.title}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 line-clamp-2">
+                            {notification.message}
+                          </p>
+                          <p className="text-[10px] text-slate-400">
+                            {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                          </p>
+                        </div>
+                      </Link>
+                    ) : (
+                      <div className="flex gap-3">
+                        <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!notification.isRead ? 'bg-blue-500' : 'bg-transparent'
+                          }`} />
+                        <div className="space-y-1">
+                          <p className={`text-sm ${!notification.isRead
+                            ? 'text-slate-900 dark:text-white font-medium'
+                            : 'text-slate-600 dark:text-slate-400'
+                            }`}>
+                            {notification.title}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 line-clamp-2">
+                            {notification.message}
+                          </p>
+                          <p className="text-[10px] text-slate-400">
+                            {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>

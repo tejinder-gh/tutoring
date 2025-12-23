@@ -69,6 +69,39 @@ export default async function AdminPage() {
         </div>
       )}
 
+      {/* Recent Activity Feed (Mock/Lead based for now) */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 mb-12">
+        <h3 className="text-lg font-bold mb-6">Recent Activity</h3>
+        <div className="space-y-6">
+          {leads.slice(0, 5).map((lead) => (
+            <div key={lead.id} className="flex gap-4 items-start">
+              <div className="w-2 h-2 mt-2 rounded-full bg-blue-500 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  New Lead: {lead.name}
+                </p>
+                <p className="text-xs text-text-muted">
+                  {lead.phone} • {new Date(lead.createdAt).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          ))}
+          {students.slice(0, 5).map((student) => (
+            <div key={student.id} className="flex gap-4 items-start">
+              <div className="w-2 h-2 mt-2 rounded-full bg-green-500 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  New Student: {student.name}
+                </p>
+                <p className="text-xs text-text-muted">
+                  Joined {new Date(student.createdAt).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Leads Table */}
       <div className="bg-accent/10 rounded-xl border border-border overflow-hidden mb-12">
         <div className="p-4 border-b border-border">

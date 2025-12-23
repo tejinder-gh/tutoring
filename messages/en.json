@@ -4,13 +4,13 @@
     "subtitle": "Master production-grade engineering through hands-on projects, structured mentorship, and proven career outcomes."
   },
   "usp": {
-    "badge": "100% Job Placement Guarantee",
-    "title": "Our commitment: You finish the roadmap, you get hired. Or we refund every penny.",
-    "subtitle": "We won't just teach you code, we will mentor you, and will help you navigate the job market and prepare for interviews.",
+    "badge": "Risk-Free Career Launch",
+    "title": "Launch Your Career with Guaranteed Placement",
+    "subtitle": "We don’t just teach code; we build engineers. Our proven mentorship model ensures you graduate with production-ready skills and a signed offer letter, or you don't pay.",
     "features": {
-      "1": "100% Job Placement Guarantee",
-      "2": "Interview opportunities until you're hired",
-      "3": "Resume & Portfolio building included"
+      "1": "100% Money-Back Guarantee if not hired",
+      "2": "Direct Mentorship from Industry Seniors",
+      "3": "Build 3+ Real-World Production Apps"
     }
   },
   "cta": {
@@ -98,7 +98,7 @@
         "2": "End-to-end system integration",
         "3": "Intensive code reading & debugging",
         "4": "Real-world engineering principles",
-        "5": "3+ portfolio-ready projects"
+        "5": "Deploy Scalable Cloud Apps"
       }
     }
   },
@@ -155,6 +155,15 @@
     "capstoneRequirement": "Capstone Requirement",
     "partneredTiers": "Partnered Tiers",
     "courseLength": "Course Length",
+    "modal": {
+      "curriculumBreakdown": "Curriculum Breakdown",
+      "outcome": "Outcome",
+      "softSkillsFocus": "Soft Skills Focus",
+      "assessment": "Assessment",
+      "finalCapstone": "Final Capstone",
+      "applyFor": "Apply for {title} Track",
+      "limitedSeats": "Limited seats available for next batch"
+    },
     "tiers": {
       "introductory": {
         "step": "Step 01",
@@ -628,5 +637,31 @@
       "resources": "Resources"
     },
     "contact": "Contact Us"
+  },
+  "errors": {
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "We couldn't find the page you were looking for.",
+      "backToHome": "Back to Home"
+    },
+    "general": {
+      "title": "Something went wrong!",
+      "description": "An unexpected error has occurred.",
+      "tryAgain": "Try Again"
+    },
+    "payment": {
+      "verified": "Payment Verified Successfully",
+      "failed": "Payment Verification Failed"
+    }
+  },
+  "email": {
+    "welcomeSubject": "Welcome to Skill-ed!",
+    "paymentSubject": "Payment Receipt for {course}"
+  },
+  "notifications": {
+    "paymentSuccess": {
+      "title": "Enrollment Successful",
+      "message": "You have successfully enrolled in {course}. Start learning now!"
+    }
   }
 }

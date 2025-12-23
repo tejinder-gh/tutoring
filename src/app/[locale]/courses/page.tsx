@@ -1,8 +1,10 @@
 "use client";
 
+import CourseDetailsModal from "@/components/CourseDetailsModal";
 import { Link } from "@/i18n/routing";
 import { ArrowRight, BookOpen, CheckCircle, Rocket, ShieldCheck, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import Divider from "../../../components/lib/SectionDivision";
 
 const getColor = (index: number) => {
@@ -140,7 +142,7 @@ const getColor = (index: number) => {
    return COLOR_SCHEMES[index % COLOR_SCHEMES.length];
 };
 
-const CourseCard = ({ tierData, t, index }: { tierData: any, t: any, index: number }) => {
+const CourseCard = ({ tierData, t, index, onOpenModal }: { tierData: any, t: any, index: number, onOpenModal: (tier: any, scheme: any) => void }) => {
    const colorScheme = getColor(index);
    return <div key={tierData.title} className={`relative rounded-3xl border border-border bg-card overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group ${colorScheme.cardHover}`}>
       {/* Header */}
@@ -155,9 +157,11 @@ const CourseCard = ({ tierData, t, index }: { tierData: any, t: any, index: numb
          <div className="flex flex-col items-end gap-2 shrink-0">
             <span className="text-sm font-semibold text-muted-foreground">{t("courseLength")}</span>
             <span className="text-2xl font-black text-foreground">{tierData.courseLength}</span>
-            <Link href={`/contact/${tierData.title}`} className={`inline-flex items-center gap-2 px-6 py-3 mt-4 rounded-2xl bg-linear-to-r ${colorScheme.gradientButton} text-white font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all`}>
+            <button
+               onClick={() => onOpenModal(tierData, colorScheme)}
+               className={`inline-flex items-center gap-2 px-6 py-3 mt-4 rounded-2xl bg-linear-to-r ${colorScheme.gradientButton} text-white font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all`}>
                {t("knowMore")}
-            </Link>
+            </button>
          </div>
       </div>
 
@@ -222,8 +226,33 @@ export default function CoursesPage() {
    const tiers = t.raw(`tiers`);
    console.log(tiers);
    const partneredTiers: any[] = [];
+
+   const [selectedTier, setSelectedTier] = useState<any>(null);
+   const [selectedColorScheme, setSelectedColorScheme] = useState<any>(null);
+   const [isModalOpen, setIsModalOpen] = useState(false);
+
+   // Expose handler to window for Code component access if needed, or better, lift state up
+   // For now, let's just pass the handler down or use context.
+   // Wait, CourseCard is defined *inside* the file but outside the component?
+   // Ah, CourseCard is a separate component. I need to pass the handler to it.
+
+   const handleOpenModal = (tier: any, scheme: any) => {
+      setSelectedTier(tier);
+      setSelectedColorScheme(scheme);
+      setIsModalOpen(true);
+   };
+
+   // Patching the window object is messy. Let's update CourseCard signature.
+
    return (
       <div className="min-h-screen bg-background py-20 px-6">
+         <CourseDetailsModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            tierData={selectedTier}
+            colorScheme={selectedColorScheme}
+            title={selectedTier?.title}
+         />
          <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-20 max-w-3xl mx-auto">
                <h1 className="text-4xl md:text-5xl font-black mb-6 bg-clip-text text-transparent bg-linear-to-r from-primary to-primary">
@@ -277,7 +306,7 @@ export default function CoursesPage() {
                               </div>
                            )}
 
-                           <CourseCard tierData={tier} t={t} index={index} />
+                           <CourseCard tierData={tier} t={t} index={index} onOpenModal={handleOpenModal} />
                         </div>
                      )
                })}
@@ -286,7 +315,7 @@ export default function CoursesPage() {
             <div className="space-y-16">
                {partneredTiers.map((tier: any, index: number) => {
                   // Access raw data for nested arrays/objects
-                  return <CourseCard key={index} tierData={tier} t={t} index={index + Object.keys(tiers).length - partneredTiers.length} />
+                  return <CourseCard key={index} tierData={tier} t={t} index={index + Object.keys(tiers).length - partneredTiers.length} onOpenModal={handleOpenModal} />
                })}
             </div>
             <div className="mt-20 text-center">

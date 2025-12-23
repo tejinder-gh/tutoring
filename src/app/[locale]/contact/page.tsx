@@ -30,7 +30,7 @@ export default function ContactPage() {
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold mb-1">Visit Us</h3>
-                                <p className="text-muted-foreground">{footerT("address")}</p>
+                                <p className="text-muted-foreground">SCO-25, first, Near, New, Krishna Mandir Rd, near Baba Deep Singh G Gurdwara, Nehru Nagar, Model Town Extension, Model Town, Ludhiana, Punjab 141002</p>
                             </div>
                         </div>
 
@@ -92,7 +92,20 @@ export default function ContactPage() {
                         </form>
                     </div>
                 </div>
-            </section>
-        </div>
+
+                {/* Google Map Embed */}
+                <div className="container mx-auto max-w-6xl mt-12 rounded-3xl overflow-hidden border border-border shadow-md">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3423.638531238495!2d75.8458157762464!3d30.896942177759246!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391a8235a82860c7%3A0xe547466e3b567d1d!2sBaba%20Deep%20Singh%20Gurudwara%20Sahib!5e0!3m2!1sen!2sin!4v1703275000000!5m2!1sen!2sin"
+                        width="100%"
+                        height="450"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                    />
+                </div>
+            </section >
+        </div >
     );
 }

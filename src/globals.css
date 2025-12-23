@@ -45,8 +45,8 @@
 }
 
 [data-theme="dark"] {
-  --background: #20284a;
-  /* Premium Dark Blue */
+  --background: #000000;
+  /* True Black for Apple Dark Mode */
   --foreground: #F5F5F7;
   /* Light gray text */
   --primary: #0A84FF;
@@ -54,7 +54,7 @@
   --secondary: #FF9F0A;
   /* Brighter orange for dark */
   --accent: #1C1C1E;
-  /* Dark gray accent */
+  /* Dark gray accent for cards */
   --border: #38383A;
   /* Dark border */
   --text-muted: #98989D;
