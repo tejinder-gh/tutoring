@@ -5,10 +5,10 @@
   },
   "usp": {
     "badge": "100% Job Placement Guarantee",
-    "title": "We Don't Just Teach. We Place You.",
-    "subtitle": "Our commitment is simple: You finish the roadmap, you get hired. Or we refund every penny.",
+    "title": "Our commitment: You finish the roadmap, you get hired. Or we refund every penny.",
+    "subtitle": "We won't just teach you code, we will mentor you, and will help you navigate the job market and prepare for interviews.",
     "features": {
-      "1": "Guaranteed minimum package of ₹4.5 LPA",
+      "1": "100% Job Placement Guarantee",
       "2": "Interview opportunities until you're hired",
       "3": "Resume & Portfolio building included"
     }
@@ -81,7 +81,7 @@
     }
   },
   "theGap": {
-    "title": "Bridging the Industry-Academia Gap",
+    "title": "How we are different from other institutes/colleges?",
     "subtitle": "Most programs teach you to code. We train you to engineer.",
     "leftTitle": "Where Most Programs Stop",
     "rightTitle": "Where We Take You",
@@ -139,11 +139,12 @@
   },
   "courses": {
     "title": "The Engineer's Roadmap",
+    "popular": "Popular Courses",
     "subtitle": "A structured path from 'Hello World' to your first offer letter. We don't sell courses; we build careers.",
     "guarantee": {
       "title": "Money Back Guarantee",
-      "description": "Complete Tiers 1-3 with an 85% score or higher, and we guarantee job placement within 6 months of graduation, or your full tuition is refunded.",
-      "badge": "Placement Protected"
+      "description": "Complete the roadmap with certain conditions, and we guarantee job placement within 6 months of graduation, or your full tuition is refunded.",
+      "badge": "100% Job Placement Guarantee"
     },
     "viewDetails": "View Full Curriculum",
     "knowMore": "Know More",
@@ -153,13 +154,14 @@
     "softSkillsFocus": "Soft Skills Focus",
     "capstoneRequirement": "Capstone Requirement",
     "partneredTiers": "Partnered Tiers",
+    "courseLength": "Course Length",
     "tiers": {
-      "tier1": {
+      "introductory": {
         "step": "Step 01",
-        "title": "Phase 1: Junior Developer Career Preparation",
+        "title": "Introductory Module",
         "role": "The Executor Track",
         "description": "Enable students to efficiently execute well-defined programming tasks under guidance, while establishing foundational Computer Science knowledge, structured collaboration habits, and reliable persistence skills.",
-        "experience": "0–2 Years Equivalent Experience",
+        "courseLength": "3 months",
         "modules": [
           {
             "code": "M1",
@@ -204,12 +206,12 @@
         },
         "capstone": "Personal Portfolio Website + API Integration Project with Production Deployment"
       },
-      "tier2": {
+      "problemSolver": {
         "step": "Step 02",
-        "title": "Phase 2: Intermediate Developer Career Preparation",
+        "title": "Problem-Solver",
         "role": "The Independent Problem-Solver Track",
         "description": "Produce autonomous full-stack specialists capable of independent execution, mastering system integration, robust quality assurance, and incident management.",
-        "experience": "3–5 Years Equivalent Experience",
+        "courseLength": "8 months",
         "modules": [
           {
             "code": "M5",
@@ -247,12 +249,76 @@
         },
         "capstone": "Robust Full-Stack Service with Critical Path Test Coverage + Complex External Service Integration"
       },
-      "tier3": {
+      "ai": {
         "step": "Step 03",
-        "title": "Phase 3: Senior Developer Career Preparation",
+        "title": "AI Engineer Career Preparation",
+        "role": "The AI-First Systems Builder Track",
+        "description": "Transition engineers from traditional full-stack development into production-grade AI system builders capable of designing, evaluating, and scaling LLM-powered systems with clear cost, reliability, and safety guarantees.",
+        "courseLength": "6 months",
+        "modules": [
+          {
+            "code": "AI-M1",
+            "title": "Applied AI Fundamentals for Engineers",
+            "tech": "ML vs DL vs LLMs, Tokens, Context Windows, Embeddings, Inference vs Training, Latency & Cost Models",
+            "outcome": "AI Decision Matrix: When to Use (and Not Use) AI",
+            "details": "Develop first-principles understanding of AI capabilities, limits, and trade-offs. Engineers learn to justify AI adoption using cost, latency, and accuracy constraints."
+          },
+          {
+            "code": "AI-M2",
+            "title": "LLM APIs & Prompt Engineering (Production Grade)",
+            "tech": "OpenAI APIs, Prompt Patterns, Few-shot Learning, JSON Mode, Function Calling, Prompt Guardrails",
+            "outcome": "Versioned Prompt Library with Automated Evaluations",
+            "details": "Design deterministic, testable prompts treated as production artifacts with regression testing."
+          },
+          {
+            "code": "AI-M3",
+            "title": "Embeddings, Vector Databases & Semantic Retrieval",
+            "tech": "Embeddings, Chunking Strategies, Cosine Similarity, Vector Databases (FAISS/Pinecone), Hybrid Search",
+            "outcome": "Semantic Search Engine over Real-World Dataset",
+            "details": "Build retrieval systems that outperform keyword search and minimize hallucinations."
+          },
+          {
+            "code": "AI-M4",
+            "title": "Retrieval-Augmented Generation (RAG) Systems",
+            "tech": "Advanced Chunking, Re-ranking, Context Assembly, Citation Injection, Failure Modes",
+            "outcome": "Enterprise-Grade RAG System with Accuracy Benchmarks",
+            "details": "Design hallucination-resistant RAG pipelines with measurable quality guarantees."
+          },
+          {
+            "code": "AI-M5",
+            "title": "Agentic Workflows & Tool-Using Systems",
+            "tech": "Tool Calling, Planning vs Reactive Agents, Memory, Agent Graphs, Multi-Agent Coordination",
+            "outcome": "Autonomous Agent Solving a Real Business Workflow",
+            "details": "Build agents that reason, act, recover from failure, and respect execution boundaries."
+          },
+          {
+            "code": "AI-M6",
+            "title": "AI Evaluation, Safety & Reliability",
+            "tech": "Golden Datasets, Offline/Online Evals, Prompt Regression, Bias & Toxicity Checks, Guardrails",
+            "outcome": "Automated AI Evaluation & Monitoring Pipeline",
+            "details": "Treat AI like production software: measured, tested, and continuously monitored."
+          },
+          {
+            "code": "AI-M7",
+            "title": "AI System Design & Cost Optimization",
+            "tech": "Latency Budgets, Streaming Inference, Caching, Rate Limits, Cost Control, Failure Scenarios",
+            "outcome": "AI System Design Document (LLM at Scale)",
+            "details": "Architect AI systems that survive real traffic, real budgets, and real failure conditions."
+          }
+        ],
+        "softSkills": {
+          "focus": "AI Trade-off Reasoning, Risk Communication, Explaining Uncertainty to Stakeholders",
+          "assessment": "AI Design Reviews, Failure Post-Mortems, Cost Justification Documents",
+          "details": "Engineers must clearly articulate why an AI system is safe, reliable, and economically viable."
+        },
+        "capstone": "Production AI System: RAG or Agent-Based Platform with Evaluations, Cost Controls, and Reliability Guarantees"
+      },
+      "systemDesign": {
+        "step": "Step 03",
+        "title": "System Design and Architecture Decision Making",
         "role": "The Architect Track",
         "description": "Develop strategic architects and leaders capable of translating ambiguous business requirements into actionable system architectures and driving organizational impact through influence.",
-        "experience": "5+ Years Equivalent Experience",
+        "courseLength": "8 months",
         "modules": [
           {
             "code": "M9",
@@ -290,11 +356,11 @@
         },
         "capstone": "Architectural Review and Defense: Present to CTO Panel, Iterate Based on Feedback, Achieve 2/3 Approval"
       },
-      "tier4": {
-        "title": "Tier 4: Staff Engineer Career Preparation",
+      "internetArchitect": {
+        "title": "App interaction with internet's Architect",
         "role": "The Systems Architect & Technical Lead Track",
         "description": "Transform senior engineers into organizational force multipliers who architect cross-team systems, establish engineering standards, and solve ambiguous problems spanning organizational boundaries while maintaining hands-on technical excellence.",
-        "experience": "6–8 Years Equivalent Experience",
+        "courseLength": "4 months",
         "modules": [
           {
             "code": "M13",
@@ -339,11 +405,11 @@
         },
         "capstone": "Cross-Team Platform Initiative: Design, Build, and Deploy Internal Tool Used by 3+ Engineering Teams + Published Technical Documentation"
       },
-      "tier5": {
-        "title": "Tier 5: Principal Engineer Career Preparation",
+      "deepDive": {
+        "title": "Explore the unexplored territories of Computer Science",
         "role": "The Technical Visionary & Standards Bearer Track",
         "description": "Cultivate principal-level engineers who define organizational technical direction, establish engineering culture and standards, own critical infrastructure, and solve the hardest technical problems while maintaining deep hands-on expertise.",
-        "experience": "10+ Years Equivalent Experience",
+        "courseLength": "6 months",
         "modules": [
           {
             "code": "M17",
@@ -388,11 +454,11 @@
         },
         "capstone": "Technical Vision Defense: Present 3-Year Technical Roadmap to Executive Team (CEO/CTO/CPO) + Implement First Major Initiative with Measurable Business Impact"
       },
-      "tier6": {
-        "title": "Tier 6: Engineering Management Career Preparation",
+      "management": {
+        "title": "Engineering Management Career Preparation",
         "role": "The Technical Leader & People Manager Track",
         "description": "Transition exceptional engineers into high-impact engineering managers who build and scale high-performing teams, balance technical excellence with business outcomes, and multiply organizational impact through effective people leadership.",
-        "experience": "5+ Years Engineering + Management Aspiration",
+        "courseLength": "4 months",
         "modules": [
           {
             "code": "M21",
@@ -441,7 +507,7 @@
         "title": "IELTS Preparation",
         "role": "IELTS Masterclass: Strategic Communication",
         "description": "Improve your communication skills for international career opportunities. Master the linguistic nuances required for global academic and professional success.",
-        "experience": "Beginner to Advanced",
+        "courseLength": "Beginner to Advanced",
         "parteneredWith": "IELTS",
         "modules": [
           {
@@ -549,7 +615,7 @@
   "footer": {
     "description": "Empowering the next generation of software engineers with industry-ready skills.",
     "copyright": "Future Ready Tutoring. All rights reserved.",
-    "address": "Model Town, Ludhiana",
+    "address": "Tution Market, Model Town, Ludhiana",
     "links": {
       "company": "Company",
       "about": "About Us",

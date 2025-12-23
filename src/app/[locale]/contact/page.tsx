@@ -50,7 +50,7 @@ export default function ContactPage() {
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold mb-1">Call Us</h3>
-                                <p className="text-muted-foreground">+91 98765 43210</p>
+                                <p className="text-muted-foreground">+91 79733 93949</p>
                             </div>
                         </div>
                     </div>

@@ -1,16 +1,16 @@
 import { sendEmail } from '@/lib/email';
 import { prisma } from '@/lib/prisma';
-import cron from 'node-cron';
+// import cron from 'node-cron';
 
 // Initialize Cron Jobs
 export function initCronJobs() {
   console.log('Initializing Cron Jobs...');
 
   // Run every day at 10:00 AM
-  cron.schedule('0 10 * * *', async () => {
-    console.log('Running Fee Reminder Cron Job...');
-    await checkFeesDue();
-  });
+  // cron.schedule('0 10 * * *', async () => {
+  //   console.log('Running Fee Reminder Cron Job...');
+  //   await checkFeesDue();
+  // });
 }
 
 async function checkFeesDue() {

@@ -121,21 +121,21 @@ const getColor = (index: number) => {
          cardHover: 'hover:shadow-elegant'
       },
       // Slate/Gray (Neutral)
-      {
-         name: 'slate-gray',
-         gradient: 'from-slate-50 to-gray-50 dark:from-slate-950 dark:to-gray-950',
-         gradientButton: 'from-slate-600 to-gray-600',
-         badge: 'bg-slate-500/10 text-slate-700 dark:text-slate-300',
-         title: 'text-slate-700 dark:text-slate-300',
-         iconColor: 'text-slate-600 dark:text-slate-400',
-         iconBg: 'bg-slate-100 dark:bg-slate-900/30 text-slate-600 dark:text-slate-400',
-         outcome: 'text-slate-600 dark:text-slate-400',
-         softSkillBg: 'bg-slate-50 dark:bg-slate-900/10',
-         softSkillBorder: 'border-slate-200/50 dark:border-slate-800/50',
-         softSkillText: 'text-slate-600 dark:text-slate-400',
-         cardBorder: 'border-border/50',
-         cardHover: 'hover:shadow-elegant'
-      }
+      // {
+      //    name: 'slate-gray',
+      //    gradient: 'from-slate-50 to-gray-50 dark:from-slate-950 dark:to-gray-950',
+      //    gradientButton: 'from-slate-600 to-gray-600',
+      //    badge: 'bg-slate-500/10 text-slate-700 dark:text-slate-300',
+      //    title: 'text-slate-700 dark:text-slate-300',
+      //    iconColor: 'text-slate-600 dark:text-slate-400',
+      //    iconBg: 'bg-slate-100 dark:bg-slate-900/30 text-slate-600 dark:text-slate-400',
+      //    outcome: 'text-slate-600 dark:text-slate-400',
+      //    softSkillBg: 'bg-slate-50 dark:bg-slate-900/10',
+      //    softSkillBorder: 'border-slate-200/50 dark:border-slate-800/50',
+      //    softSkillText: 'text-slate-600 dark:text-slate-400',
+      //    cardBorder: 'border-border/50',
+      //    cardHover: 'hover:shadow-elegant'
+      // }
    ];
    return COLOR_SCHEMES[index % COLOR_SCHEMES.length];
 };
@@ -144,7 +144,7 @@ const CourseCard = ({ tierData, t, index }: { tierData: any, t: any, index: numb
    const colorScheme = getColor(index);
    return <div key={tierData.title} className={`relative rounded-3xl border border-border bg-card overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group ${colorScheme.cardHover}`}>
       {/* Header */}
-      <div className={`p-8 md:p-10 border-b border-border bg-gradient-to-br ${colorScheme.gradient} flex flex-col md:flex-row justify-between items-start md:items-center gap-6`}>
+      <div className={`p-8 md:p-10 border-b border-border bg-linear-to-br ${colorScheme.gradient} flex flex-col md:flex-row justify-between items-start md:items-center gap-6`}>
          <div>
             <div className={`inline-block px-4 py-1.5 rounded-full font-bold text-sm mb-4 ${colorScheme.badge}`}>
                {tierData.role}
@@ -153,9 +153,9 @@ const CourseCard = ({ tierData, t, index }: { tierData: any, t: any, index: numb
             <p className="text-muted-foreground font-medium max-w-2xl">{tierData.description}</p>
          </div>
          <div className="flex flex-col items-end gap-2 shrink-0">
-            <span className="text-sm font-semibold text-muted-foreground">{t("experienceEquivalent")}</span>
-            <span className="text-2xl font-black text-foreground">{tierData.experience}</span>
-            <Link href={`/contact/${tierData.title}`} className={`inline-flex items-center gap-2 px-6 py-3 mt-4 rounded-2xl bg-gradient-to-r ${colorScheme.gradientButton} text-white font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all`}>
+            <span className="text-sm font-semibold text-muted-foreground">{t("courseLength")}</span>
+            <span className="text-2xl font-black text-foreground">{tierData.courseLength}</span>
+            <Link href={`/contact/${tierData.title}`} className={`inline-flex items-center gap-2 px-6 py-3 mt-4 rounded-2xl bg-linear-to-r ${colorScheme.gradientButton} text-white font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all`}>
                {t("knowMore")}
             </Link>
          </div>
@@ -226,7 +226,7 @@ export default function CoursesPage() {
       <div className="min-h-screen bg-background py-20 px-6">
          <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-20 max-w-3xl mx-auto">
-               <h1 className="text-4xl md:text-5xl font-black mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary">
+               <h1 className="text-4xl md:text-5xl font-black mb-6 bg-clip-text text-transparent bg-linear-to-r from-primary to-primary">
                   {t("title")}
                </h1>
                <p className="text-xl text-muted-foreground leading-relaxed mb-8">
@@ -234,12 +234,12 @@ export default function CoursesPage() {
                </p>
 
                {/* Money Back Guarantee Badge - Premium Gold */}
-               <div className="inline-flex flex-col md:flex-row items-center gap-4 p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-700/50 text-left shadow-lg shadow-amber-500/10">
-                  <div className="w-14 h-14 rounded-xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center shrink-0 text-amber-600 dark:text-amber-500">
+               <div className="inline-flex flex-col md:flex-row items-center gap-4 p-5 rounded-2xl bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-700/50 text-left shadow-lg shadow-emerald-500/10">
+                  <div className="w-14 h-14 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-500">
                      <ShieldCheck size={28} />
                   </div>
                   <div>
-                     <div className="text-sm font-bold text-amber-600 dark:text-amber-500 mb-0.5 uppercase tracking-wide">
+                     <div className="text-sm font-bold text-emerald-600 dark:text-emerald-500 mb-0.5 uppercase tracking-wide">
                         {t("guarantee.badge")}
                      </div>
                      <div className="font-bold text-xl text-foreground mb-1">

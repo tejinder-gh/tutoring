@@ -11,7 +11,7 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="relative py-20 px-6 bg-accent/5 border-b border-border">
         <div className="container mx-auto text-center max-w-3xl">
-          <h1 className="text-4xl md:text-5xl font-black mb-6 bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-black mb-6 bg-linear-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
             {t("hero.title")}
           </h1>
           <p className="text-xl text-muted-foreground font-medium leading-relaxed">
@@ -32,7 +32,7 @@ export default function AboutPage() {
               {t("mission.content")}
             </p>
           </div>
-          <div className="p-8 rounded-3xl bg-secondary/30 border border-border">
+          <div className="p-8 rounded-3xl from-indigo-100 to-blue-200 bg-linear-to-br border border-border">
             <h3 className="text-xl font-bold mb-6">{t("values.title")}</h3>
             <div className="space-y-4">
               {[1, 2, 3].map((num) => (
@@ -59,7 +59,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {[1, 2, 3].map((num) => (
               <div key={num} className="p-8 rounded-3xl bg-card border border-border shadow-sm hover:shadow-elegant transition-all duration-300">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mx-auto mb-6 flex items-center justify-center">
+                <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/20 to-secondary/20 mx-auto mb-6 flex items-center justify-center">
                   <User size={40} className="text-foreground/70" />
                 </div>
                 <h3 className="text-xl font-bold mb-1">{t(`team.members.${num}.name`)}</h3>
