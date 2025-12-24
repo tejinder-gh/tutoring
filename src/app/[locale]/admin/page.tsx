@@ -12,14 +12,19 @@ export default async function AdminPage() {
   await requirePermission('read', 'user');
   const session = await auth();
 
-  const [leads, students, analytics] = await Promise.all([
+  const [leads, students, analytics, auditLogs] = await Promise.all([
     prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
     prisma.user.findMany({
       where: { role: { name: 'STUDENT' } },
       include: { studentProfile: true, role: true },
       orderBy: { createdAt: 'desc' },
     }),
-    getAdminAnalytics()
+    getAdminAnalytics(),
+    prisma.auditLog.findMany({
+      take: 10,
+      orderBy: { createdAt: 'desc' },
+      include: { user: { select: { name: true, email: true } } }
+    })
   ]);
 
   return (
@@ -69,36 +74,34 @@ export default async function AdminPage() {
         </div>
       )}
 
-      {/* Recent Activity Feed (Mock/Lead based for now) */}
+      {/* Recent Activity Feed (Audit Log) */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 mb-12">
-        <h3 className="text-lg font-bold mb-6">Recent Activity</h3>
+        <h3 className="text-lg font-bold mb-6">Recent System Activity</h3>
         <div className="space-y-6">
-          {leads.slice(0, 5).map((lead) => (
-            <div key={lead.id} className="flex gap-4 items-start">
-              <div className="w-2 h-2 mt-2 rounded-full bg-blue-500 shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-foreground">
-                  New Lead: {lead.name}
-                </p>
-                <p className="text-xs text-text-muted">
-                  {lead.phone} • {new Date(lead.createdAt).toLocaleString()}
-                </p>
+          {auditLogs.length === 0 ? (
+            <p className="text-sm text-text-muted">No recent activity found.</p>
+          ) : (
+            auditLogs.map((log) => (
+              <div key={log.id} className="flex gap-4 items-start">
+                <div className={`w-2 h-2 mt-2 rounded-full shrink-0 ${log.action === 'PAYMENT' ? 'bg-green-500' :
+                  log.action === 'DELETE' ? 'bg-red-500' :
+                    log.action === 'UPDATE' ? 'bg-yellow-500' :
+                      'bg-blue-500'
+                  }`} />
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    {log.action} on {log.entity} by <span className="font-bold">{log.user.name || log.user.email}</span>
+                  </p>
+                  <p className="text-sm text-foreground/80 my-1">
+                    {(log.newValue as any)?.details || "No details provided"}
+                  </p>
+                  <p className="text-xs text-text-muted">
+                    {new Date(log.createdAt).toLocaleString()}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-          {students.slice(0, 5).map((student) => (
-            <div key={student.id} className="flex gap-4 items-start">
-              <div className="w-2 h-2 mt-2 rounded-full bg-green-500 shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-foreground">
-                  New Student: {student.name}
-                </p>
-                <p className="text-xs text-text-muted">
-                  Joined {new Date(student.createdAt).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
