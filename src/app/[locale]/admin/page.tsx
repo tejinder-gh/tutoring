@@ -1,18 +1,21 @@
 import { auth } from '@/auth';
 import { SimpleBarChart, SimpleLineChart } from '@/components/Analytics/Charts';
 import StatCard from '@/components/Analytics/StatCard';
+import { Link } from '@/i18n/routing';
 import { requirePermission } from '@/lib/permissions';
-import { BadgeIndianRupee, Users } from 'lucide-react';
+import { BadgeIndianRupee, GraduationCap, Users } from 'lucide-react';
 import { prisma } from '../../../lib/prisma';
-import { getAdminAnalytics } from '../../actions/analytics';
+import { getAdminAnalytics, getDashboardMetrics, TrendPeriod } from '../../actions/analytics';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: { searchParams: { period?: string } }) {
   await requirePermission('read', 'user');
   const session = await auth();
 
-  const [leads, students, analytics, auditLogs] = await Promise.all([
+  const period: TrendPeriod = (searchParams.period as TrendPeriod) || 'MONTHLY';
+
+  const [leads, students, analytics, dashboardMetrics, auditLogs] = await Promise.all([
     prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
     prisma.user.findMany({
       where: { role: { name: 'STUDENT' } },
@@ -20,12 +23,21 @@ export default async function AdminPage() {
       orderBy: { createdAt: 'desc' },
     }),
     getAdminAnalytics(),
+    getDashboardMetrics(period),
     prisma.auditLog.findMany({
       take: 10,
       orderBy: { createdAt: 'desc' },
       include: { user: { select: { name: true, email: true } } }
     })
   ]);
+
+  const periods: { label: string; value: TrendPeriod }[] = [
+    { label: 'Daily', value: 'DAILY' },
+    { label: 'Weekly', value: 'WEEKLY' },
+    { label: 'Bi-Weekly', value: 'BIWEEKLY' },
+    { label: 'Monthly', value: 'MONTHLY' },
+    { label: 'Yearly', value: 'YEARLY' },
+  ];
 
   return (
     <div>
@@ -34,26 +46,56 @@ export default async function AdminPage() {
           <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
           <p className="text-text-muted">Welcome back, {session?.user?.name}</p>
         </div>
+
+        {/* Period Selector */}
+        <div className="flex bg-accent/10 p-1 rounded-lg border border-border">
+          {periods.map((p) => (
+            <Link
+              key={p.value}
+              href={`/admin?period=${p.value}`}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${period === p.value
+                  ? 'bg-primary text-black shadow-sm'
+                  : 'text-text-muted hover:text-foreground'
+                }`}
+            >
+              {p.label}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-        <StatCard title="Total Leads" value={leads.length} icon={Users} trend="neutral" />
-        {analytics && (
-          <>
-            <StatCard title="Total Revenue" value={`₹${analytics.overview.totalRevenue.toLocaleString()}`} icon={BadgeIndianRupee} trend="up" />
-            <StatCard title="Total Courses" value={analytics.overview.totalCourses} icon={BadgeIndianRupee} trend="neutral" />
-          </>
-        )}
+        <StatCard
+          title="Total Revenue"
+          value={`₹${analytics?.overview.totalRevenue.toLocaleString()}`}
+          icon={BadgeIndianRupee}
+          trend={dashboardMetrics?.revenue.trend}
+          trendValue={`${dashboardMetrics?.revenue.change}%`}
+          trendLabel={`vs prev ${period.toLowerCase()}`}
+        />
+        <StatCard
+          title="Total Leads"
+          value={leads.length}
+          icon={Users}
+          trend={dashboardMetrics?.leads.trend}
+          trendValue={`${dashboardMetrics?.leads.change}%`}
+          trendLabel={`vs prev ${period.toLowerCase()}`}
+        />
+        <StatCard
+          title="Total Students"
+          value={students.length}
+          icon={GraduationCap}
+          trend={dashboardMetrics?.enrollments.trend}
+          trendValue={`${dashboardMetrics?.enrollments.change}%`}
+          trendLabel={`vs prev ${period.toLowerCase()}`}
+        />
+
         <div className="bg-primary/10 rounded-xl p-6 border border-primary/30">
           <div className="text-4xl font-bold text-primary mb-2">
-            {(() => {
-              // eslint-disable-next-line react-hooks/purity
-              const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
-              return leads.filter(l => new Date(l.createdAt) > cutoff).length;
-            })()}
+            {coursesCount(analytics?.overview.totalCourses)}
           </div>
-          <div className="text-text-muted">Leads (Last 24h)</div>
+          <div className="text-text-muted">Total Courses</div>
         </div>
       </div>
 
@@ -196,4 +238,8 @@ export default async function AdminPage() {
       </div>
     </div>
   );
+}
+
+function coursesCount(count?: number) {
+  return count || 0;
 }

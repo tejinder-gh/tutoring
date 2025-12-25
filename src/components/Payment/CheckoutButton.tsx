@@ -1,6 +1,7 @@
 "use client";
 
 import { createOrder, verifyPayment } from '@/app/actions/payment';
+import { siteConfig } from '@/config/site';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
@@ -34,7 +35,7 @@ export default function CheckoutButton({ courseId, courseTitle, amount, classNam
         key: order.key,
         amount: order.amount,
         currency: order.currency,
-        name: "Future Ready Academy",
+        name: siteConfig.name,
         description: `Enrollment for ${courseTitle}`,
         order_id: order.id,
         handler: async function (response: any) {

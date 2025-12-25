@@ -83,7 +83,7 @@ export default async function LeadDetailsPage({ params }: { params: { leadId: st
 
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
             <h3 className="font-semibold mb-6 text-foreground">Activity Timeline</h3>
-            <ActivityFeed activities={lead.activities as any} />
+            <ActivityFeed activities={lead.activities} />
             {/* Casting 'as any' because Prisma JSON/Date types can be strictly typed differenlty from our simple UI type.
                         In real app, we use mapper. */}
           </div>

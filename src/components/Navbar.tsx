@@ -1,6 +1,7 @@
 "use client";
 
 import NotificationBell from "@/components/NotificationBell";
+import { siteConfig } from "@/config/site";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { Languages, Menu, Moon, Sun, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -25,7 +26,7 @@ export default function Navbar() {
     <header className="fixed inset-x-0 top-0 z-40 h-16 bg-background border-b border-border flex items-center px-6">
       <div className="container flex items-center gap-6">
         <Link href="/" className="font-bold text-primary text-2xl">
-          Skill-ed
+          {siteConfig.shortName}
         </Link>
 
         <nav className="ml-auto hidden md:flex items-center gap-4">

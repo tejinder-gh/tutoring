@@ -20,13 +20,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { siteConfig } from "@/config/site";
+
+// ... existing imports
+
 export const metadata: Metadata = {
-  title: "Future Ready Tutoring | Web Development Bootcamp in Punjab",
-  description: "Outcome-driven web development bootcamp in Punjab. Learn MERN stack, React, and get placed. 65-75% placement rate. Apply now!",
+  title: `${siteConfig.name} | Web Development Bootcamp in Punjab`,
+  description: siteConfig.description,
   keywords: ["web development", "bootcamp", "Punjab", "MERN", "React", "placement", "coding bootcamp", "Ludhiana"],
   openGraph: {
-    title: "Future Ready Tutoring | Web Development Bootcamp",
-    description: "Transform from student to hired professional. Outcome-driven web development bootcamp in Punjab.",
+    title: `${siteConfig.name} | Web Development Bootcamp`,
+    description: siteConfig.description,
     type: "website",
   },
 };

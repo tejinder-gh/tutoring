@@ -1,4 +1,5 @@
 import CheckoutButton from '@/components/Payment/CheckoutButton'
+import { siteConfig } from '@/config/site'
 import { prisma } from '@/lib/prisma'
 import { Award, BookOpen, CheckCircle2, PlayCircle, Users } from 'lucide-react'
 import { Metadata } from 'next'
@@ -81,7 +82,7 @@ export default async function CoursePage({ params }: Props) {
     description: course.description,
     provider: {
       '@type': 'Organization',
-      name: 'Future Ready Academy',
+      name: siteConfig.name,
       sameAs: 'https://futureready.com'
     },
     offers: {

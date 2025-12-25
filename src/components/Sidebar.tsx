@@ -1,5 +1,6 @@
 "use client";
 
+import { siteConfig } from "@/config/site";
 import {
   BookOpen,
   Calendar,
@@ -56,7 +57,7 @@ export default function Sidebar({ role }: SidebarProps) {
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-2 font-bold text-xl text-primary">
           <GraduationCap /> {/* Or Logo */}
-          <span>Future Ready</span>
+          <span>{siteConfig.shortName}</span>
         </div>
         <div className="mt-2 text-xs font-medium text-text-muted bg-accent/50 px-2 py-1 rounded inline-block">
           {role} PORTAL
