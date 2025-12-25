@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import FloatingCTA from './FloatingCTA';
+import Footer from './Footer';
 import Navbar from './Navbar';
 
 interface ConditionalLayoutProps {
@@ -21,6 +22,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
         </main>
       </div>
       {!isAdminRoute && <FloatingCTA seatsLeft={12} />}
+      {!isAdminRoute && <Footer />}
     </>
   );
 }

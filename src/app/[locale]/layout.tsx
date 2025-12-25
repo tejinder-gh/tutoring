@@ -1,6 +1,5 @@
 import { AuthProvider } from "@/components/AuthProvider";
 import ConditionalLayout from "@/components/ConditionalLayout";
-import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeContext";
 import { routing } from '@/i18n/routing';
 import type { Metadata } from "next";
@@ -64,7 +63,6 @@ export default async function RootLayout({
               <ConditionalLayout>
                 {children}
               </ConditionalLayout>
-              <Footer />
             </ThemeProvider>
           </AuthProvider>
         </NextIntlClientProvider>

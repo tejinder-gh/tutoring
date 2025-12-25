@@ -47,6 +47,9 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
     YEARLY: 'Revenue Trend (Last 5 Years)',
   }[period];
 
+  const trendColor = dashboardMetrics?.revenue.trend === 'up' ? '#10B981' :
+    dashboardMetrics?.revenue.trend === 'down' ? '#EF4444' : '#F59E0B';
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -74,37 +77,45 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-        <StatCard
-          title="Total Revenue"
-          value={`₹${analytics?.overview.totalRevenue.toLocaleString()}`}
-          icon={BadgeIndianRupee}
-          trend={dashboardMetrics?.revenue.trend}
-          trendValue={`${dashboardMetrics?.revenue.change}%`}
-          trendLabel={`vs prev ${period.toLowerCase()}`}
-        />
-        <StatCard
-          title="Total Leads"
-          value={leads.length}
-          icon={Users}
-          trend={dashboardMetrics?.leads.trend}
-          trendValue={`${dashboardMetrics?.leads.change}%`}
-          trendLabel={`vs prev ${period.toLowerCase()}`}
-        />
-        <StatCard
-          title="Total Students"
-          value={students.length}
-          icon={GraduationCap}
-          trend={dashboardMetrics?.enrollments.trend}
-          trendValue={`${dashboardMetrics?.enrollments.change}%`}
-          trendLabel={`vs prev ${period.toLowerCase()}`}
-        />
+        <Link href="/admin/finance" className="block transition-transform hover:scale-[1.02]">
+          <StatCard
+            title="Total Revenue"
+            value={`₹${analytics?.overview.totalRevenue.toLocaleString()}`}
+            icon={BadgeIndianRupee}
+            trend={dashboardMetrics?.revenue.trend}
+            trendValue={`${dashboardMetrics?.revenue.change}%`}
+            trendLabel={`vs prev ${period.toLowerCase()}`}
+          />
+        </Link>
+        <Link href="/admin/leads" className="block transition-transform hover:scale-[1.02]">
+          <StatCard
+            title="Total Leads"
+            value={leads.length}
+            icon={Users}
+            trend={dashboardMetrics?.leads.trend}
+            trendValue={`${dashboardMetrics?.leads.change}%`}
+            trendLabel={`vs prev ${period.toLowerCase()}`}
+          />
+        </Link>
+        <Link href="/admin/users?role=student" className="block transition-transform hover:scale-[1.02]">
+          <StatCard
+            title="Total Students"
+            value={students.length}
+            icon={GraduationCap}
+            trend={dashboardMetrics?.enrollments.trend}
+            trendValue={`${dashboardMetrics?.enrollments.change}%`}
+            trendLabel={`vs prev ${period.toLowerCase()}`}
+          />
+        </Link>
 
-        <div className="bg-primary/10 rounded-xl p-6 border border-primary/30">
-          <div className="text-4xl font-bold text-primary mb-2">
-            {coursesCount(analytics?.overview.totalCourses)}
+        <Link href="/admin/courses" className="block transition-transform hover:scale-[1.02]">
+          <div className="bg-primary/10 rounded-xl p-6 border border-primary/30 h-full flex flex-col justify-center">
+            <div className="text-4xl font-bold text-primary mb-2">
+              {coursesCount(analytics?.overview.totalCourses)}
+            </div>
+            <div className="text-text-muted">Total Courses</div>
           </div>
-          <div className="text-text-muted">Total Courses</div>
-        </div>
+        </Link>
       </div>
 
       {analytics && (
@@ -112,7 +123,7 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
             <h3 className="text-lg font-bold mb-6">{chartTitle}</h3>
             <div className="h-64">
-              <SimpleLineChart data={analytics.revenueData} xKey="name" yKey="revenue" color="#10B981" />
+              <SimpleLineChart data={analytics.revenueData} xKey="name" yKey="revenue" color={trendColor} />
             </div>
           </div>
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
