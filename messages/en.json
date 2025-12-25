@@ -139,6 +139,7 @@
   },
   "courses": {
     "title": "The Engineer's Roadmap",
+    "step": "Step",
     "popular": "Popular Courses",
     "subtitle": "A structured path from 'Hello World' to your first offer letter. We don't sell courses; we build careers.",
     "guarantee": {
@@ -166,7 +167,7 @@
     },
     "tiers": {
       "introductory": {
-        "step": "Step 01",
+        "popular": "Popular",
         "title": "Introductory Module",
         "role": "The Executor Track",
         "description": "Enable students to efficiently execute well-defined programming tasks under guidance, while establishing foundational Computer Science knowledge, structured collaboration habits, and reliable persistence skills.",
@@ -216,7 +217,6 @@
         "capstone": "Personal Portfolio Website + API Integration Project with Production Deployment"
       },
       "problemSolver": {
-        "step": "Step 02",
         "title": "Problem-Solver",
         "role": "The Independent Problem-Solver Track",
         "description": "Produce autonomous full-stack specialists capable of independent execution, mastering system integration, robust quality assurance, and incident management.",
@@ -259,7 +259,7 @@
         "capstone": "Robust Full-Stack Service with Critical Path Test Coverage + Complex External Service Integration"
       },
       "ai": {
-        "step": "Step 03",
+        "popular": "Popular",
         "title": "AI Engineer Career Preparation",
         "role": "The AI-First Systems Builder Track",
         "description": "Transition engineers from traditional full-stack development into production-grade AI system builders capable of designing, evaluating, and scaling LLM-powered systems with clear cost, reliability, and safety guarantees.",
@@ -323,7 +323,6 @@
         "capstone": "Production AI System: RAG or Agent-Based Platform with Evaluations, Cost Controls, and Reliability Guarantees"
       },
       "systemDesign": {
-        "step": "Step 03",
         "title": "System Design and Architecture Decision Making",
         "role": "The Architect Track",
         "description": "Develop strategic architects and leaders capable of translating ambiguous business requirements into actionable system architectures and driving organizational impact through influence.",
@@ -464,6 +463,7 @@
         "capstone": "Technical Vision Defense: Present 3-Year Technical Roadmap to Executive Team (CEO/CTO/CPO) + Implement First Major Initiative with Measurable Business Impact"
       },
       "management": {
+        "popular": "Popular",
         "title": "Engineering Management Career Preparation",
         "role": "The Technical Leader & People Manager Track",
         "description": "Transition exceptional engineers into high-impact engineering managers who build and scale high-performing teams, balance technical excellence with business outcomes, and multiply organizational impact through effective people leadership.",
@@ -547,6 +547,113 @@
           "details": "Simulate real exam environments to build stamina and confidence."
         },
         "capstone": "Full-Length Mock Examination with Detailed Evaluative Feedback"
+      },
+      "digitalMarketing": {
+        "popular": "Popular",
+        "title": "Digital Marketing Mastery",
+        "role": "Marketing Strategist",
+        "description": "Master the art of online growth. Learn SEO, SEM, Social Media Marketing, and Content Strategy to drive real business results.",
+        "courseLength": "3 months",
+        "modules": [
+          {
+            "code": "DM1",
+            "title": "SEO & Content Strategy",
+            "tech": "Keyword Research, On-page SEO, Off-page SEO, Content Planning, Analytics",
+            "outcome": "Optimized Website with Content Plan",
+            "details": "Learn to rank websites on search engines and create content that converts."
+          },
+          {
+            "code": "DM2",
+            "title": "Social Media & Branding",
+            "tech": "Instagram Marketing, LinkedIn Growth, Personal Branding, Copywriting, Community Management",
+            "outcome": "Social Media Growth Strategy",
+            "details": "Build a strong brand presence and engage with audiences effectively."
+          },
+          {
+            "code": "DM3",
+            "title": "Performance Marketing",
+            "tech": "Google Ads, Facebook/Meta Ads, ROI Analysis, Campaign Optimization",
+            "outcome": "Live Ad Campaign with ROI Report",
+            "details": "Run paid campaigns that generate leads and sales with positive ROI."
+          }
+        ],
+        "softSkills": {
+          "focus": "Creativity, Data-Driven Decision Making, Communication",
+          "assessment": "Campaign Pitch, Ad Creative Review, Analytics Interpretation",
+          "details": "Combine creative storytelling with analytical rigor to drive marketing success."
+        },
+        "capstone": "Live Marketing Campaign: Execute a real campaign with a budget and report on performance metrics."
+      },
+      "dataAnalytics": {
+        "popular": "Popular",
+        "title": "Data Analytics & Visualization",
+        "role": "Data Analyst",
+        "description": "Turn raw data into actionable insights. Master Excel, SQL, Python, and PowerBI to solve complex business problems.",
+        "courseLength": "4 months",
+        "modules": [
+          {
+            "code": "DA1",
+            "title": "Excel & SQL Fundamentals",
+            "tech": "Advanced Excel (Pivot Tables, VLOOKUP), SQL Queries, Joins, Aggregations, Data Cleaning",
+            "outcome": "Cleaned Dataset & SQL Reports",
+            "details": "Master the foundational tools of data analysis for querying and cleaning data."
+          },
+          {
+            "code": "DA2",
+            "title": "Python for Data Analysis",
+            "tech": "Python, Pandas, NumPy, Data Manipulation, Statistical Analysis",
+            "outcome": "Exploratory Data Analysis (EDA) Notebook",
+            "details": "Use Python to manipulate large datasets and perform statistical analysis."
+          },
+          {
+            "code": "DA3",
+            "title": "Data Visualization & Storytelling",
+            "tech": "PowerBI, Tableau, Dashboard Design, Data Storytelling",
+            "outcome": "Interactive Business Intelligence Dashboard",
+            "details": "Create compelling dashboards that communicate insights effectively to stakeholders."
+          }
+        ],
+        "softSkills": {
+          "focus": "Critical Thinking, Attention to Detail, Stakeholder Communication",
+          "assessment": "Insight Presentation, Dashboard Review, Data Integrity Check",
+          "details": "Translate complex data findings into clear business recommendations."
+        },
+        "capstone": "Business Intelligence Dashboard: End-to-end analysis of a real-world dataset with actionable business insights."
+      },
+      "productManagement": {
+        "title": "Product Management Launchpad",
+        "role": "Associate Product Manager",
+        "description": "Learn to build products customers love. Master the product lifecycle from ideation to launch, user research, and agile execution.",
+        "courseLength": "4 months",
+        "modules": [
+          {
+            "code": "PM1",
+            "title": "User Research & Ideation",
+            "tech": "User Interviews, Persona Creation, Empathy Mapping, Problem Statement Definition, Ideation Techniques",
+            "outcome": "User Research Report & High-Level Concept",
+            "details": "Understand user needs and define valuable product opportunities."
+          },
+          {
+            "code": "PM2",
+            "title": "Product Strategy & Roadmapping",
+            "tech": "Market Analysis, MVP Definition, Feature Prioritization (RICE/MoSCoW), Product Roadmapping",
+            "outcome": "Product Strategy Deck & Roadmap",
+            "details": "Define the vision, strategy, and roadmap for a product."
+          },
+          {
+            "code": "PM3",
+            "title": "Agile Execution & Metrics",
+            "tech": "Scrum/Kanban, JIRA/Linear, User Stories, Acceptance Criteria, Product Metrics (KPIs, OKRs)",
+            "outcome": "Backlog & Launch Plan",
+            "details": "Manage the development process and measure product success."
+          }
+        ],
+        "softSkills": {
+          "focus": "Leadership, Empathy, Strategic Vision, Cross-Functional Collaboration",
+          "assessment": "PRD Review, Stakeholder Alignment Simulation, Roadmapping Exercise",
+          "details": "Lead without authority and align cross-functional teams towards a common goal."
+        },
+        "capstone": "End-to-End Product PRD & Launch Plan: Create a comprehensive Product Requirements Document and launch strategy."
       }
     },
     "prReview": {

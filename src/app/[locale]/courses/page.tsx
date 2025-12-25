@@ -142,14 +142,21 @@ const getColor = (index: number) => {
    return COLOR_SCHEMES[index % COLOR_SCHEMES.length];
 };
 
-const CourseCard = ({ tierData, t, index, onOpenModal }: { tierData: any, t: any, index: number, onOpenModal: (tier: any, scheme: any) => void }) => {
+export const CourseCard = ({ tierData, t, index, onOpenModal }: { tierData: any, t: any, index: number, onOpenModal?: (tier: any, scheme: any) => void }) => {
    const colorScheme = getColor(index);
    return <div key={tierData.title} className={`relative rounded-3xl border border-border bg-card overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group ${colorScheme.cardHover}`}>
       {/* Header */}
       <div className={`p-8 md:p-10 border-b border-border bg-linear-to-br ${colorScheme.gradient} flex flex-col md:flex-row justify-between items-start md:items-center gap-6`}>
          <div>
-            <div className={`inline-block px-4 py-1.5 rounded-full font-bold text-sm mb-4 ${colorScheme.badge}`}>
-               {tierData.role}
+            <div className="flex flex-wrap gap-2 mb-4">
+               {tierData.popular && (
+                  <div className="inline-block px-4 py-1.5 rounded-full font-bold text-sm bg-linear-to-r from-amber-500 to-orange-500 text-white shadow-md">
+                     {tierData.popular}
+                  </div>
+               )}
+               <div className={`inline-block px-4 py-1.5 rounded-full font-bold text-sm ${colorScheme.badge}`}>
+                  {tierData.role}
+               </div>
             </div>
             <h2 className="text-3xl font-bold mb-2 text-foreground">{tierData.title}</h2>
             <p className="text-muted-foreground font-medium max-w-2xl">{tierData.description}</p>
@@ -157,11 +164,11 @@ const CourseCard = ({ tierData, t, index, onOpenModal }: { tierData: any, t: any
          <div className="flex flex-col items-end gap-2 shrink-0">
             <span className="text-sm font-semibold text-muted-foreground">{t("courseLength")}</span>
             <span className="text-2xl font-black text-foreground">{tierData.courseLength}</span>
-            <button
-               onClick={() => onOpenModal(tierData, colorScheme)}
+            {onOpenModal && <button
+               onClick={() => { onOpenModal(tierData, colorScheme) }}
                className={`inline-flex items-center gap-2 px-6 py-3 mt-4 rounded-2xl bg-linear-to-r ${colorScheme.gradientButton} text-white font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all`}>
                {t("knowMore")}
-            </button>
+            </button>}
          </div>
       </div>
 
@@ -224,7 +231,6 @@ export default function CoursesPage() {
 
    // Helper to get tier data properly typed/handled
    const tiers = t.raw(`tiers`);
-   console.log(tiers);
    const partneredTiers: any[] = [];
 
    const [selectedTier, setSelectedTier] = useState<any>(null);
@@ -292,21 +298,21 @@ export default function CoursesPage() {
                         <div key={index} className="relative">
                            {/* Roadmap Connector */}
                            {index > 0 && (
-                              <div className="absolute -top-16 left-1/2 -translate-x-1/2 h-16 w-1 bg-gradient-to-b from-border/0 via-primary/20 to-border/0 flex items-center justify-center">
+                              <div className="absolute -top-16 left-1/2 -translate-x-1/2 h-16 w-1 bg-linear-to-b from-border/0 via-primary/20 to-border/0 flex items-center justify-center">
                                  <div className="w-3 h-3 rounded-full bg-primary/20" />
                               </div>
                            )}
 
                            {/* Step Label */}
-                           {tier.step && (
+                           {
                               <div className="absolute -top-5 left-8 z-10">
                                  <span className="bg-background border border-border px-3 py-1 rounded-full text-xs font-bold text-muted-foreground uppercase tracking-widest shadow-sm">
-                                    {tier.step}
+                                    {t(`step`) + " " + (index > 10 ? (index + 1) : "0" + (index + 1))}
                                  </span>
                               </div>
-                           )}
+                           }
 
-                           <CourseCard tierData={tier} t={t} index={index} onOpenModal={handleOpenModal} />
+                           <CourseCard key={index} tierData={tier} t={t} index={index} onOpenModal={handleOpenModal} />
                         </div>
                      )
                })}
@@ -315,7 +321,7 @@ export default function CoursesPage() {
             <div className="space-y-16">
                {partneredTiers.map((tier: any, index: number) => {
                   // Access raw data for nested arrays/objects
-                  return <CourseCard key={index} tierData={tier} t={t} index={index + Object.keys(tiers).length - partneredTiers.length} onOpenModal={handleOpenModal} />
+                  return <CourseCard key={index} tierData={tier} t={t} index={index + Object.keys(tiers).length + 1 - partneredTiers.length} onOpenModal={handleOpenModal} />
                })}
             </div>
             <div className="mt-20 text-center">

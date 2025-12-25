@@ -3,14 +3,16 @@
 import { Link } from "@/i18n/routing";
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { CourseCard } from "./courses/page";
 
 export default function HomePage() {
   const t = useTranslations();
+  const tCourses = useTranslations("courses");
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Hero Section - Apple-inspired */}
-      <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-32 overflow-hidden">
+      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-24 overflow-hidden">
         {/* Gradient Mesh Background */}
         <div className="absolute inset-0 gradient-mesh opacity-60 -z-10" />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10 animate-pulse" />
@@ -18,7 +20,7 @@ export default function HomePage() {
 
         <div className="container mx-auto px-6 text-center z-10 relative">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass shadow-elegant text-primary text-sm font-semibold mb-12 animate-in fade-in slide-in-from-bottom-4">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass shadow-elegant text-primary text-sm font-semibold mb-8 animate-in fade-in slide-in-from-bottom-4">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
@@ -27,14 +29,14 @@ export default function HomePage() {
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl sm:text-6xl md:text-7xl lg:text-6xl font-black mb-10 tracking-tight leading-[1.05] animate-in fade-in slide-in-from-bottom-6 duration-700">
+          <h1 className="text-3xl sm:text-6xl md:text-7xl lg:text-6xl font-black mb-6 tracking-tight leading-[1.05] animate-in fade-in slide-in-from-bottom-6 duration-700">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-foreground/70">
               {t("hero.title")}
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg sm:text-xl md:text-2xl text-text-muted max-w-3xl mx-auto font-normal mb-16 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+          <p className="text-lg sm:text-xl md:text-2xl text-text-muted max-w-3xl mx-auto font-normal mb-10 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
             {t("hero.subtitle")}
           </p>
 
@@ -61,7 +63,7 @@ export default function HomePage() {
       </section>
 
       {/* USP Section - Job Placement Guarantee */}
-      <section className="py-24 bg-linear-to-b from-primary/90 to-primary text-primary-foreground relative overflow-hidden">
+      <section className="py-20 bg-linear-to-b from-primary/90 to-primary text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-10" />
         <div className="container mx-auto px-6 text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-sm mb-8 animate-pulse">
@@ -70,7 +72,7 @@ export default function HomePage() {
           </div>
 
           <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-white">{t("usp.title")}</h2>
-          <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto mb-16 leading-relaxed">{t("usp.subtitle")}</p>
+          <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto mb-12 leading-relaxed">{t("usp.subtitle")}</p>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[1, 2, 3].map((num) => (
@@ -86,9 +88,9 @@ export default function HomePage() {
       </section>
 
       {/* The Gap - Redesigned with Positive Framing */}
-      <section className="py-24 px-6 bg-linear-to-b from-background to-accent/20">
+      <section className="py-20 px-6 bg-accent/5">
         <div className="container mx-auto max-w-7xl">
-          <div className="text-center max-w-3xl mx-auto mb-20">
+          <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-4xl md:text-4xl font-black mb-6 tracking-tight leading-tight">{t("theGap.title")}</h2>
             <p className="text-xl md:text-2xl text-text-muted font-normal">{t("theGap.subtitle")}</p>
           </div>
@@ -138,7 +140,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      <section className="py-24 px-6 bg-background bg-linear-to-b from-background to-accent/20">
+      <section className="py-20 px-6 bg-background">
         <div className="container mx-auto max-w-7xl">
 
           <div className="p-10 lg:p-12 rounded-3xl glass border border-border/50 shadow-elegant">
@@ -157,9 +159,25 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      <section className="py-20 px-6 bg-background bg-linear-to-b from-background to-accent/20">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">{t("courses.popular")}</h2>
+            <p className="text-xl text-text-muted">{t("courses.subtitle")}</p>
+          </div>
 
-      <section className="py-24 px-6 bg-background bg-linear-to-b from-background to-accent/20">
+          {/* Tier Cards */}
+          <div className="space-y-16">
+            {Object.values(t.raw("courses.tiers")).map((tier: any, idx: number) => {
+              if (tier.popular) {
+                return <CourseCard key={idx} tierData={tier} t={tCourses} index={idx} />
+              }
+            })}
+          </div>
+        </div>
+      </section>
 
+      <section className="py-8 px-6 bg-accent/5">
         <div className="container mx-auto max-w-7xl">
           {/* Analogy Section */}
           <div className="p-10 lg:p-12 rounded-3xl bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border border-border/50 shadow-elegant">
