@@ -3,6 +3,7 @@
 import { getMySchedule } from "@/app/actions/calendar";
 import { requestLeave } from "@/app/actions/leave";
 import LeaveRequestModal from "@/components/Calendar/LeaveRequestModal";
+import ScheduleEventDialog from "@/components/Calendar/ScheduleEventDialog";
 import WeeklySchedule from "@/components/Calendar/WeeklySchedule";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ export default function TeacherSchedulePage() {
   const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState<any[]>([]);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Fetch schedule when date changes
@@ -41,18 +43,27 @@ export default function TeacherSchedulePage() {
     <div className="p-8 space-y-6 max-h-screen overflow-hidden flex flex-col">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Schedule Overview</h1>
-          <p className="text-slate-500 dark:text-slate-400">
+          <h1 className="text-3xl font-bold text-foreground">Schedule Overview</h1>
+          <p className="text-text-muted">
             View your upcoming classes and manage leave requests.
           </p>
         </div>
-        <button
-          onClick={() => setIsLeaveModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium shadow-sm"
-        >
-          <Plus size={20} />
-          Request Leave
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIsEventModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-primary hover:opacity-90 text-white rounded-lg transition-colors font-medium shadow-sm transition-transform active:scale-95"
+          >
+            <Plus size={20} />
+            Add Event
+          </button>
+          <button
+            onClick={() => setIsLeaveModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent/80 text-foreground border border-border rounded-lg transition-colors font-medium shadow-sm"
+          >
+            <Plus size={20} />
+            Request Leave
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 min-h-0">
@@ -73,6 +84,15 @@ export default function TeacherSchedulePage() {
         isOpen={isLeaveModalOpen}
         onClose={() => setIsLeaveModalOpen(false)}
         onSubmit={handleLeaveSubmit}
+      />
+
+      <ScheduleEventDialog
+        isOpen={isEventModalOpen}
+        onClose={() => setIsEventModalOpen(false)}
+        onSuccess={async () => {
+          const newData = await getMySchedule(date);
+          setEvents(newData);
+        }}
       />
     </div>
   );

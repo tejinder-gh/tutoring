@@ -25,7 +25,7 @@ export async function getMySchedule(date: Date) {
     }
   });
 
-  const leaveEvents = leaves.map(leave => ({
+  const leaveEvents = leaves.map((leave: any) => ({
     id: leave.id,
     title: `Leave: ${leave.reason} (${leave.status})`,
     startTime: leave.startDate.toISOString(),
@@ -36,29 +36,57 @@ export async function getMySchedule(date: Date) {
 
   // 2. Fetch Classes (Enrollments -> Batch -> Schedule)
   // Logic: For each active enrollment, get batch schedule, expand to current week
-  const enrollments = await prisma.enrollment.findMany({
-    where: {
-      studentProfile: { userId: userId },
-      status: 'ACTIVE',
-      batch: { isActive: true }
-    },
-    include: {
-      batch: true,
-      course: true
-    }
+  // Also fetch events for these batches
+
+  // Check if User is Student or Teacher and get relevant batch IDs
+  let relevantBatchIds: string[] = [];
+
+  const studentProfile = await prisma.studentProfile.findUnique({
+      where: { userId },
+      include: {
+          enrollments: {
+              where: { status: 'ACTIVE' },
+              include: { batch: true }
+          }
+      }
   });
 
-  // Also fetch for Teachers
-  // const teacherBatches = ...
+  if (studentProfile) {
+      relevantBatchIds = studentProfile.enrollments
+          .map((e: any) => e.batchId)
+          .filter((id: any): id is string => !!id);
+  }
+
+  const teacherProfile = await prisma.teacherProfile.findUnique({
+      where: { userId },
+      include: {
+          courses: {
+              include: {
+                  batches: {
+                      where: { isActive: true }
+                  }
+              }
+          }
+      }
+  });
+
+  if (teacherProfile) {
+      const teacherBatchIds = teacherProfile.courses.flatMap((c: any) => c.batches.map((b: any) => b.id));
+      relevantBatchIds = [...new Set([...relevantBatchIds, ...teacherBatchIds]) as any];
+  }
+
+  // Fetch batches with their details
+  const batches = await prisma.batch.findMany({
+      where: { id: { in: relevantBatchIds }, isActive: true },
+      include: { course: true }
+  });
 
   const classEvents: any[] = [];
 
-  for (const enrollment of enrollments) {
-      const batch = enrollment.batch;
+  for (const batch of batches) {
       if (batch?.schedule) {
           const schedule = batch.schedule as Record<string, string>; // e.g., { "mon": "10:00-12:00" }
 
-          // Map day names to index (0 = Sun, 1 = Mon...)
           const dayMap: Record<string, number> = {
               "sun": 0, "mon": 1, "tue": 2, "wed": 3, "thu": 4, "fri": 5, "sat": 6
           };
@@ -67,19 +95,12 @@ export async function getMySchedule(date: Date) {
               const dayIndex = dayMap[dayKey.toLowerCase()];
               if (dayIndex === undefined) return;
 
-              // Find the date for this day in the requested week
-              // weekDays from startOfWeek(Monday) -> 0..6
-              // startOfWeek (Mon) is day 1.
-
-              // Let's iterate 7 days of the requested week
               for (let i = 0; i < 7; i++) {
                   const currentDayDate = addDays(startDate, i);
                   if (currentDayDate.getDay() === dayIndex) {
-                      // Found the matching day
                       const [startStr, endStr] = timeRange.split('-');
                       if (!startStr || !endStr) continue;
 
-                      // Parse time "10:00"
                       const [startH, startM] = startStr.split(':').map(Number);
                       const [endH, endM] = endStr.split(':').map(Number);
 
@@ -88,10 +109,11 @@ export async function getMySchedule(date: Date) {
 
                       classEvents.push({
                           id: `${batch.id}-${currentDayDate.toISOString()}`,
-                          title: `${enrollment.course.title} (${batch.name})`,
+                          title: `${batch.course.title} (${batch.name})`,
                           startTime: startDateTime.toISOString(),
                           endTime: endDateTime.toISOString(),
-                          type: 'CLASS'
+                          type: 'CLASS',
+                          batchId: batch.id
                       });
                   }
               }
@@ -99,5 +121,25 @@ export async function getMySchedule(date: Date) {
       }
   }
 
-  return [...leaveEvents, ...classEvents];
+  // 3. Fetch Batch Events (Tests, Deadlines, etc.)
+  const customEvents = await prisma.event.findMany({
+    where: {
+      batchId: { in: relevantBatchIds },
+      startTime: { gte: startDate, lte: endDate }
+    },
+    include: {
+        batch: { include: { course: true } }
+    }
+  });
+
+  const mappedCustomEvents = customEvents.map((event: any) => ({
+      id: event.id,
+      title: `${event.title} (${event.batch?.name || 'Class'})`,
+      startTime: event.startTime.toISOString(),
+      endTime: event.endTime.toISOString(),
+      type: event.type,
+      batchId: event.batchId
+  }));
+
+  return [...leaveEvents, ...classEvents, ...mappedCustomEvents];
 }

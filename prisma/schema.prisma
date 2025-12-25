@@ -165,6 +165,14 @@ enum LeaveStatus {
   REJECTED
 }
 
+enum EventType {
+  CLASS
+  TEST
+  DEADLINE
+  WORKSHOP
+  OTHER
+}
+
 // =============================================================================
 // USER MANAGEMENT
 // =============================================================================
@@ -431,6 +439,7 @@ model Assignment {
 
   submissions Submission[]
   resources   Resource[]
+  events      Event[]
 
   @@index([curriculumId])
   @@index([lessonId])
@@ -491,6 +500,7 @@ model Quiz {
   questions Question[]
   attempts  QuizAttempt[]
   resources Resource[]
+  events    Event[]
 
   @@index([curriculumId])
   @@index([lessonId])
@@ -592,9 +602,34 @@ model Batch {
 
   students    StudentProfile[]
   enrollments Enrollment[]
+  events      Event[]
 
   @@index([courseId])
   @@index([isActive])
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  type        EventType @default(CLASS)
+
+  batchId     String?
+  batch       Batch?    @relation(fields: [batchId], references: [id])
+
+  // Optional links to curriculum items
+  assignmentId String?
+  assignment   Assignment? @relation(fields: [assignmentId], references: [id])
+  quizId       String?
+  quiz         Quiz?       @relation(fields: [quizId], references: [id])
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([batchId])
+  @@index([startTime])
 }
 
 /// Tracks a student's enrollment in a specific course
