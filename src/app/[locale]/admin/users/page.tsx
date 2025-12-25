@@ -1,5 +1,6 @@
 
 import { UserActions } from "@/components/admin/UserActions";
+import { UserInviteDialog } from "@/components/admin/UserInviteDialog";
 import { requirePermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { Mail, Phone, Shield } from "lucide-react";
@@ -22,6 +23,7 @@ export default async function AdminUsersPage() {
           <h1 className="text-3xl font-bold text-foreground">Users & Staff</h1>
           <p className="text-text-muted">Manage all platform users</p>
         </div>
+        <UserInviteDialog />
       </div>
 
       <div className="bg-accent/10 rounded-xl border border-border overflow-hidden">
@@ -38,7 +40,7 @@ export default async function AdminUsersPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {users.map((user: any) => (
                 <tr key={user.id} className="border-t border-border hover:bg-accent/10">
                   <td className="p-4">
                     <div className="font-medium text-foreground">{user.name}</div>
