@@ -30,36 +30,24 @@ export default function Navbar() {
         </Link>
 
         <nav className="ml-auto hidden md:flex items-center gap-4">
-          <Link
-            href="/courses"
-            className="text-text-muted hover:text-foreground transition"
-          >
-            {t("courses")}
-          </Link>
-          <Link
-            href="/about"
-            className="text-text-muted hover:text-foreground transition"
-          >
-            {t("about")}
-          </Link>
-          <Link
-            href="/contact"
-            className="text-text-muted hover:text-foreground transition"
-          >
-            {t("contact")}
-          </Link>
-          <Link
-            href="/register"
-            className="text-text-muted hover:text-foreground transition"
-          >
-            {t("register")}
-          </Link>
-          <Link
-            href="/login"
-            className="text-text-muted hover:text-foreground transition"
-          >
-            {t("login")}
-          </Link>
+          {[
+            { href: "/courses", label: t("courses") },
+            { href: "/about", label: t("about") },
+            { href: "/contact", label: t("contact") },
+            { href: "/register", label: t("register") },
+            { href: "/login", label: t("login") },
+          ].map((link) => {
+            const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`transition ${isActive ? "text-primary font-bold" : "text-text-muted hover:text-foreground"}`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
 
           <div className="flex items-center gap-2 border-l border-border pl-4">
             <NotificationBell />

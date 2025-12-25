@@ -2,8 +2,78 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { addDays, endOfDay, endOfWeek, endOfYear, format, startOfDay, startOfMonth, startOfWeek, startOfYear, subDays, subMonths, subWeeks, subYears } from "date-fns";
+import { endOfDay, endOfWeek, endOfYear, format, startOfDay, startOfMonth, startOfWeek, startOfYear, subDays, subMonths, subWeeks, subYears } from "date-fns";
 import { unstable_cache } from "next/cache";
+
+export async function getTeacherAnalytics() {
+    const session = await auth();
+    if (!session?.user?.id) return null;
+    const userId = session.user.id;
+
+    const teacherProfile = await prisma.teacherProfile.findUnique({
+        where: { userId },
+        include: {
+            courses: {
+                include: {
+                    batches: {
+                        where: { isActive: true },
+                        include: {
+                            enrollments: true,
+                            events: {
+                                where: { startTime: { gte: new Date() } },
+                                take: 5,
+                                orderBy: { startTime: 'asc' }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    if (!teacherProfile) return null;
+
+    // 1. Total Students (Unique Enrollments across all active batches)
+    const studentIds = new Set<string>();
+    let totalActiveBatches = 0;
+    const upcomingClasses: any[] = [];
+
+    teacherProfile.courses.forEach((course: any) => {
+        course.batches.forEach((batch: any) => {
+            totalActiveBatches++;
+            batch.enrollments.forEach((enrollment: any) => {
+                if (enrollment.status === 'ACTIVE') {
+                    studentIds.add(enrollment.studentProfileId);
+                }
+            });
+            // Collect upcoming events
+            batch.events.forEach((event: any) => {
+                if (event.type === 'CLASS') {
+                    upcomingClasses.push({
+                        id: event.id,
+                        title: event.title,
+                        startTime: event.startTime,
+                        batchName: batch.name,
+                        courseTitle: course.title
+                    });
+                }
+            });
+        });
+    });
+
+    // Sort upcoming classes globally
+    upcomingClasses.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+
+    return {
+        overview: {
+            totalStudents: studentIds.size,
+            activeBatches: totalActiveBatches,
+            activeCourses: teacherProfile.courses.length,
+        },
+        upcomingClasses: upcomingClasses.slice(0, 5),
+        // Add more as needed
+    };
+}
 
 export async function getStudentAnalytics() {
   const session = await auth();
@@ -59,32 +129,83 @@ export async function getStudentAnalytics() {
 }
 
 const getCachedAdminAnalyticsData = unstable_cache(
-    async () => {
-        // 1. Monthly Revenue (Last 6 months)
+    async (period: TrendPeriod) => {
         const revenueData = [];
-        for (let i = 5; i >= 0; i--) {
-            const date = subMonths(new Date(), i);
-            const start = startOfMonth(date);
-            const nextMonth = startOfMonth(addDays(new Date(date.getFullYear(), date.getMonth() + 1, 0), 1));
+        const now = new Date();
 
-            const monthlyRevenue = await prisma.paymentReceipts.aggregate({
-                _sum: { amountPaid: true },
-                where: {
-                    paymentDate: {
-                        gte: start,
-                        lt: nextMonth
-                    }
-                }
-            });
+        // Determine loop count and date grouping strategy
+        if (period === 'DAILY') {
+            // Last 7 days
+            for (let i = 6; i >= 0; i--) {
+                const date = subDays(now, i);
+                const start = startOfDay(date);
+                const end = endOfDay(date);
 
-            revenueData.push({
-                name: format(date, 'MMM'),
-                revenue: Number(monthlyRevenue._sum.amountPaid || 0)
-            });
+                const dailyRevenue = await prisma.paymentReceipts.aggregate({
+                    _sum: { amountPaid: true },
+                    where: { paymentDate: { gte: start, lte: end } }
+                });
+
+                revenueData.push({
+                    name: format(date, 'EEE'), // Mon, Tue...
+                    revenue: Number(dailyRevenue._sum.amountPaid || 0)
+                });
+            }
+        } else if (period === 'WEEKLY') {
+            // Last 4 weeks
+            for (let i = 3; i >= 0; i--) {
+                const date = subWeeks(now, i);
+                const start = startOfWeek(date, { weekStartsOn: 1 });
+                const end = endOfWeek(date, { weekStartsOn: 1 });
+
+                const weeklyRevenue = await prisma.paymentReceipts.aggregate({
+                    _sum: { amountPaid: true },
+                    where: { paymentDate: { gte: start, lte: end } }
+                });
+
+                revenueData.push({
+                    name: `Week ${format(start, 'w')}`,
+                    revenue: Number(weeklyRevenue._sum.amountPaid || 0)
+                });
+            }
+        } else if (period === 'YEARLY') {
+            // Last 5 years
+            for (let i = 4; i >= 0; i--) {
+                const date = subYears(now, i);
+                const start = startOfYear(date);
+                const end = endOfYear(date);
+
+                const yearlyRevenue = await prisma.paymentReceipts.aggregate({
+                    _sum: { amountPaid: true },
+                    where: { paymentDate: { gte: start, lte: end } }
+                });
+
+                revenueData.push({
+                    name: format(date, 'yyyy'),
+                    revenue: Number(yearlyRevenue._sum.amountPaid || 0)
+                });
+            }
+        } else {
+            // MONTHLY (Default) - Last 6 months
+            for (let i = 5; i >= 0; i--) {
+                const date = subMonths(now, i);
+                const start = startOfMonth(date);
+                const end = endOfDay(new Date(date.getFullYear(), date.getMonth() + 1, 0));
+
+                const monthlyRevenue = await prisma.paymentReceipts.aggregate({
+                    _sum: { amountPaid: true },
+                    where: { paymentDate: { gte: start, lte: end } }
+                });
+
+                revenueData.push({
+                    name: format(date, 'MMM'),
+                    revenue: Number(monthlyRevenue._sum.amountPaid || 0)
+                });
+            }
         }
 
         // 2. Total Stats
-        const totalStudents = await prisma.user.count({ where: { roleId: { not: null } } }); // Approximation
+        const totalStudents = await prisma.user.count({ where: { roleId: { not: null } } });
         const totalCourses = await prisma.course.count();
         const totalRevenue = await prisma.paymentReceipts.aggregate({ _sum: { amountPaid: true } });
 
@@ -121,12 +242,12 @@ const getCachedAdminAnalyticsData = unstable_cache(
     { revalidate: 3600, tags: ['analytics'] }
 );
 
-export async function getAdminAnalytics() {
+export async function getAdminAnalytics(period: TrendPeriod = 'MONTHLY') {
     const session = await auth();
     // In real app, check admin role
     if (!session?.user?.id) return null;
 
-    return getCachedAdminAnalyticsData();
+    return getCachedAdminAnalyticsData(period);
 }
 
 export type TrendPeriod = 'DAILY' | 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY' | 'YEARLY';

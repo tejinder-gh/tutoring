@@ -1,5 +1,4 @@
 import { auth } from "@/auth";
-import AdminHeader from "@/components/AdminHeader";
 import Sidebar from "@/components/Sidebar";
 import { SessionProvider } from "next-auth/react";
 import { redirect } from "next/navigation";
@@ -24,7 +23,6 @@ export default async function AdminLayout({
       <div className="min-h-screen bg-background text-foreground">
         <Sidebar role="ADMIN" />
         <div className="pl-64 flex flex-col min-h-screen">
-          <AdminHeader />
           <main className="flex-1 p-8">
             {children}
           </main>

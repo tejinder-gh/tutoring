@@ -117,7 +117,7 @@ export default function LessonEditor({
         <button
           onClick={handleSave}
           disabled={isSaving || !isDirty}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-black font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSaving ? (
             <>
@@ -137,11 +137,11 @@ export default function LessonEditor({
       {message && (
         <div
           className={`p-4 rounded-xl border flex items-start gap-3 ${message.type === 'success'
-              ? 'bg-green-500/10 border-green-500/50 text-green-600'
-              : 'bg-red-500/10 border-red-500/50 text-red-600'
+            ? 'bg-green-500/10 border-green-500/50 text-green-600'
+            : 'bg-red-500/10 border-red-500/50 text-red-600'
             }`}
         >
-          <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+          <AlertCircle size={20} className="shrink-0 mt-0.5" />
           <span className="text-sm font-medium">{message.text}</span>
         </div>
       )}

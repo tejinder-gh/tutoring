@@ -103,8 +103,8 @@ export default function ResourceUploadDialog({
         <div className="flex border-b border-border">
           <button
             className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === "UPLOAD"
-                ? "text-primary border-b-2 border-primary"
-                : "text-text-muted hover:text-primary hover:bg-accent/5"
+              ? "text-primary border-b-2 border-primary"
+              : "text-text-muted hover:text-primary hover:bg-accent/5"
               }`}
             onClick={() => setActiveTab("UPLOAD")}
           >
@@ -114,8 +114,8 @@ export default function ResourceUploadDialog({
           </button>
           <button
             className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === "LINK"
-                ? "text-primary border-b-2 border-primary"
-                : "text-text-muted hover:text-primary hover:bg-accent/5"
+              ? "text-primary border-b-2 border-primary"
+              : "text-text-muted hover:text-primary hover:bg-accent/5"
               }`}
             onClick={() => setActiveTab("LINK")}
           >
@@ -183,7 +183,7 @@ export default function ResourceUploadDialog({
                         setError(`Upload failed: ${error.message}`);
                       }}
                       appearance={{
-                        button: "bg-primary text-black font-bold hover:opacity-90",
+                        button: "bg-primary text-primary-foreground font-bold hover:opacity-90",
                         allowedContent: "text-text-muted text-xs"
                       }}
                     />
@@ -258,7 +258,7 @@ export default function ResourceUploadDialog({
             type="submit"
             form="resource-form"
             disabled={isSubmitting || (activeTab === "UPLOAD" && !uploadedFile)}
-            className="flex items-center gap-2 px-6 py-2 bg-primary text-black font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-6 py-2 bg-primary text-primary-foreground font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>

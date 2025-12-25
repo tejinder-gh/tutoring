@@ -8,136 +8,40 @@ import { useState } from "react";
 import Divider from "../../../components/lib/SectionDivision";
 
 const getColor = (index: number) => {
+   // Simplified color schemes to match the app's theme
    const COLOR_SCHEMES = [
-      // Tier 1: Blue/Indigo
+      // Primary: Indigo/Blue based
       {
-         name: 'blue-indigo',
-         gradient: 'from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950',
-         gradientButton: 'from-blue-600 to-indigo-600',
+         name: 'primary-theme',
+         gradient: 'from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20',
+         gradientButton: 'from-primary to-primary/90',
          badge: 'bg-primary/10 text-primary',
-         title: 'text-primary',
+         title: 'text-foreground',
          iconColor: 'text-primary',
-         iconBg: 'bg-blue-100 dark:bg-blue-900/30 text-primary',
+         iconBg: 'bg-primary/10 text-primary',
          outcome: 'text-primary',
-         softSkillBg: 'bg-accent/50',
-         softSkillBorder: 'border-blue-200/50 dark:border-blue-800/50',
+         softSkillBg: 'bg-primary/5',
+         softSkillBorder: 'border-primary/20',
          softSkillText: 'text-primary',
-         cardBorder: 'border-border/50',
-         cardHover: 'hover:shadow-elegant'
+         cardBorder: 'border-border',
+         cardHover: 'hover:shadow-elegant hover:border-primary/30'
       },
-      // Tier 2: Purple/Pink
+      // Secondary: Purple/Violet based (Complementary)
       {
-         name: 'purple-pink',
-         gradient: 'from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950',
-         gradientButton: 'from-purple-600 to-pink-600',
-         badge: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
-         title: 'text-purple-600 dark:text-purple-400',
-         iconColor: 'text-purple-600 dark:text-purple-400',
-         iconBg: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
-         outcome: 'text-purple-600 dark:text-purple-400',
-         softSkillBg: 'bg-purple-50 dark:bg-purple-900/10',
-         softSkillBorder: 'border-purple-200/50 dark:border-purple-800/50',
-         softSkillText: 'text-purple-600 dark:text-purple-400',
-         cardBorder: 'border-border/50',
-         cardHover: 'hover:shadow-elegant'
-      },
-      // Tier 3: Amber/Orange
-      {
-         name: 'amber-orange',
-         gradient: 'from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950',
-         gradientButton: 'from-amber-600 to-orange-600',
+         name: 'secondary-theme',
+         gradient: 'from-secondary/5 to-secondary/10 dark:from-secondary/10 dark:to-secondary/20',
+         gradientButton: 'from-secondary to-secondary/90',
          badge: 'bg-secondary/10 text-secondary',
-         title: 'text-secondary',
+         title: 'text-foreground',
          iconColor: 'text-secondary',
-         iconBg: 'bg-orange-100 dark:bg-orange-900/30 text-secondary',
+         iconBg: 'bg-secondary/10 text-secondary',
          outcome: 'text-secondary',
-         softSkillBg: 'bg-orange-50 dark:bg-orange-900/10',
-         softSkillBorder: 'border-orange-200/50 dark:border-orange-800/50',
+         softSkillBg: 'bg-secondary/5',
+         softSkillBorder: 'border-secondary/20',
          softSkillText: 'text-secondary',
-         cardBorder: 'border-border/50',
-         cardHover: 'hover:shadow-elegant'
-      },
-      // Additional schemes for expansion
-      // Emerald/Teal
-      {
-         name: 'emerald-teal',
-         gradient: 'from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950',
-         gradientButton: 'from-emerald-600 to-teal-600',
-         badge: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-         title: 'text-emerald-600 dark:text-emerald-400',
-         iconColor: 'text-emerald-600 dark:text-emerald-400',
-         iconBg: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400',
-         outcome: 'text-emerald-600 dark:text-emerald-400',
-         softSkillBg: 'bg-emerald-50 dark:bg-emerald-900/10',
-         softSkillBorder: 'border-emerald-200/50 dark:border-emerald-800/50',
-         softSkillText: 'text-emerald-600 dark:text-emerald-400',
-         cardBorder: 'border-border/50',
-         cardHover: 'hover:shadow-elegant'
-      },
-      // Rose/Pink
-      {
-         name: 'rose-pink',
-         gradient: 'from-rose-50 to-pink-50 dark:from-rose-950 dark:to-pink-950',
-         gradientButton: 'from-rose-600 to-pink-600',
-         badge: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-         title: 'text-rose-600 dark:text-rose-400',
-         iconColor: 'text-rose-600 dark:text-rose-400',
-         iconBg: 'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400',
-         outcome: 'text-rose-600 dark:text-rose-400',
-         softSkillBg: 'bg-rose-50 dark:bg-rose-900/10',
-         softSkillBorder: 'border-rose-200/50 dark:border-rose-800/50',
-         softSkillText: 'text-rose-600 dark:text-rose-400',
-         cardBorder: 'border-border/50',
-         cardHover: 'hover:shadow-elegant'
-      },
-      // Cyan/Sky
-      {
-         name: 'cyan-sky',
-         gradient: 'from-cyan-50 to-sky-50 dark:from-cyan-950 dark:to-sky-950',
-         gradientButton: 'from-cyan-600 to-sky-600',
-         badge: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400',
-         title: 'text-cyan-600 dark:text-cyan-400',
-         iconColor: 'text-cyan-600 dark:text-cyan-400',
-         iconBg: 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400',
-         outcome: 'text-cyan-600 dark:text-cyan-400',
-         softSkillBg: 'bg-cyan-50 dark:bg-cyan-900/10',
-         softSkillBorder: 'border-cyan-200/50 dark:border-cyan-800/50',
-         softSkillText: 'text-cyan-600 dark:text-cyan-400',
-         cardBorder: 'border-border/50',
-         cardHover: 'hover:shadow-elegant'
-      },
-      // Lime/Emerald
-      {
-         name: 'lime-emerald',
-         gradient: 'from-lime-50 to-emerald-50 dark:from-lime-950 dark:to-emerald-950',
-         gradientButton: 'from-lime-600 to-emerald-600',
-         badge: 'bg-lime-500/10 text-lime-700 dark:text-lime-400',
-         title: 'text-lime-700 dark:text-lime-400',
-         iconColor: 'text-lime-700 dark:text-lime-400',
-         iconBg: 'bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-400',
-         outcome: 'text-lime-700 dark:text-lime-400',
-         softSkillBg: 'bg-lime-50 dark:bg-lime-900/10',
-         softSkillBorder: 'border-lime-200/50 dark:border-lime-800/50',
-         softSkillText: 'text-lime-700 dark:text-lime-400',
-         cardBorder: 'border-border/50',
-         cardHover: 'hover:shadow-elegant'
-      },
-      // Slate/Gray (Neutral)
-      // {
-      //    name: 'slate-gray',
-      //    gradient: 'from-slate-50 to-gray-50 dark:from-slate-950 dark:to-gray-950',
-      //    gradientButton: 'from-slate-600 to-gray-600',
-      //    badge: 'bg-slate-500/10 text-slate-700 dark:text-slate-300',
-      //    title: 'text-slate-700 dark:text-slate-300',
-      //    iconColor: 'text-slate-600 dark:text-slate-400',
-      //    iconBg: 'bg-slate-100 dark:bg-slate-900/30 text-slate-600 dark:text-slate-400',
-      //    outcome: 'text-slate-600 dark:text-slate-400',
-      //    softSkillBg: 'bg-slate-50 dark:bg-slate-900/10',
-      //    softSkillBorder: 'border-slate-200/50 dark:border-slate-800/50',
-      //    softSkillText: 'text-slate-600 dark:text-slate-400',
-      //    cardBorder: 'border-border/50',
-      //    cardHover: 'hover:shadow-elegant'
-      // }
+         cardBorder: 'border-border',
+         cardHover: 'hover:shadow-elegant hover:border-secondary/30'
+      }
    ];
    return COLOR_SCHEMES[index % COLOR_SCHEMES.length];
 };

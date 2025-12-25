@@ -49,10 +49,10 @@ export default function QuizCard({
       <div className="flex items-start gap-4">
         <div
           className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${hasPassed
-              ? "bg-green-500/10 text-green-500"
-              : hasAttempted
-                ? "bg-red-500/10 text-red-500"
-                : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-black"
+            ? "bg-green-500/10 text-green-500"
+            : hasAttempted
+              ? "bg-red-500/10 text-red-500"
+              : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
             }`}
         >
           {hasPassed ? (

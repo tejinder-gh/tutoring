@@ -19,14 +19,7 @@ export default function HomePage() {
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/5 rounded-full blur-3xl -z-10" />
 
         <div className="container mx-auto px-6 text-center z-10 relative">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass shadow-elegant text-primary text-sm font-semibold mb-8 animate-in fade-in slide-in-from-bottom-4">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
-            </span>
-            Now Accepting Applications for Batch 5
-          </div>
+
 
           {/* Title */}
           <h1 className="text-3xl sm:text-6xl md:text-7xl lg:text-6xl font-black mb-6 tracking-tight leading-[1.05] animate-in fade-in slide-in-from-bottom-6 duration-700">

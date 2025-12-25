@@ -13,7 +13,7 @@ function LoginButton() {
   return (
     <button
       type="submit"
-      className="w-full flex justify-center items-center gap-2 rounded-xl bg-primary px-3.5 py-4 text-center text-sm font-bold text-black shadow-lg shadow-primary/20 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+      className="w-full flex justify-center items-center gap-2 rounded-xl bg-primary px-3.5 py-4 text-center text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-primary transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
       aria-disabled={pending}
     >
       {pending ? <Loader2 size={18} className="animate-spin" /> : t("submit")}

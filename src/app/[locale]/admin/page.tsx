@@ -22,7 +22,7 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
       include: { studentProfile: true, role: true },
       orderBy: { createdAt: 'desc' },
     }),
-    getAdminAnalytics(),
+    getAdminAnalytics(period),
     getDashboardMetrics(period),
     prisma.auditLog.findMany({
       take: 10,
@@ -39,6 +39,14 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
     { label: 'Yearly', value: 'YEARLY' },
   ];
 
+  const chartTitle = {
+    DAILY: 'Revenue Trend (Last 7 Days)',
+    WEEKLY: 'Revenue Trend (Last 4 Weeks)',
+    BIWEEKLY: 'Revenue Trend (Last 14 Days)',
+    MONTHLY: 'Revenue Trend (Last 6 Months)',
+    YEARLY: 'Revenue Trend (Last 5 Years)',
+  }[period];
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -54,8 +62,8 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
               key={p.value}
               href={`/admin?period=${p.value}`}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${period === p.value
-                  ? 'bg-primary text-black shadow-sm'
-                  : 'text-text-muted hover:text-foreground'
+                ? 'bg-primary text-black shadow-sm'
+                : 'text-text-muted hover:text-foreground'
                 }`}
             >
               {p.label}
@@ -102,7 +110,7 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
       {analytics && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-            <h3 className="text-lg font-bold mb-6">Revenue Trend (Last 6 Months)</h3>
+            <h3 className="text-lg font-bold mb-6">{chartTitle}</h3>
             <div className="h-64">
               <SimpleLineChart data={analytics.revenueData} xKey="name" yKey="revenue" color="#10B981" />
             </div>
@@ -123,7 +131,7 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
           {auditLogs.length === 0 ? (
             <p className="text-sm text-text-muted">No recent activity found.</p>
           ) : (
-            auditLogs.map((log) => (
+            auditLogs.map((log: any) => (
               <div key={log.id} className="flex gap-4 items-start">
                 <div className={`w-2 h-2 mt-2 rounded-full shrink-0 ${log.action === 'PAYMENT' ? 'bg-green-500' :
                   log.action === 'DELETE' ? 'bg-red-500' :
@@ -171,7 +179,7 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
                   </td>
                 </tr>
               ) : (
-                leads.slice(0, 20).map((lead) => (
+                leads.slice(0, 20).map((lead: any) => (
                   <tr key={lead.id} className="border-t border-border hover:bg-accent/10">
                     <td className="p-4 text-foreground font-medium">{lead.name}</td>
                     <td className="p-4 text-foreground">{lead.phone}</td>
@@ -216,7 +224,7 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
                   </td>
                 </tr>
               ) : (
-                students.slice(0, 20).map((student) => (
+                students.slice(0, 20).map((student: any) => (
                   <tr key={student.id} className="border-t border-border hover:bg-accent/10">
                     <td className="p-4 text-foreground font-medium">{student.name}</td>
                     <td className="p-4 text-foreground">{student.email}</td>

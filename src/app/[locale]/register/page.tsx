@@ -106,7 +106,7 @@ export default function RegisterPage() {
             <div key={s} className="flex items-center gap-2">
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all
-                  ${step >= s ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-accent text-text-muted'}`}
+                  ${step >= s ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' : 'bg-accent text-text-muted'}`}
               >
                 {s}
               </div>
@@ -161,7 +161,7 @@ export default function RegisterPage() {
                 type="button"
                 onClick={() => setStep(2)}
                 disabled={!formData.name || !formData.email || !formData.phone}
-                className="w-full bg-primary text-black py-4 rounded-xl font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
+                className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
               >
                 Continue <ArrowRight size={18} />
               </button>
@@ -192,14 +192,14 @@ export default function RegisterPage() {
                       onChange={(e) => setFormData({ ...formData, tier: e.target.value })}
                       className="sr-only"
                     />
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${formData.tier === tier.id ? 'bg-primary text-black' : 'bg-accent text-text-muted'}`}>
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${formData.tier === tier.id ? 'bg-primary text-primary-foreground' : 'bg-accent text-text-muted'}`}>
                       <tier.icon size={24} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-foreground">{tier.label}</span>
                         {tier.recommended && (
-                          <span className="text-[10px] bg-primary text-black px-2 py-0.5 rounded-full font-black">
+                          <span className="text-[10px] bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-black">
                             RECOMMENDED
                           </span>
                         )}
@@ -208,7 +208,7 @@ export default function RegisterPage() {
                     </div>
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
                       ${formData.tier === tier.id ? 'border-primary bg-primary shadow-sm shadow-primary/20' : 'border-border'}`}>
-                      {formData.tier === tier.id && <CheckCircle size={12} className="text-black" />}
+                      {formData.tier === tier.id && <CheckCircle size={12} className="text-primary-foreground" />}
                     </div>
                   </label>
                 ))}
@@ -225,7 +225,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setStep(3)}
-                  className="flex-1 bg-primary text-black py-4 rounded-xl font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition active:scale-[0.98] flex items-center justify-center gap-2"
+                  className="flex-1 bg-primary text-primary-foreground py-4 rounded-xl font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition active:scale-[0.98] flex items-center justify-center gap-2"
                 >
                   {tCommon("continue")} <ArrowRight size={18} />
                 </button>
@@ -279,7 +279,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-primary text-black py-4 rounded-xl font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-primary text-primary-foreground py-4 rounded-xl font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>

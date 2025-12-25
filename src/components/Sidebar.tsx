@@ -28,7 +28,6 @@ export default function Sidebar({ role }: SidebarProps) {
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
       { href: "/admin/users", label: "Users & Staff", icon: Users },
       { href: "/admin/courses", label: "Curriculum", icon: BookOpen },
-      { href: "/admin/quizzes", label: "Quizzes", icon: FileText },
       { href: "/admin/batches", label: "Batches", icon: Calendar },
       { href: "/admin/finance", label: "Finance", icon: FileText },
       { href: "/admin/settings/roles", label: "Roles", icon: Shield },
@@ -46,7 +45,7 @@ export default function Sidebar({ role }: SidebarProps) {
       { href: "/student/assignments", label: "Assignments", icon: FileText },
       { href: "/student/queries", label: "My Queries", icon: MessageSquare },
       { href: "/student/schedule", label: "My Schedule", icon: Calendar },
-      { href: "/student/payments", label: "Payments", icon: FileText }, // Reusing FileText for basic icon
+      { href: "/student/payments", label: "Payments", icon: FileText },
     ],
   };
 
@@ -55,10 +54,10 @@ export default function Sidebar({ role }: SidebarProps) {
   return (
     <div className="flex bg-background border-r border-border h-screen flex-col w-64 fixed left-0 top-0 overflow-y-auto">
       <div className="p-6 border-b border-border">
-        <div className="flex items-center gap-2 font-bold text-xl text-primary">
+        <Link href={`/${role.toLowerCase()}`} className="flex items-center gap-2 font-bold text-xl text-primary hover:opacity-80 transition-opacity">
           <GraduationCap /> {/* Or Logo */}
           <span>{siteConfig.shortName}</span>
-        </div>
+        </Link>
         <div className="mt-2 text-xs font-medium text-text-muted bg-accent/50 px-2 py-1 rounded inline-block">
           {role} PORTAL
         </div>
