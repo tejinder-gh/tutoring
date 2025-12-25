@@ -8,7 +8,14 @@ export default async function CoursesPage() {
   const courses = await prisma.course.findMany({
     include: {
       _count: {
-        select: { modules: true, assignments: true }
+        select: { enrollments: true }
+      },
+      curriculum: {
+        include: {
+          _count: {
+            select: { modules: true, assignments: true }
+          }
+        }
       }
     },
     orderBy: { title: 'asc' }
@@ -18,15 +25,15 @@ export default async function CoursesPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-            <h1 className="text-3xl font-bold text-foreground">Curriculum Management</h1>
-            <p className="text-text-muted">Manage courses, modules, and lessons.</p>
+          <h1 className="text-3xl font-bold text-foreground">Curriculum Management</h1>
+          <p className="text-text-muted">Manage courses, modules, and lessons.</p>
         </div>
         <Link
-            href="/admin/courses/new"
-            className="flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-all"
+          href="/admin/courses/new"
+          className="flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-all"
         >
-            <Plus size={18} />
-            Create Course
+          <Plus size={18} />
+          Create Course
         </Link>
       </div>
 
@@ -39,30 +46,30 @@ export default async function CoursesPage() {
           >
             <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{course.title}</h3>
             <p className="text-sm text-text-muted line-clamp-2 mb-4 h-10">
-                {course.description || "No description provided."}
+              {course.description || "No description provided."}
             </p>
 
             <div className="flex gap-4 text-sm text-text-muted">
-                <div>
-                    <span className="block font-bold text-foreground">{course._count.modules}</span>
-                    Modules
-                </div>
-                <div>
-                    <span className="block font-bold text-foreground">{course._count.assignments}</span>
-                    Assignments
-                </div>
-                <div>
-                    <span className="block font-bold text-foreground">{course._count.students}</span>
-                    Students
-                </div>
+              <div>
+                <span className="block font-bold text-foreground">{course.curriculum?._count.modules || 0}</span>
+                Modules
+              </div>
+              <div>
+                <span className="block font-bold text-foreground">{course.curriculum?._count.assignments || 0}</span>
+                Assignments
+              </div>
+              <div>
+                <span className="block font-bold text-foreground">{course._count.enrollments}</span>
+                Students
+              </div>
             </div>
           </Link>
         ))}
 
         {courses.length === 0 && (
-            <div className="col-span-full text-center py-12 text-text-muted border border-dashed border-border rounded-xl">
-                <p>No courses found. Create your first course to get started.</p>
-            </div>
+          <div className="col-span-full text-center py-12 text-text-muted border border-dashed border-border rounded-xl">
+            <p>No courses found. Create your first course to get started.</p>
+          </div>
         )}
       </div>
     </div>

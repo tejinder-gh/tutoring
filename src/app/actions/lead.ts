@@ -43,17 +43,7 @@ export async function getLeadById(leadId: string) {
     include: {
       activities: {
         orderBy: { createdAt: "desc" },
-        // Use createdBy relationship if we had one in LeadActivity pointing to User
-        // Checking schema: createdBy is String, not a relation? Let's check schema again if needed.
-        // Schema Analysis earlier: `createdBy String`. It does NOT have a @relation.
-        // We will just display the ID or fetch generic user?
-        // Best effort: we'll store user NAME in 'createdBy' for display or just ID.
-        // Actually, let's fix the schema later if needed. For now, it's just a string ID.
       },
-      assignedToUser: { // Assuming generic 'assignedTo' might be relation? No, schema was `assignedTo String?`
-         // Schema check: `assignedTo String?`. No relation defined in provided schema text.
-         // We'll skip relation include.
-      }
     },
   });
 }

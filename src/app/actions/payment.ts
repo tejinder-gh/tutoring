@@ -7,7 +7,6 @@ import crypto from "crypto";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import Razorpay from "razorpay";
-import { AuditAction, AuditResource, logActivity } from "@/lib/audit";
 
 // Initialize Razorpay
 // Note: In production, these should be in .env.
@@ -169,6 +168,7 @@ export async function verifyPayment(
           message: notifMessage,
           type: "SUCCESS",
           link: `/student/learn/${course.id}`,
+        }
       });
 
       return { success: true };

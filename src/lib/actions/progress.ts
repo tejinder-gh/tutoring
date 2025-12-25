@@ -19,20 +19,24 @@ export async function getEnrolledCourses() {
     include: {
       course: {
         include: {
-          modules: {
+          curriculum: {
             include: {
-              lessons: {
-                select: {
-                  id: true,
-                  lessonProgress: {
-                    where: { userId: session.user.id },
-                    select: { completed: true },
+              modules: {
+                include: {
+                  lessons: {
+                    select: {
+                      id: true,
+                      lessonProgress: {
+                        where: { userId: session.user.id },
+                        select: { completed: true },
+                      },
+                    },
                   },
                 },
+                orderBy: { order: "asc" },
               },
-            },
-            orderBy: { order: "asc" },
-          },
+            }
+          }
         },
       },
     },
@@ -41,7 +45,8 @@ export async function getEnrolledCourses() {
   // Calculate progress for each course
   return enrollments.map((enrollment) => {
     const course = enrollment.course;
-    const allLessons = course.modules.flatMap((m) => m.lessons);
+    const modules = course.curriculum?.modules || [];
+    const allLessons = modules.flatMap((m) => m.lessons);
     const completedLessons = allLessons.filter(
       (l) => l.lessonProgress?.[0]?.completed
     ).length;
@@ -75,27 +80,32 @@ export async function getCourseWithProgress(courseId: string) {
   const course = await prisma.course.findUnique({
     where: { id: courseId },
     include: {
-      modules: {
+      curriculum: {
         include: {
-          lessons: {
-            include: {
-              resources: true,
-              lessonProgress: {
-                where: { userId: session.user.id },
-              },
+            modules: {
+                include: {
+                lessons: {
+                    include: {
+                    resources: true,
+                    lessonProgress: {
+                        where: { userId: session.user.id },
+                    },
+                    },
+                    orderBy: { order: "asc" },
+                },
+                },
+                orderBy: { order: "asc" },
             },
-            orderBy: { order: "asc" },
-          },
-        },
-        orderBy: { order: "asc" },
-      },
+        }
+      }
     },
   });
 
   if (!course) return null;
 
   // Transform to include progress state
-  const modulesWithProgress = course.modules.map((module) => ({
+  const modules = course.curriculum?.modules || [];
+  const modulesWithProgress = modules.map((module) => ({
     ...module,
     lessons: module.lessons.map((lesson) => ({
       id: lesson.id,
@@ -142,7 +152,11 @@ export async function getLesson(lessonId: string) {
       resources: true,
       module: {
         include: {
-          course: { select: { id: true, title: true, slug: true } },
+          curriculum: {
+             include: {
+                 course: { select: { id: true, title: true, slug: true } },
+             }
+          },
           lessons: {
             select: { id: true, title: true, order: true },
             orderBy: { order: "asc" },
@@ -170,7 +184,7 @@ export async function getLesson(lessonId: string) {
     content: lesson.content,
     videoUrl: lesson.videoUrl,
     resources: lesson.resources,
-    course: lesson.module.course,
+    course: lesson.module.curriculum.course,
     moduleTitle: lesson.module.title,
     completed: lesson.lessonProgress?.[0]?.completed ?? false,
     watchTime: lesson.lessonProgress?.[0]?.watchTime ?? 0,

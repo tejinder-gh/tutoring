@@ -142,11 +142,15 @@ export async function getAllHighlights() {
             select: {
               id: true,
               title: true,
-              course: {
+              curriculum: {
                 select: {
-                  id: true,
-                  title: true,
-                },
+                    course: {
+                        select: {
+                        id: true,
+                        title: true,
+                        },
+                    },
+                }
               },
             },
           },
@@ -258,11 +262,15 @@ export async function getUserBookmarks() {
             select: {
               id: true,
               title: true,
-              course: {
+              curriculum: {
                 select: {
-                  id: true,
-                  title: true,
-                },
+                    course: {
+                        select: {
+                        id: true,
+                        title: true,
+                        },
+                    },
+                }
               },
             },
           },

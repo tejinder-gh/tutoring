@@ -46,7 +46,7 @@ export default async function HighlightsPage() {
             {highlights.map((highlight) => (
               <Link
                 key={highlight.id}
-                href={`/student/learn/${highlight.lesson.module.course.id}/${highlight.lessonId}`}
+                href={`/student/learn/${highlight.lesson.module.curriculum.course.id}/${highlight.lessonId}`}
                 className="block p-6 bg-card border border-border rounded-xl hover:border-primary/50 transition-all hover:shadow-lg group"
               >
                 <div className="flex items-start gap-4">
@@ -57,7 +57,7 @@ export default async function HighlightsPage() {
 
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-text-muted font-bold mb-2">
-                      {highlight.lesson.module.course.title} / {highlight.lesson.title}
+                      {highlight.lesson.module.curriculum.course.title} / {highlight.lesson.title}
                     </p>
 
                     <blockquote className="text-lg font-medium text-foreground mb-3 relative pl-4 italic">

@@ -26,11 +26,19 @@ export async function createQuiz(data: {
   }
 
   try {
+    const curriculum = await prisma.curriculum.findUnique({
+        where: { courseId: data.courseId }
+    });
+
+    if (!curriculum) {
+        return { success: false, error: "Curriculum not found for this course" };
+    }
+
     const quiz = await prisma.quiz.create({
       data: {
         title: data.title,
         description: data.description,
-        courseId: data.courseId,
+        curriculumId: curriculum.id,
         lessonId: data.lessonId || null,
         duration: data.duration || null,
         passingScore: data.passingScore ?? 70,
@@ -193,14 +201,17 @@ export async function deleteQuestion(questionId: string) {
 export async function getAllQuizzes() {
   const quizzes = await prisma.quiz.findMany({
     include: {
-      course: { select: { id: true, title: true } },
+      curriculum: { select: { course: { select: { id: true, title: true } } } },
       lesson: { select: { id: true, title: true } },
       _count: { select: { questions: true, attempts: true } },
     },
     orderBy: { createdAt: "desc" },
   });
 
-  return quizzes;
+  return quizzes.map(q => ({
+      ...q,
+      course: q.curriculum?.course || null
+  }));
 }
 
 /**
@@ -210,7 +221,7 @@ export async function getQuizWithQuestions(quizId: string) {
   const quiz = await prisma.quiz.findUnique({
     where: { id: quizId },
     include: {
-      course: { select: { id: true, title: true } },
+      curriculum: { select: { course: { select: { id: true, title: true } } } },
       lesson: { select: { id: true, title: true } },
       questions: {
         include: { options: { orderBy: { order: "asc" } } },
@@ -220,7 +231,8 @@ export async function getQuizWithQuestions(quizId: string) {
     },
   });
 
-  return quiz;
+  if (!quiz) return null;
+  return { ...quiz, course: quiz.curriculum?.course };
 }
 
 // =============================================================================
@@ -237,7 +249,7 @@ export async function getQuizForStudent(quizId: string) {
   const quiz = await prisma.quiz.findUnique({
     where: { id: quizId, isActive: true },
     include: {
-      course: { select: { id: true, title: true } },
+      curriculum: { select: { course: { select: { id: true, title: true } } } },
       questions: {
         include: {
           options: {
@@ -250,7 +262,8 @@ export async function getQuizForStudent(quizId: string) {
     },
   });
 
-  return quiz;
+  if (!quiz) return null;
+  return { ...quiz, course: quiz.curriculum?.course };
 }
 
 /**
@@ -443,7 +456,7 @@ export async function getQuizzesForCourse(courseId: string) {
   if (!session?.user?.id) return [];
 
   const quizzes = await prisma.quiz.findMany({
-    where: { courseId, isActive: true },
+    where: { curriculum: { courseId }, isActive: true },
     include: {
       lesson: { select: { id: true, title: true } },
       _count: { select: { questions: true } },

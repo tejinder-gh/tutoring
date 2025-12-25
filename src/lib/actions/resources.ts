@@ -39,7 +39,7 @@ export async function createResource(data: {
         mimeType: data.mimeType,
         isPublic: data.isPublic ?? false,
         uploadedById: session.user.id,
-        courseId: data.courseId,
+        curriculumId: data.courseId ? (await prisma.curriculum.findUnique({ where: { courseId: data.courseId } }))?.id : undefined,
         lessonId: data.lessonId,
         quizId: data.quizId,
         assignmentId: data.assignmentId,
@@ -162,7 +162,11 @@ export async function getAllResources(filters?: {
   }
 
   if (filters?.entityType && filters?.entityId) {
-    where[`${filters.entityType}Id`] = filters.entityId;
+    if (filters.entityType === 'course') {
+        where.curriculum = { courseId: filters.entityId };
+    } else {
+        where[`${filters.entityType}Id`] = filters.entityId;
+    }
   }
 
   const resources = await prisma.resource.findMany({
@@ -171,8 +175,8 @@ export async function getAllResources(filters?: {
       uploadedBy: {
         select: { id: true, name: true, email: true },
       },
-      course: {
-        select: { id: true, title: true },
+      curriculum: {
+        select: { course: { select: { id: true, title: true } } },
       },
       lesson: {
         select: { id: true, title: true },
@@ -187,7 +191,10 @@ export async function getAllResources(filters?: {
     orderBy: { createdAt: "desc" },
   });
 
-  return resources;
+  return resources.map(r => ({
+      ...r,
+      course: r.curriculum?.course || null
+  }));
 }
 
 /**
@@ -200,9 +207,12 @@ export async function getResourcesByEntity(
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  const where: any = {
-    [`${entityType}Id`]: entityId,
-  };
+  const where: any = {};
+  if (entityType === 'course') {
+      where.curriculum = { courseId: entityId };
+  } else {
+      where[`${entityType}Id`] = entityId;
+  }
 
   // Students can only see public resources
   const userRole = (session.user as any).role?.name;
@@ -239,9 +249,13 @@ export async function linkResourceToEntity(
   // TODO: Add permission check for admin/teacher roles
 
   try {
-    const updateData: any = {
-      [`${entityType}Id`]: entityId,
-    };
+    const updateData: any = {};
+    if (entityType === 'course') {
+        const c = await prisma.curriculum.findUnique({ where: { courseId: entityId } });
+        if (c) updateData.curriculumId = c.id;
+    } else {
+        updateData[`${entityType}Id`] = entityId;
+    }
 
     const resource = await prisma.resource.update({
       where: { id: resourceId },
@@ -271,9 +285,12 @@ export async function unlinkResourceFromEntity(
   // TODO: Add permission check for admin/teacher roles
 
   try {
-    const updateData: any = {
-      [`${entityType}Id`]: null,
-    };
+    const updateData: any = {};
+    if (entityType === 'course') {
+         updateData.curriculumId = null;
+    } else {
+         updateData[`${entityType}Id`] = null;
+    }
 
     const resource = await prisma.resource.update({
       where: { id: resourceId },

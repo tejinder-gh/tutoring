@@ -8,18 +8,28 @@ export default async function NewQuizPage() {
   await requirePermission("manage", "course");
 
   // Get courses for dropdown
-  const courses = await prisma.course.findMany({
+  // Get courses for dropdown
+  const coursesData = await prisma.course.findMany({
     where: { isActive: true },
     include: {
-      modules: {
+      curriculum: {
         include: {
-          lessons: { select: { id: true, title: true } },
-        },
-        orderBy: { order: "asc" },
-      },
+          modules: {
+            include: {
+              lessons: { select: { id: true, title: true } },
+            },
+            orderBy: { order: "asc" },
+          },
+        }
+      }
     },
     orderBy: { title: "asc" },
   });
+
+  const courses = coursesData.map(c => ({
+    ...c,
+    modules: c.curriculum?.modules || []
+  }));
 
   return (
     <div>

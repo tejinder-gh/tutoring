@@ -210,16 +210,20 @@ export async function getLessonsNeedingMigration() {
         select: {
           id: true,
           title: true,
-          course: {
+          curriculum: {
             select: {
-              id: true,
-              title: true,
-            },
+                course: {
+                    select: {
+                    id: true,
+                    title: true,
+                    },
+                },
+            }
           },
         },
       },
     },
-    orderBy: [{ module: { courseId: "asc" } }, { order: "asc" }],
+    orderBy: [{ module: { curriculum: { courseId: "asc" } } }, { order: "asc" }],
   });
 
   return lessons;

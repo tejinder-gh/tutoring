@@ -11,34 +11,38 @@ export default async function StudentAssignmentsPage() {
   const profile = await prisma.studentProfile.findUnique({
     where: { userId: session.user.id },
     include: {
-        batch: {
+      batch: {
+        include: {
+          course: {
             include: {
-                course: {
+              curriculum: {
+                include: {
+                  assignments: {
                     include: {
-                        assignments: {
-                            include: {
-                                submissions: {
-                                    where: { studentId: session.user.id }
-                                }
-                            }
-                        }
+                      submissions: {
+                        where: { studentId: session.user.id }
+                      }
                     }
+                  }
                 }
+              }
             }
+          }
         }
+      }
     }
   });
 
   if (!profile || !profile.batch) {
     return (
-        <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">Not Enrolled</h2>
-            <p className="text-text-muted">You are not currently enrolled in any active batch.</p>
-        </div>
+      <div className="text-center py-12">
+        <h2 className="text-xl font-semibold">Not Enrolled</h2>
+        <p className="text-text-muted">You are not currently enrolled in any active batch.</p>
+      </div>
     );
   }
 
-  const assignments = profile.batch.course.assignments;
+  const assignments = profile.batch.course.curriculum?.assignments || [];
 
   return (
     <div>
@@ -49,7 +53,7 @@ export default async function StudentAssignmentsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {assignments.map((assignment: any) => (
-           <AssignmentCard key={assignment.id} assignment={assignment} userId={session?.user?.id || ""} />
+          <AssignmentCard key={assignment.id} assignment={assignment} userId={session?.user?.id || ""} />
         ))}
         {assignments.length === 0 && <p>No assignments found for this course.</p>}
       </div>

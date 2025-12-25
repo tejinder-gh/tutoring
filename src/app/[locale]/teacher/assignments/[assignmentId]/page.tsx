@@ -12,7 +12,11 @@ export default async function GradingPage(props: PageProps) {
     const assignment = await prisma.assignment.findUnique({
         where: { id: params.assignmentId },
         include: {
-            course: true,
+            curriculum: {
+                include: {
+                    course: true
+                }
+            },
             submissions: {
                 include: {
                     student: true
@@ -30,7 +34,7 @@ export default async function GradingPage(props: PageProps) {
                     <ArrowLeft size={16} /> Back to List
                 </Link>
                 <h1 className="text-3xl font-bold">{assignment.title}</h1>
-                <p className="text-text-muted">{assignment.course.title}</p>
+                <p className="text-text-muted">{assignment.curriculum?.course.title}</p>
             </div>
 
             <div className="space-y-6">

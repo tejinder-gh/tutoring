@@ -30,7 +30,7 @@ type ResourceWithRelations = {
   mimeType: string | null;
   isPublic: boolean;
   createdAt: Date;
-  uploadedBy: { id: string; name: string; email: string } | null;
+  uploadedBy: { id: string; name: string | null; email: string | null } | null;
   course: { id: string; title: string } | null;
   lesson: { id: string; title: string } | null;
   quiz: { id: string; title: string } | null;

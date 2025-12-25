@@ -46,13 +46,13 @@ export default async function BookmarksPage() {
             {bookmarks.map((bookmark) => (
               <Link
                 key={bookmark.id}
-                href={`/student/learn/${bookmark.lesson.module.course.id}/${bookmark.lessonId}`}
+                href={`/student/learn/${bookmark.lesson.module.curriculum.course.id}/${bookmark.lessonId}`}
                 className="group p-6 bg-card border border-border rounded-xl hover:border-primary/50 transition-all hover:shadow-lg"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
                     <p className="text-xs text-primary font-bold mb-1">
-                      {bookmark.lesson.module.course.title} • {bookmark.lesson.module.title}
+                      {bookmark.lesson.module.curriculum.course.title} • {bookmark.lesson.module.title}
                     </p>
                     <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
                       {bookmark.lesson.title}

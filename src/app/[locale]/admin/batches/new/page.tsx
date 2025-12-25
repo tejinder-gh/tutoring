@@ -11,15 +11,15 @@ export default async function NewBatchPage() {
 
   if (courses.length === 0) {
     return (
-        <div className="max-w-2xl mx-auto py-8">
-            <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-6 rounded-xl">
-                <h2 className="text-xl font-bold mb-2">No Courses Found</h2>
-                <p>You need to create a course before you can create a batch.</p>
-                <Link href="/admin/courses" className="inline-block mt-4 text-sm underline hover:text-red-400">
-                    Go to Courses
-                </Link>
-            </div>
+      <div className="max-w-2xl mx-auto py-8">
+        <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-6 rounded-xl">
+          <h2 className="text-xl font-bold mb-2">No Courses Found</h2>
+          <p>You need to create a course before you can create a batch.</p>
+          <Link href="/admin/courses" className="inline-block mt-4 text-sm underline hover:text-red-400">
+            Go to Courses
+          </Link>
         </div>
+      </div>
     )
   }
 
@@ -90,6 +90,82 @@ export default async function NewBatchPage() {
                 name="endDate"
                 className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
               />
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-border">
+            <h3 className="text-lg font-semibold text-foreground">Financials</h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Batch Fee
+                </label>
+                <input
+                  type="number"
+                  name="fee"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="0.00"
+                  className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Fee Frequency
+                </label>
+                <select
+                  name="feeFrequency"
+                  className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="ONE_TIME">One Time</option>
+                  <option value="MONTHLY">Monthly</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Teacher Compensation (Fixed)
+                </label>
+                <input
+                  type="number"
+                  name="teacherCompensation"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Teacher Commission (Per Student)
+                </label>
+                <input
+                  type="number"
+                  name="teacherCommission"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Monthly Overhead Cost
+                </label>
+                <input
+                  type="number"
+                  name="monthlyOverHeadCost"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
             </div>
           </div>
 

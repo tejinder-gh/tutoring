@@ -378,43 +378,26 @@ async function main() {
         teachers: {
           connect: { id: teacher.teacherProfile.id }
         },
-        modules: {
-          create: offering.modules.map((mod, idx) => ({
-            title: mod.title,
-            order: idx + 1,
-            lessons: {
-              create: mod.lessons.map((lesson, lIdx) => ({
-                title: lesson.title,
-                order: lIdx + 1,
-                content: '<h1>Lesson Content</h1><p>Placeholder content...</p>',
-                // Removed nested creation of quizzes/assignments to avoid missing courseId error.
-                // These are handled in the Second Pass below.
-              }))
+        curriculum: {
+            create: {
+                description: `Curriculum for ${offering.title}`,
+                modules: {
+                  create: offering.modules.map((mod, idx) => ({
+                    title: mod.title,
+                    order: idx + 1,
+                    lessons: {
+                      create: mod.lessons.map((lesson, lIdx) => ({
+                        title: lesson.title,
+                        order: lIdx + 1,
+                        content: '<h1>Lesson Content</h1><p>Placeholder content...</p>',
+                      }))
+                    }
+                  }))
+                }
             }
-          }))
         }
       }
     })
-
-    // Check if we need to fix Course ID links for deeply nested creations that require it (like Quiz/Assignment often link to Course AND Lesson)
-    // In schema: Quiz has courseId AND lessonId? Yes.
-    // When creating nested in Lesson, lessonId is auto-set. courseId is NOT auto-set by Prisma unless explicitly passed or implied by parent.
-    // Since we are creating Course -> Module -> Lesson -> Quiz, the Quiz is nested in Lesson.
-    // However, Quiz ALSO has a courseId foreign key.
-    // Prisma *might* require us to connect the course explicitly if it can't infer it.
-    // But since we are inside `course.create`, we can't connect to the course being created easily in the same transaction for proper ID reference unless we use valid nested writes.
-    // `courseId` on `Quiz` is required.
-    // Nesting `quizzes` under `Lesson` creates the quiz with `lessonId`.
-    // But `courseId` needs to be provided.
-    // Prisma allows `course: { connect: { id: ... } }` but we don't have ID yet.
-    // BUT! Logic fix:
-    // We are creating the course. We can't link back to it in the same create tree efficiently for `courseId`.
-    // Actually, we can if we omit `courseId` in the `create` and rely on Prisma... but `courseId` is required.
-    // FIX: We should create Quizzes and Assignments AFTER the course is created, or finding a way to pass it.
-    // Easier approach: Let's create the course structure first, then iterate to add Quizzes/Assignments.
-
-    // Actually, let's keep it simple. I'll stick to the previous simple logic but for Quizzes/Assignments, I'll add them in a second pass for each course to ensure IDs are available.
-    // Or, I can update the schema to make courseId optional on Quiz if Lesson is present? No, schema is fixed.
 
     createdCourses.push(course);
     console.log(`✅ Course synced: ${course.title}`);
@@ -426,12 +409,13 @@ async function main() {
      const course = await prisma.course.findUnique({ where: { slug: offering.slug } });
      if (!course) continue;
 
+     const curriculum = await prisma.curriculum.findUnique({ where: { courseId: course.id } });
+     if (!curriculum) continue;
+
      for (const mod of offering.modules) {
         // Find module
-        // We can't query by name easily, modules are not unique by name globally.
-        // We can fetch modules for the course.
         const dbModules = await prisma.module.findMany({
-            where: { courseId: course.id, title: mod.title },
+            where: { curriculumId: curriculum.id, title: mod.title },
             include: { lessons: true }
         });
 
@@ -455,7 +439,7 @@ async function main() {
                         data: {
                             title: text,
                             lessonId: dbLesson.id,
-                            courseId: course.id,
+                            curriculumId: curriculum.id,
                             questions: {
                                 create: lesson.quiz.questions.map((q, i) => ({
                                     text: q.text,
@@ -486,7 +470,7 @@ async function main() {
                              description: lesson.assignment.description,
                              dueInDays: lesson.assignment.dueInDays,
                              lessonId: dbLesson.id,
-                             courseId: course.id
+                             curriculumId: curriculum.id
                          }
                      })
                      console.log(`   + Added Assignment to ${lesson.title}`);

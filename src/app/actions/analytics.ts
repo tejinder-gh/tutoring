@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { addDays, endOfDay, endOfWeek, endOfYear, format, startOfDay, startOfMonth, startOfWeek, startOfYear, subDays, subMonths, subWeeks, subYears } from "date-fns";
+import { unstable_cache } from "next/cache";
 
 export async function getStudentAnalytics() {
   const session = await auth();
@@ -16,8 +17,8 @@ export async function getStudentAnalytics() {
   });
 
   const totalCourses = enrollments.length;
-  const completedCourses = enrollments.filter(e => e.status === 'COMPLETED').length;
-  const activeCourses = enrollments.filter(e => e.status === 'ACTIVE').length;
+  const completedCourses = enrollments.filter((e: any) => e.status === 'COMPLETED').length;
+  const activeCourses = enrollments.filter((e: any) => e.status === 'ACTIVE').length;
 
   // 2. Quiz Performance (Recent 5)
   const quizAttempts = await prisma.quizAttempt.findMany({
@@ -27,7 +28,7 @@ export async function getStudentAnalytics() {
     include: { quiz: { select: { title: true } } }
   });
 
-  const recentQuizScores = quizAttempts.map(attempt => ({
+  const recentQuizScores = quizAttempts.map((attempt: any) => ({
     name: attempt.quiz.title,
     score: attempt.score || 0,
     total: 100 // Assuming percentage
@@ -41,7 +42,7 @@ export async function getStudentAnalytics() {
       orderBy: { date: 'desc' }
   });
 
-  const presentCount = attendance.filter(a => a.status === 'PRESENT').length;
+  const presentCount = attendance.filter((a: any) => a.status === 'PRESENT').length;
   const totalTracked = attendance.length;
   const attendanceRate = totalTracked > 0 ? (presentCount / totalTracked) * 100 : 100;
 
@@ -57,67 +58,75 @@ export async function getStudentAnalytics() {
   };
 }
 
+const getCachedAdminAnalyticsData = unstable_cache(
+    async () => {
+        // 1. Monthly Revenue (Last 6 months)
+        const revenueData = [];
+        for (let i = 5; i >= 0; i--) {
+            const date = subMonths(new Date(), i);
+            const start = startOfMonth(date);
+            const nextMonth = startOfMonth(addDays(new Date(date.getFullYear(), date.getMonth() + 1, 0), 1));
+
+            const monthlyRevenue = await prisma.paymentReceipts.aggregate({
+                _sum: { amountPaid: true },
+                where: {
+                    paymentDate: {
+                        gte: start,
+                        lt: nextMonth
+                    }
+                }
+            });
+
+            revenueData.push({
+                name: format(date, 'MMM'),
+                revenue: Number(monthlyRevenue._sum.amountPaid || 0)
+            });
+        }
+
+        // 2. Total Stats
+        const totalStudents = await prisma.user.count({ where: { roleId: { not: null } } }); // Approximation
+        const totalCourses = await prisma.course.count();
+        const totalRevenue = await prisma.paymentReceipts.aggregate({ _sum: { amountPaid: true } });
+
+        // 3. Top Courses by Enrollment
+        const popularCourses = await prisma.enrollment.groupBy({
+            by: ['courseId'],
+            _count: { courseId: true },
+            orderBy: {
+                _count: { courseId: 'desc' }
+            },
+            take: 5
+        });
+
+        const enrichedPopularCourses = (await Promise.all(popularCourses.map(async (item: any) => {
+            if (!item.courseId) return null;
+            const course = await prisma.course.findUnique({ where: { id: item.courseId }, select: { title: true } });
+            return {
+                name: course?.title || 'Unknown',
+                students: item._count.courseId
+            };
+        }))).filter((item): item is NonNullable<typeof item> => item !== null);
+
+        return {
+            revenueData,
+            overview: {
+                totalStudents,
+                totalCourses,
+                totalRevenue: Number(totalRevenue._sum.amountPaid || 0)
+            },
+            popularCourses: enrichedPopularCourses
+        };
+    },
+    ['admin-analytics'],
+    { revalidate: 3600, tags: ['analytics'] }
+);
+
 export async function getAdminAnalytics() {
     const session = await auth();
     // In real app, check admin role
     if (!session?.user?.id) return null;
 
-    // 1. Monthly Revenue (Last 6 months)
-    const revenueData = [];
-    for (let i = 5; i >= 0; i--) {
-        const date = subMonths(new Date(), i);
-        const start = startOfMonth(date);
-        const nextMonth = startOfMonth(addDays(new Date(date.getFullYear(), date.getMonth() + 1, 0), 1));
-
-        const monthlyRevenue = await prisma.paymentReceipts.aggregate({
-            _sum: { amountPaid: true },
-            where: {
-                paymentDate: {
-                    gte: start,
-                    lt: nextMonth
-                }
-            }
-        });
-
-        revenueData.push({
-            name: format(date, 'MMM'),
-            revenue: Number(monthlyRevenue._sum.amountPaid || 0)
-        });
-    }
-
-    // 2. Total Stats
-    const totalStudents = await prisma.user.count({ where: { roleId: { not: null } } }); // Approximation
-    const totalCourses = await prisma.course.count();
-    const totalRevenue = await prisma.paymentReceipts.aggregate({ _sum: { amountPaid: true } });
-
-    // 3. Top Courses by Enrollment
-    const popularCourses = await prisma.enrollment.groupBy({
-        by: ['courseId'],
-        _count: { courseId: true },
-        orderBy: {
-            _count: { courseId: 'desc' }
-        },
-        take: 5
-    });
-
-    const enrichedPopularCourses = (await Promise.all(popularCourses.map(async (item) => {
-        if (!item.courseId) return null;
-        const course = await prisma.course.findUnique({ where: { id: item.courseId }, select: { title: true } });
-        return {
-            name: course?.title || 'Unknown',
-            students: item._count.courseId
-        };
-    }))).filter((item): item is NonNullable<typeof item> => item !== null);
-
-    return {
-        revenueData,
-        overview: {
-            totalStudents,
-            totalCourses,
-            totalRevenue: Number(totalRevenue._sum.amountPaid || 0)
-        },
-        popularCourses: enrichedPopularCourses
-    };
+    return getCachedAdminAnalyticsData();
 }
 
 export type TrendPeriod = 'DAILY' | 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY' | 'YEARLY';
@@ -145,78 +154,83 @@ function calculateTrend(current: number, previous: number): TrendMetric {
     };
 }
 
+const getCachedDashboardMetricsData = unstable_cache(
+    async (period: TrendPeriod) => {
+        const now = new Date();
+        let currentStart: Date, currentEnd: Date, previousStart: Date, previousEnd: Date;
+
+        switch (period) {
+            case 'DAILY':
+                currentStart = startOfDay(now);
+                currentEnd = endOfDay(now);
+                previousStart = subDays(currentStart, 1);
+                previousEnd = subDays(currentEnd, 1);
+                break;
+            case 'WEEKLY':
+                currentStart = startOfWeek(now, { weekStartsOn: 1 });
+                currentEnd = endOfWeek(now, { weekStartsOn: 1 });
+                previousStart = subWeeks(currentStart, 1);
+                previousEnd = subWeeks(currentEnd, 1);
+                break;
+            case 'BIWEEKLY':
+                currentStart = subDays(startOfDay(now), 14);
+                currentEnd = endOfDay(now);
+                previousStart = subDays(currentStart, 14);
+                previousEnd = subDays(currentEnd, 14);
+                break;
+            case 'YEARLY':
+                currentStart = startOfYear(now);
+                currentEnd = endOfYear(now);
+                previousStart = subYears(currentStart, 1);
+                previousEnd = subYears(currentEnd, 1);
+                break;
+            case 'MONTHLY':
+            default:
+                currentStart = startOfMonth(now);
+                currentEnd = endOfDay(now); // Up to now
+                previousStart = subMonths(currentStart, 1);
+                previousEnd = subMonths(currentEnd, 1);
+                break;
+        }
+
+        // 1. Revenue
+        const [currentRevenue, previousRevenue] = await Promise.all([
+            prisma.paymentReceipts.aggregate({
+                _sum: { amountPaid: true },
+                where: { paymentDate: { gte: currentStart, lte: currentEnd } }
+            }),
+            prisma.paymentReceipts.aggregate({
+                _sum: { amountPaid: true },
+                where: { paymentDate: { gte: previousStart, lte: previousEnd } }
+            })
+        ]);
+
+        // 2. Leads
+        const [currentLeads, previousLeads] = await Promise.all([
+            prisma.lead.count({ where: { createdAt: { gte: currentStart, lte: currentEnd } } }),
+            prisma.lead.count({ where: { createdAt: { gte: previousStart, lte: previousEnd } } })
+        ]);
+
+        // 3. New Students (Enrollments)
+        const [currentEnrollments, previousEnrollments] = await Promise.all([
+            prisma.enrollment.count({ where: { enrolledAt: { gte: currentStart, lte: currentEnd } } }),
+            prisma.enrollment.count({ where: { enrolledAt: { gte: previousStart, lte: previousEnd } } })
+        ]);
+
+        return {
+            revenue: calculateTrend(Number(currentRevenue._sum.amountPaid || 0), Number(previousRevenue._sum.amountPaid || 0)),
+            leads: calculateTrend(currentLeads, previousLeads),
+            enrollments: calculateTrend(currentEnrollments, previousEnrollments),
+            periodLabel: period
+        };
+    },
+    ['dashboard-metrics'],
+    { revalidate: 3600, tags: ['analytics'] }
+);
+
 export async function getDashboardMetrics(period: TrendPeriod = 'MONTHLY') {
     const session = await auth();
     if (!session?.user?.id) return null;
 
-    const now = new Date();
-    let currentStart: Date, currentEnd: Date, previousStart: Date, previousEnd: Date;
-
-    switch (period) {
-        case 'DAILY':
-            currentStart = startOfDay(now);
-            currentEnd = endOfDay(now);
-            previousStart = subDays(currentStart, 1);
-            previousEnd = subDays(currentEnd, 1);
-            break;
-        case 'WEEKLY':
-            currentStart = startOfWeek(now, { weekStartsOn: 1 });
-            currentEnd = endOfWeek(now, { weekStartsOn: 1 });
-            previousStart = subWeeks(currentStart, 1);
-            previousEnd = subWeeks(currentEnd, 1);
-            break;
-        case 'BIWEEKLY':
-            currentStart = subDays(startOfDay(now), 14);
-            currentEnd = endOfDay(now);
-            previousStart = subDays(currentStart, 14);
-            previousEnd = subDays(currentEnd, 14);
-            break;
-        case 'YEARLY':
-            currentStart = startOfYear(now);
-            currentEnd = endOfYear(now);
-            previousStart = subYears(currentStart, 1);
-            previousEnd = subYears(currentEnd, 1);
-            break;
-        case 'MONTHLY':
-        default:
-            currentStart = startOfMonth(now);
-            currentEnd = endOfDay(now); // Up to now
-            previousStart = subMonths(currentStart, 1);
-            previousEnd = subMonths(currentEnd, 1); // Note: this compares partial month to partial month if we want exact comparison, or full prev month. Let's compare "same period previous month"
-            // Actually simpler: Full Previous Month vs Current Month-to-date?
-            // User asked for "project if anything moved... on monthly basis".
-            // Let's do: Current Month vs Previous Month.
-            break;
-    }
-
-    // 1. Revenue
-    const [currentRevenue, previousRevenue] = await Promise.all([
-        prisma.paymentReceipts.aggregate({
-            _sum: { amountPaid: true },
-            where: { paymentDate: { gte: currentStart, lte: currentEnd } }
-        }),
-        prisma.paymentReceipts.aggregate({
-            _sum: { amountPaid: true },
-            where: { paymentDate: { gte: previousStart, lte: previousEnd } }
-        })
-    ]);
-
-    // 2. Leads
-    const [currentLeads, previousLeads] = await Promise.all([
-        prisma.lead.count({ where: { createdAt: { gte: currentStart, lte: currentEnd } } }),
-        prisma.lead.count({ where: { createdAt: { gte: previousStart, lte: previousEnd } } })
-    ]);
-
-    // 3. New Students (Enrollments)
-    const [currentEnrollments, previousEnrollments] = await Promise.all([
-        prisma.enrollment.count({ where: { enrolledAt: { gte: currentStart, lte: currentEnd } } }),
-        prisma.enrollment.count({ where: { enrolledAt: { gte: previousStart, lte: previousEnd } } })
-    ]);
-
-    return {
-        revenue: calculateTrend(Number(currentRevenue._sum.amountPaid || 0), Number(previousRevenue._sum.amountPaid || 0)),
-        leads: calculateTrend(currentLeads, previousLeads),
-        enrollments: calculateTrend(currentEnrollments, previousEnrollments),
-        periodLabel: period
-    };
+    return getCachedDashboardMetricsData(period);
 }

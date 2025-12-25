@@ -18,11 +18,15 @@ async function getCourse(slug: string) {
   const course = await prisma.course.findUnique({
     where: { slug },
     include: {
-      modules: {
+      curriculum: {
         include: {
-          lessons: true
-        },
-        orderBy: { order: 'asc' }
+          modules: {
+            include: {
+              lessons: true
+            },
+            orderBy: { order: 'asc' }
+          }
+        }
       },
       teachers: {
         include: {
@@ -219,7 +223,7 @@ export default async function CoursePage({ params }: Props) {
         <div className="container mx-auto px-6 max-w-5xl">
           <h2 className="text-4xl font-black mb-16">{t("curriculum")}</h2>
           <div className="space-y-6">
-            {course.modules.map((module) => (
+            {course.curriculum?.modules.map((module) => (
               <div key={module.id} className="border border-border rounded-3xl overflow-hidden bg-accent/5 backdrop-blur-sm">
                 <div className="p-8 flex items-center justify-between bg-accent/10">
                   <h3 className="text-xl font-black flex items-center gap-3">

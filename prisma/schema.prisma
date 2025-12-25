@@ -321,19 +321,36 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  modules         Module[]
   batches         Batch[]
-  assignments     Assignment[]
   teachers        TeacherProfile[]  @relation("CourseTeachers")
   roadmaps        Roadmap[]         @relation("CourseRoadmaps")
   enrollments     Enrollment[]
   announcements   Announcement[]
-  quizzes         Quiz[]
   paymentReceipts PaymentReceipts[]
-  resources       Resource[]
+
+  curriculum      Curriculum?
 
   @@index([slug])
   @@index([isActive, isFeatured])
+}
+
+/// Curriculum container for a specific course
+/// Holds all modules, quizzes, assignments, and resources
+model Curriculum {
+  id          String   @id @default(cuid())
+  courseId    String   @unique
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  description String?
+
+  modules     Module[]
+  quizzes     Quiz[]
+  assignments Assignment[]
+  resources   Resource[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([courseId])
 }
 
 /// Course module - groups related lessons
@@ -342,15 +359,15 @@ model Module {
   id        String   @id @default(cuid())
   title     String
   order     Int      @default(0) /// Display order within course
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  curriculumId  String
+  curriculum    Curriculum   @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   lessons Lesson[]
 
-  @@index([courseId, order])
+  @@index([curriculumId, order])
 }
 
 /// Individual lesson within a module
@@ -407,15 +424,15 @@ model Assignment {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  courseId    String
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  curriculumId    String
+  curriculum      Curriculum   @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
   lessonId    String?
   lesson      Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   submissions Submission[]
   resources   Resource[]
 
-  @@index([courseId])
+  @@index([curriculumId])
   @@index([lessonId])
 }
 
@@ -461,8 +478,8 @@ model Quiz {
   id           String   @id @default(cuid())
   title        String
   description  String?
-  courseId     String
-  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  curriculumId     String
+  curriculum       Curriculum   @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
   lessonId     String?
   lesson       Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   duration     Int? /// Minutes allowed (null = unlimited)
@@ -475,7 +492,7 @@ model Quiz {
   attempts  QuizAttempt[]
   resources Resource[]
 
-  @@index([courseId])
+  @@index([curriculumId])
   @@index([lessonId])
 }
 
@@ -545,6 +562,12 @@ model QuestionResponse {
 // BATCH & ENROLLMENT MANAGEMENT
 // =============================================================================
 
+/// Frequency of fee payment
+enum FeeFrequency {
+  ONE_TIME
+  MONTHLY
+}
+
 /// A batch is a cohort of students studying a course together
 /// Example: "Web Dev Batch Jan 2024"
 model Batch {
@@ -559,6 +582,13 @@ model Batch {
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  // Financials
+  fee                 Decimal      @default(0.0)
+  feeFrequency        FeeFrequency @default(ONE_TIME)
+  teacherCompensation Decimal      @default(0.0) /// Fixed compensation
+  teacherCommission   Decimal      @default(0.0) /// Per student commission
+  monthlyOverHeadCost Decimal      @default(0.0) /// Operational costs per month
 
   students    StudentProfile[]
   enrollments Enrollment[]
@@ -581,6 +611,10 @@ model Enrollment {
   status           EnrollmentStatus @default(ACTIVE)
   completedAt      DateTime?
   certificateUrl   String? /// Generated certificate URL
+
+  // Financials
+  discount           Decimal? /// Discount amount or percentage for this enrollment
+  discountType       String?  /// "PERCENTAGE" or "FIXED" - optional, or just assume amount. keeping simple for now.
 
   @@unique([studentProfileId, courseId]) /// One enrollment per student per course
   @@index([status])
@@ -867,8 +901,8 @@ model Resource {
   mimeType    String? /// MIME type for uploads
 
   // Entity relationships (optional - can link to multiple)
-  courseId     String?
-  course       Course?     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  curriculumId     String?
+  curriculum       Curriculum?     @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
   lessonId     String?
   lesson       Lesson?     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   quizId       String?
@@ -883,7 +917,7 @@ model Resource {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@index([courseId])
+  @@index([curriculumId])
   @@index([lessonId])
   @@index([quizId])
   @@index([assignmentId])
