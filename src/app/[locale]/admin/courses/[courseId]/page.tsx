@@ -12,7 +12,8 @@ export default async function CourseDetailPage(props: PageProps) {
   const course = await prisma.course.findUnique({
     where: { id: params.courseId },
     include: {
-      curriculum: {
+      curriculums: {
+        where: { teacherId: null }, // Fetch default curriculum
         include: {
           modules: {
             orderBy: { order: "asc" },
@@ -29,6 +30,8 @@ export default async function CourseDetailPage(props: PageProps) {
   });
 
   if (!course) return <div>Course not found</div>;
+
+  const curriculum = course.curriculums[0];
 
   return (
     <div>
@@ -58,7 +61,7 @@ export default async function CourseDetailPage(props: PageProps) {
           </div>
 
           <div className="space-y-4">
-            {course.curriculum?.modules.map((module: any) => (
+            {curriculum?.modules.map((module: any) => (
               <div
                 key={module.id}
                 className="border border-border rounded-xl overflow-hidden bg-accent/10"
@@ -143,7 +146,7 @@ export default async function CourseDetailPage(props: PageProps) {
           <div className="bg-accent/20 border border-border p-6 rounded-xl">
             <h3 className="font-bold mb-4">Assignments</h3>
             <div className="space-y-4">
-              {course.curriculum?.assignments.map((assignment: any) => (
+              {curriculum?.assignments.map((assignment: any) => (
                 <div key={assignment.id} className="p-3 bg-background rounded-lg border border-border">
                   <h4 className="font-semibold text-sm">{assignment.title}</h4>
                   <p className="text-xs text-text-muted mt-1 truncate">{assignment.description}</p>
@@ -154,7 +157,7 @@ export default async function CourseDetailPage(props: PageProps) {
                   </div>
                 </div>
               ))}
-              {course.curriculum?.assignments.length === 0 && <p className="text-sm text-text-muted">No assignments yet.</p>}
+              {curriculum?.assignments.length === 0 && <p className="text-sm text-text-muted">No assignments yet.</p>}
             </div>
 
             <div className="mt-6 pt-6 border-t border-border">
@@ -184,11 +187,11 @@ export default async function CourseDetailPage(props: PageProps) {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-text-muted">Modules</span>
-                <span>{course.curriculum?.modules.length || 0}</span>
+                <span>{curriculum?.modules.length || 0}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-text-muted">Total Lessons</span>
-                <span>{course.curriculum?.modules.reduce((acc: number, m: any) => acc + m.lessons.length, 0) || 0}</span>
+                <span>{curriculum?.modules.reduce((acc: number, m: any) => acc + m.lessons.length, 0) || 0}</span>
               </div>
             </div>
           </div>

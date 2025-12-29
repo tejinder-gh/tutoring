@@ -9,18 +9,31 @@ export default async function TeacherAssignmentsPage() {
   if (!session?.user) return <div>Unauthorized</div>;
 
   // Fetch courses taught by this teacher
+  // 1. Get Teacher Profile ID
   const teacherProfile = await prisma.teacherProfile.findUnique({
     where: { userId: session.user.id },
+    select: { id: true }
+  });
+
+  if (!teacherProfile) {
+    return <div>Teacher profile not found.</div>;
+  }
+
+  // 2. Get Courses with Effective Curriculum (Teacher's version OR Default)
+  const courses = await prisma.course.findMany({
+    where: { teachers: { some: { id: teacherProfile.id } } },
     include: {
-      courses: {
+      curriculums: {
+        where: {
+          OR: [
+            { teacherId: teacherProfile.id },
+            { teacherId: null }
+          ]
+        },
         include: {
-          curriculum: {
+          assignments: {
             include: {
-              assignments: {
-                include: {
-                  _count: { select: { submissions: true } }
-                }
-              }
+              _count: { select: { submissions: true } }
             }
           }
         }
@@ -28,13 +41,14 @@ export default async function TeacherAssignmentsPage() {
     }
   });
 
-  if (!teacherProfile) {
-    return <div>Teacher profile not found.</div>;
-  }
+  const assignments = courses.flatMap(c => {
+    // Prefer teacher's version, fallback to default (null)
+    const effectiveCurriculum =
+      c.curriculums.find(curr => curr.teacherId === teacherProfile.id) ||
+      c.curriculums.find(curr => curr.teacherId === null);
 
-  const assignments = teacherProfile.courses.flatMap(c =>
-    (c.curriculum?.assignments || []).map(a => ({ ...a, courseTitle: c.title }))
-  );
+    return (effectiveCurriculum?.assignments || []).map(a => ({ ...a, courseTitle: c.title }));
+  });
 
   return (
     <div>

@@ -1,6 +1,6 @@
 export const siteConfig = {
-  name: "Future Ready Academy",
-  shortName: "Future Ready",
+  name: "big O  Academy",
+  shortName: "big O ",
   description: "Master production-grade engineering through hands-on projects, structured mentorship, and proven career outcomes.",
   address: "Tuition Market, Model Town, Ludhiana",
   contact: {

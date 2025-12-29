@@ -1,13 +1,17 @@
-
 import {
+  EnrollmentStatus,
+  LeadSource,
+  LeadStatus,
   Level,
+  NotificationType,
   PrismaClient
 } from '@prisma/client';
+import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 // ===========================================================================
-// DATA SOURCE (Moved from messages/en.json)
+// DATA SOURCE
 // ===========================================================================
 const COURSES_DATA: Record<string, any> = {
   "introductory": {
@@ -503,14 +507,17 @@ const COURSES_DATA: Record<string, any> = {
 
 
 async function main() {
-  console.log('🌱 Starting seed from static details...');
+  console.log('🌱 Starting seed...');
 
   // ===========================================================================
-  // 1. Create Users & Profiles
+  // 1. Create Roles & Permissions
   // ===========================================================================
-  const HASHED_PASSWORD = "$2b$10$ZpMeeu9BpOIiKFVAHt7kEuQXKZP8Nl3TChHgxaDfqXF8o7DyKHxNm";
 
-  // create roles
+  const PASSWORD = "password123";
+  // Hashed password for "password123"
+  // const HASHED_PASSWORD = "$2b$10$ZpMeeu9BpOIiKFVAHt7kEuQXKZP8Nl3TChHgxaDfqXF8o7DyKHxNm";
+  const HASHED_PASSWORD = await hash(PASSWORD, 12);
+
   const ROLES = [
       'DIRECTOR', 'GENERAL_MANAGER', 'ADMIN', 'HR_MANAGER', 'PAYROLL_MANAGER',
       'BUSINESS_ANALYST', 'DIGITAL_MARKETING', 'TEACHER', 'BACKOFFICE', 'STUDENT'
@@ -561,6 +568,10 @@ async function main() {
   console.log('✅ Permissions seeded');
 
 
+  // ===========================================================================
+  // 2. Create Users & Profiles
+  // ===========================================================================
+
   // DIRECTOR
   const director = await prisma.user.upsert({
       where: { email: 'director@future-ready.com' },
@@ -579,6 +590,21 @@ async function main() {
                   designation: 'Director'
               }
           }
+      }
+  });
+
+  // ADMIN
+  const admin = await prisma.user.upsert({
+      where: { email: 'admin@future-ready.com' },
+      update: {
+          password: HASHED_PASSWORD,
+          role: { connect: { name: 'ADMIN' } }
+      },
+      create: {
+          email: 'admin@future-ready.com',
+          name: 'Admin User',
+          password: HASHED_PASSWORD,
+          role: { connect: { name: 'ADMIN' } },
       }
   });
 
@@ -630,9 +656,32 @@ async function main() {
 
   if (!student.studentProfile) throw new Error("Student profile not created");
 
+  console.log('✅ Users created');
+
 
   // ===========================================================================
-  // 2. Generate Courses from STATIC DATA
+  // 3. Seed Salaries
+  // ===========================================================================
+  // Check if salary exists
+  const existingSalary = await prisma.salary.findFirst({
+      where: { teacherProfileId: teacher.teacherProfile.id }
+  });
+
+  if (!existingSalary) {
+      await prisma.salary.create({
+          data: {
+              teacherProfileId: teacher.teacherProfile.id,
+              baseSalary: 50000,
+              allowances: 5000,
+              effectiveFrom: new Date(),
+          }
+      });
+      console.log('✅ Salary created');
+  }
+
+
+  // ===========================================================================
+  // 4. Generate Courses from STATIC DATA
   // ===========================================================================
 
   const guessLevel = (slug: string): Level => {
@@ -719,9 +768,10 @@ async function main() {
 
 
       // Ensure Curriculum exists
-      let curriculum = await prisma.curriculum.findUnique({
+      let curriculum = await prisma.curriculum.findFirst({
           where: { courseId: course.id }
       });
+
 
       if (!curriculum) {
           curriculum = await prisma.curriculum.create({
@@ -790,7 +840,7 @@ async function main() {
   }
 
   // ===========================================================================
-  // 3. Create Roadmaps
+  // 5. Create Roadmaps
   // ===========================================================================
   const allCourses = await prisma.course.findMany();
   const roadmapName = "Full Engineering Proficiency";
@@ -799,24 +849,101 @@ async function main() {
       await prisma.roadmap.create({
           data: {
               name: roadmapName,
-              description: "Complete path from beginner to architect",
+              description: "The complete path to becoming a Senior Software Engineer.",
               courses: {
                   connect: allCourses.map(c => ({ id: c.id }))
               }
           }
       });
-      console.log("✅ Roadmap created");
+      console.log('✅ Roadmap created');
   }
+
+  // ===========================================================================
+  // 6. Create Leads (Marketing Test)
+  // ===========================================================================
+  await prisma.lead.create({
+    data: {
+      name: 'Interested Prospect',
+      phone: '1234567890',
+      email: 'prospect@gmail.com',
+      status: LeadStatus.NEW,
+      source: LeadSource.WEBSITE,
+      courseInterest: 'introductory'
+    }
+  });
+  console.log('✅ Demo lead created');
+
+
+  // ===========================================================================
+  // 7. Enroll Student (Test Enrollment)
+  // ===========================================================================
+  // Using 'introductory' as a default course test for student
+  const introCourse = await prisma.course.findUnique({ where: { slug: 'introductory' } });
+
+  if (introCourse && student.studentProfile) {
+    // Check if batch exists
+    let batch = await prisma.batch.findFirst({
+        where: { name: 'Intro-Jan-2025' }
+    });
+
+    if (!batch) {
+        batch = await prisma.batch.create({
+            data: {
+              name: 'Intro-Jan-2025',
+              startDate: new Date(),
+              courseId: introCourse.id,
+              students: {
+                  connect: { id: student.studentProfile.id }
+              }
+            }
+          });
+          console.log('✅ Batch created');
+    }
+
+    // Enroll student
+    await prisma.enrollment.upsert({
+      where: {
+        studentProfileId_courseId: {
+          studentProfileId: student.studentProfile.id,
+          courseId: introCourse.id
+        }
+      },
+      update: {
+        status: EnrollmentStatus.ACTIVE
+      },
+      create: {
+        studentProfileId: student.studentProfile.id,
+        courseId: introCourse.id,
+        batchId: batch.id,
+        status: EnrollmentStatus.ACTIVE
+      }
+    });
+
+    console.log('✅ Student enrolled in Introductory batch');
+  }
+
+  // ===========================================================================
+  // 8. Seed Notifications
+  // ===========================================================================
+  await prisma.notification.create({
+      data: {
+          userId: student.id,
+          title: "Welcome to big O ",
+          message: "We are glad to have you here. Check out your dashboard.",
+          type: NotificationType.INFO,
+          isRead: false
+      }
+  });
+  console.log('✅ Notification created');
 
   console.log('🏁 Seeding completed successfully');
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
+  .catch((e) => {
     console.error(e);
-    await prisma.$disconnect();
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });

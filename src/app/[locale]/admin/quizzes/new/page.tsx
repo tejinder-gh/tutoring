@@ -12,7 +12,8 @@ export default async function NewQuizPage() {
   const coursesData = await prisma.course.findMany({
     where: { isActive: true },
     include: {
-      curriculum: {
+      curriculums: {
+        where: { teacherId: null },
         include: {
           modules: {
             include: {
@@ -28,7 +29,7 @@ export default async function NewQuizPage() {
 
   const courses = coursesData.map(c => ({
     ...c,
-    modules: c.curriculum?.modules || []
+    modules: c.curriculums[0]?.modules || []
   }));
 
   return (

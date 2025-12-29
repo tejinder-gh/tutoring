@@ -12,6 +12,11 @@
   },
   "dependencies": {
     "@prisma/client": "^6.19.1",
+    "@tiptap/extension-image": "^3.14.0",
+    "@tiptap/extension-link": "^3.14.0",
+    "@tiptap/extension-placeholder": "^3.14.0",
+    "@tiptap/react": "^3.14.0",
+    "@tiptap/starter-kit": "^3.14.0",
     "@types/bcryptjs": "^2.4.6",
     "@uiw/react-md-editor": "^4.0.11",
     "@uploadthing/react": "^7.3.3",
@@ -56,5 +61,8 @@
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }

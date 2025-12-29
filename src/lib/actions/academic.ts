@@ -31,7 +31,7 @@ export async function createCourse(formData: FormData) {
       title: validation.data.title,
       description: validation.data.description || "",
       slug: validation.data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Date.now(),
-      curriculum: {
+      curriculums: {
           create: {}
       }
     },
@@ -44,7 +44,7 @@ export async function createCourse(formData: FormData) {
 export async function addModule(courseId: string, formData: FormData) {
     const title = formData.get("title") as string;
 
-    const curriculum = await prisma.curriculum.findUnique({ where: { courseId } });
+    const curriculum = await prisma.curriculum.findFirst({ where: { courseId, teacherId: null } });
     if (!curriculum) return; // Should handle error
 
     // Find current max order
@@ -89,7 +89,7 @@ export async function createAssignment(courseId: string, formData: FormData) {
     // Parse dueInDays to integer, default to null if not provided
     const dueInDays = dueInDaysStr ? parseInt(dueInDaysStr) : null;
 
-    const curriculum = await prisma.curriculum.findUnique({ where: { courseId } });
+    const curriculum = await prisma.curriculum.findFirst({ where: { courseId, teacherId: null } });
     if (!curriculum) return;
 
     await prisma.assignment.create({

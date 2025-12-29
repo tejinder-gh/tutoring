@@ -8,6 +8,16 @@ async function main() {
   const password = process.env.ADMIN_PASSWORD || 'admin123';
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  const adminRole = await prisma.role.upsert({
+    where: { name: 'ADMIN' },
+    update: {},
+    create: {
+      name: 'ADMIN',
+      description: 'System Administrator',
+      isSystem: true
+    }
+  });
+
   const user = await prisma.user.upsert({
     where: { email },
     update: {},
@@ -15,7 +25,8 @@ async function main() {
       email,
       name: 'Super Admin',
       password: hashedPassword,
-      role: 'ADMIN',
+      role: { connect: { id: adminRole.id } },
+      isVerified: true
     },
   });
 

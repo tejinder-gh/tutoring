@@ -27,7 +27,7 @@ export default async function AdminLayout({
             {children}
           </main>
           <footer className="border-t border-border p-6 text-center text-xs text-text-muted bg-background/50">
-            <p>&copy; {new Date().getFullYear()} Future Ready Tutoring. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} big O  Tutoring. All rights reserved.</p>
             <p className="mt-1">Admin Console v1.0.0</p>
           </footer>
         </div>

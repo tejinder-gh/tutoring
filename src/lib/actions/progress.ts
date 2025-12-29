@@ -17,9 +17,16 @@ export async function getEnrolledCourses() {
       status: "ACTIVE",
     },
     include: {
+      batch: { select: { teacherId: true } },
       course: {
         include: {
-          curriculum: {
+          curriculums: {
+            where: {
+                OR: [
+                    { teacherId: null },
+                    { status: "APPROVED" }
+                ]
+            },
             include: {
               modules: {
                 include: {
@@ -45,7 +52,14 @@ export async function getEnrolledCourses() {
   // Calculate progress for each course
   return enrollments.map((enrollment) => {
     const course = enrollment.course;
-    const modules = course.curriculum?.modules || [];
+    const teacherId = enrollment.batch?.teacherId;
+
+    // Find effective curriculum: Teacher's approved version > Default version
+    const effectiveCurriculum =
+        (teacherId ? course.curriculums.find(c => c.teacherId === teacherId && c.status === "APPROVED") : null) ||
+        course.curriculums.find(c => c.teacherId === null);
+
+    const modules = effectiveCurriculum?.modules || [];
     const allLessons = modules.flatMap((m) => m.lessons);
     const completedLessons = allLessons.filter(
       (l) => l.lessonProgress?.[0]?.completed
@@ -77,10 +91,30 @@ export async function getCourseWithProgress(courseId: string) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
+  // 1. Get student's batch teacher for this course
+  const enrollment = await prisma.enrollment.findUnique({
+    where: {
+      studentProfileId_courseId: {
+        studentProfileId: (await prisma.studentProfile.findUnique({ where: { userId: session.user.id }, select: { id: true } }))?.id || "",
+        courseId
+      }
+    },
+    select: { batch: { select: { teacherId: true } } }
+  });
+
+  const teacherId = enrollment?.batch?.teacherId;
+
+  // 2. Fetch course with relevant curriculums
   const course = await prisma.course.findUnique({
     where: { id: courseId },
     include: {
-      curriculum: {
+      curriculums: {
+        where: {
+          OR: [
+            { teacherId: null },
+            ...(teacherId ? [{ teacherId, status: "APPROVED" }] : [])
+          ]
+        },
         include: {
             modules: {
                 include: {
@@ -103,8 +137,13 @@ export async function getCourseWithProgress(courseId: string) {
 
   if (!course) return null;
 
+  // 3. Select Effective Curriculum
+  const effectiveCurriculum =
+      (teacherId ? course.curriculums.find(c => c.teacherId === teacherId && c.status === "APPROVED") : null) ||
+      course.curriculums.find(c => c.teacherId === null);
+
   // Transform to include progress state
-  const modules = course.curriculum?.modules || [];
+  const modules = effectiveCurriculum?.modules || [];
   const modulesWithProgress = modules.map((module) => ({
     ...module,
     lessons: module.lessons.map((lesson) => ({

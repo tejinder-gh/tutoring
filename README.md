@@ -1,4 +1,4 @@
-# Future Ready Web - Tutoring Platform
+# big O  Web - Tutoring Platform
 
 A modern, full-stack tutoring and education management platform built with Next.js 16, Prisma, and PostgreSQL.
 

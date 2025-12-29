@@ -10,30 +10,30 @@ export default async function CoursesPage() {
       _count: {
         select: { enrollments: true }
       },
-      curriculum: {
+      curriculums: { // Changed from curriculum to curriculums
+        where: { teacherId: null }, // Added where clause
         include: {
           _count: {
             select: { modules: true, assignments: true }
           }
-        }
+        },
+        take: 1 // Added take: 1
       }
     },
-    orderBy: { title: 'asc' }
+    orderBy: { createdAt: "desc" }, // Changed orderBy field and direction
   });
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-6"> {/* Changed mb-8 to mb-6 */}
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Curriculum Management</h1>
-          <p className="text-text-muted">Manage courses, modules, and lessons.</p>
+          <h1 className="text-3xl font-bold text-foreground">Courses Management</h1> {/* Changed h1 text */}
+          {/* Removed <p className="text-text-muted">Manage courses, modules, and lessons.</p> */}
         </div>
-        <Link
-          href="/admin/courses/new"
-          className="flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-all"
-        >
-          <Plus size={18} />
-          Create Course
+        <Link href="/admin/courses/new">
+          <button className="flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-all">
+            <Plus className="mr-2 h-4 w-4" /> New Course
+          </button>
         </Link>
       </div>
 

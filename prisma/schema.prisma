@@ -265,7 +265,9 @@ model TeacherProfile {
   referredBy   User?     @relation("ReferredBy", fields: [referredById], references: [id])
 
   courses  Course[] @relation("CourseTeachers")
+  batches  Batch[]
   salaries Salary[]
+  curriculums Curriculum[]
 
   @@index([domain])
 }
@@ -336,7 +338,7 @@ model Course {
   announcements   Announcement[]
   paymentReceipts PaymentReceipts[]
 
-  curriculum      Curriculum?
+  curriculums     Curriculum[]
 
   @@index([slug])
   @@index([isActive, isFeatured])
@@ -346,8 +348,14 @@ model Course {
 /// Holds all modules, quizzes, assignments, and resources
 model Curriculum {
   id          String   @id @default(cuid())
-  courseId    String   @unique
+  courseId    String
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  // Versioning fields
+  teacherId   String?  /// Null for Director's version, populated for Teacher's version
+  teacher     TeacherProfile? @relation(fields: [teacherId], references: [id])
+  status      String   @default("APPROVED") /// DRAFT, PENDING_APPROVAL, APPROVED, REJECTED
+  versionName String?  /// Optional name for the version
   description String?
 
   modules     Module[]
@@ -358,7 +366,9 @@ model Curriculum {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@unique([courseId, teacherId]) /// One active version per teacher per course
   @@index([courseId])
+  @@index([teacherId])
 }
 
 /// Course module - groups related lessons
@@ -389,6 +399,8 @@ model Lesson {
 
   // Deprecated: Will be removed after migration
   content String? /// Lesson content/notes (can be HTML or markdown)
+
+  richTextContent String? /// New rich text content (HTML/JSON from Tiptap)
 
   videoUrl  String? /// Video lesson URL
   order     Int      @default(0) /// Order within module
@@ -589,6 +601,8 @@ model Batch {
   schedule    Json? /// Weekly schedule (e.g., {"mon": "10:00-12:00", ...})
   courseId    String
   course      Course    @relation(fields: [courseId], references: [id])
+  teacherId   String?
+  teacher     TeacherProfile? @relation(fields: [teacherId], references: [id])
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

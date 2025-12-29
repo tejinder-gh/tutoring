@@ -39,7 +39,7 @@ export async function createResource(data: {
         mimeType: data.mimeType,
         isPublic: data.isPublic ?? false,
         uploadedById: session.user.id,
-        curriculumId: data.courseId ? (await prisma.curriculum.findUnique({ where: { courseId: data.courseId } }))?.id : undefined,
+        curriculumId: data.courseId ? (await prisma.curriculum.findFirst({ where: { courseId: data.courseId, teacherId: null } }))?.id : undefined,
         lessonId: data.lessonId,
         quizId: data.quizId,
         assignmentId: data.assignmentId,
@@ -251,7 +251,7 @@ export async function linkResourceToEntity(
   try {
     const updateData: any = {};
     if (entityType === 'course') {
-        const c = await prisma.curriculum.findUnique({ where: { courseId: entityId } });
+        const c = await prisma.curriculum.findFirst({ where: { courseId: entityId, teacherId: null } });
         if (c) updateData.curriculumId = c.id;
     } else {
         updateData[`${entityType}Id`] = entityId;

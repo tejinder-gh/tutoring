@@ -719,7 +719,7 @@
   },
   "login": {
     "title": "Sign in to your account",
-    "subtitle": "Future Ready Internal System",
+    "subtitle": "big O  Internal System",
     "emailLabel": "Email address",
     "passwordLabel": "Password",
     "submit": "Sign in"
@@ -730,7 +730,7 @@
   },
   "footer": {
     "description": "Empowering the next generation of software engineers with industry-ready skills.",
-    "copyright": "Future Ready Tutoring. All rights reserved.",
+    "copyright": "big O  Tutoring. All rights reserved.",
     "address": "Tution Market, Model Town, Ludhiana",
     "links": {
       "company": "Company",

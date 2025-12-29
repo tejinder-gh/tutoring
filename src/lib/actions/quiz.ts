@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { QuestionType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
+
+0912
 // =============================================================================
 // ADMIN/TEACHER ACTIONS
 // =============================================================================
@@ -26,8 +28,8 @@ export async function createQuiz(data: {
   }
 
   try {
-    const curriculum = await prisma.curriculum.findUnique({
-        where: { courseId: data.courseId }
+    const curriculum = await prisma.curriculum.findFirst({
+        where: { courseId: data.courseId, teacherId: null }
     });
 
     if (!curriculum) {
@@ -456,7 +458,7 @@ export async function getQuizzesForCourse(courseId: string) {
   if (!session?.user?.id) return [];
 
   const quizzes = await prisma.quiz.findMany({
-    where: { curriculum: { courseId }, isActive: true },
+    where: { curriculum: { courseId, teacherId: null }, isActive: true },
     include: {
       lesson: { select: { id: true, title: true } },
       _count: { select: { questions: true } },

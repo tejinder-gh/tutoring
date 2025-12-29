@@ -61,7 +61,7 @@ async function checkFeesDue() {
       await sendEmail({
         to: receipt.user.email,
         subject: isOverdue ? 'Overdue Fee Notice' : 'Fee Payment Reminder',
-        html: `<p>Dear ${receipt.user.name},</p><p>${message}</p><p>Regards,<br/>Future Ready Admin</p>`
+        html: `<p>Dear ${receipt.user.name},</p><p>${message}</p><p>Regards,<br/>big O  Admin</p>`
       });
 
       // 2. Create Notification for Student

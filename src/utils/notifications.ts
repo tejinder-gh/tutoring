@@ -24,7 +24,7 @@ export async function sendEmailNotification(lead: Lead): Promise<void> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Future Ready <notifications@futureready.com>',
+        from: 'big O  <notifications@futureready.com>',
         to: [toEmail],
         subject: `🔥 New Lead: ${lead.name}`,
         html: `

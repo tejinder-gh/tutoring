@@ -1,5 +1,6 @@
-
+import { getEffectiveCurriculum } from "@/app/actions/curriculum-versioning";
 import { auth } from "@/auth";
+import { CustomizeCurriculumButton } from "@/components/curriculum/CustomizeCurriculumButton";
 import { prisma } from "@/lib/prisma";
 import { ArrowLeft, FileText, Video } from "lucide-react";
 import Link from "next/link";
@@ -38,24 +39,12 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
 
   const course = await prisma.course.findUnique({
     where: { id: params.courseId },
-    include: {
-      curriculum: {
-        include: {
-          modules: {
-            orderBy: { order: "asc" },
-            include: {
-              lessons: true,
-            },
-          },
-          assignments: {
-            orderBy: { createdAt: 'desc' }
-          }
-        }
-      }
-    },
   });
 
   if (!course) return notFound();
+
+  const curriculum = await getEffectiveCurriculum(params.courseId);
+  const isCustomized = curriculum?.teacherId === teacherProfile.id;
 
   return (
     <div className="container mx-auto py-8">
@@ -69,10 +58,15 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-bold">{course.title}</h1>
+            <div className="flex items-center gap-2 mt-2">
+              {isCustomized && <span className="px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800 border border-amber-200">Custom Version: {curriculum?.status}</span>}
+              {!isCustomized && <span className="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-800 border border-gray-200">Standard Curriculum</span>}
+            </div>
             <p className="text-muted-foreground mt-2 max-w-2xl">
               {course.description}
             </p>
           </div>
+          <CustomizeCurriculumButton courseId={course.id} hasExistingVersion={isCustomized} />
         </div>
       </div>
 
@@ -84,7 +78,7 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
           </div>
 
           <div className="space-y-4">
-            {course.curriculum?.modules.map((module) => (
+            {curriculum?.modules.map((module: any) => (
               <div
                 key={module.id}
                 className="border rounded-xl overflow-hidden bg-muted/10"
@@ -99,7 +93,7 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
                 </div>
 
                 <div className="divide-y divide-border/50">
-                  {module.lessons.map((lesson) => (
+                  {module.lessons.map((lesson: any) => (
                     <div
                       key={lesson.id}
                       className="p-4 flex items-center gap-3 hover:bg-muted/5 text-sm"
@@ -110,6 +104,7 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
                         <FileText size={16} className="text-secondary" />
                       )}
                       <span>{lesson.title}</span>
+                      {lesson.richTextContent && <span className="ml-2 text-xs text-blue-600 bg-blue-50 px-1 rounded">Edited</span>}
                     </div>
                   ))}
                   {module.lessons.length === 0 && (
@@ -118,7 +113,7 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
                 </div>
               </div>
             ))}
-            {(!course.curriculum?.modules || course.curriculum.modules.length === 0) && (
+            {(!curriculum?.modules || curriculum.modules.length === 0) && (
               <div className="p-8 text-center border border-dashed rounded-lg bg-muted/10">
                 <p className="text-muted-foreground">No modules defined yet.</p>
               </div>
@@ -132,7 +127,7 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
           <div className="bg-muted/20 border p-6 rounded-xl">
             <h3 className="font-bold mb-4">Assignments</h3>
             <div className="space-y-4">
-              {course.curriculum?.assignments.map((assignment) => (
+              {curriculum?.assignments.map((assignment: any) => (
                 <div key={assignment.id} className="p-3 bg-background rounded-lg border shadow-sm">
                   <h4 className="font-semibold text-sm">{assignment.title}</h4>
                   <p className="text-xs text-muted-foreground mt-1 truncate">{assignment.description}</p>
@@ -143,7 +138,7 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
                   </div>
                 </div>
               ))}
-              {(!course.curriculum?.assignments || course.curriculum.assignments.length === 0) && <p className="text-sm text-muted-foreground">No assignments yet.</p>}
+              {(!curriculum?.assignments || curriculum.assignments.length === 0) && <p className="text-sm text-muted-foreground">No assignments yet.</p>}
             </div>
           </div>
 
@@ -152,11 +147,11 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Modules</span>
-                <span>{course.curriculum?.modules.length || 0}</span>
+                <span>{curriculum?.modules.length || 0}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Total Lessons</span>
-                <span>{course.curriculum?.modules.reduce((acc, m) => acc + m.lessons.length, 0) || 0}</span>
+                <span>{curriculum?.modules.reduce((acc: number, m: any) => acc + m.lessons.length, 0) || 0}</span>
               </div>
             </div>
           </div>

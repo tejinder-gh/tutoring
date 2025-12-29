@@ -15,7 +15,8 @@ export default async function StudentAssignmentsPage() {
         include: {
           course: {
             include: {
-              curriculum: {
+              curriculums: {
+                where: { teacherId: null }, // TODO: Handle teacher overrides
                 include: {
                   assignments: {
                     include: {
@@ -42,7 +43,7 @@ export default async function StudentAssignmentsPage() {
     );
   }
 
-  const assignments = profile.batch.course.curriculum?.assignments || [];
+  const assignments = profile.batch.course.curriculums[0]?.assignments || [];
 
   return (
     <div>
