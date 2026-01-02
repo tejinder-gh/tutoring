@@ -223,10 +223,28 @@ model User {
   discountedStudents StudentProfile[] @relation("DiscountBy")
   referredTeachers   TeacherProfile[] @relation("ReferredBy")
 
+  // Password reset tokens
+  passwordResetTokens PasswordResetToken[]
+
   @@index([email])
   @@index([roleId])
   @@index([isActive, isDeleted])
 }
+
+/// Token for password reset functionality
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique /// Unique reset token
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime /// Token expiration time
+  used      Boolean  @default(false) /// Has token been used
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+}
+
 
 /// Student-specific profile data
 /// Linked to User model via one-to-one relation

@@ -49,7 +49,7 @@ export default async function StaffDashboard() {
           <div>
             <p className="text-sm text-text-muted">Base Salary</p>
             <p className="font-bold">
-              {salaryStructure ? `$${Number(salaryStructure.baseSalary).toLocaleString()}` : "Not Set"}
+              {salaryStructure ? `₹${Number(salaryStructure.baseSalary).toLocaleString()}` : "Not Set"}
             </p>
           </div>
         </div>
