@@ -3,8 +3,62 @@
 import { auth } from "@/auth";
 import { AuditAction, AuditResource, logActivity } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
-import { LeadStatus } from "@prisma/client";
+import { LeadSource, LeadStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+
+/**
+ * Create a new lead
+ */
+export async function createLead(data: {
+  name: string;
+  email?: string;
+  phone: string;
+  source?: LeadSource;
+  notes?: string;
+  courseInterest?: string;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+  try {
+    const lead = await prisma.lead.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        source: data.source || "OTHER",
+        notes: data.notes,
+        courseInterest: data.courseInterest,
+        status: "NEW", // Default
+      },
+    });
+
+    // Log creation
+    await prisma.leadActivity.create({
+      data: {
+        leadId: lead.id,
+        type: "CREATED",
+        notes: "Lead created manually",
+        createdBy: session.user.id,
+      },
+    });
+
+    // Audit Log
+    await logActivity({
+      action: AuditAction.CREATE,
+      resource: AuditResource.LEAD,
+      details: `Created lead ${lead.name}`,
+      metadata: { leadId: lead.id },
+      userId: session.user.id
+    });
+
+    revalidatePath("/admin/leads");
+    return { success: true, data: lead };
+  } catch (error) {
+    console.error("Failed to create lead:", error);
+    return { success: false, error: "Failed to create lead" };
+  }
+}
 
 /**
  * Fetch paginated leads
