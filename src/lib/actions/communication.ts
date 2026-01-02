@@ -42,3 +42,58 @@ export async function createAnnouncement(formData: FormData) {
     revalidatePath("/teacher/announcements");
     revalidatePath("/student");
 }
+
+export async function getAdminQueries() {
+    const session = await auth();
+    // In real app, check for ADMIN or SUPPORT role
+    if (!session?.user) throw new Error("Unauthorized");
+
+    return await prisma.query.findMany({
+        orderBy: { createdAt: 'desc' },
+        include: {
+            student: {
+                select: {
+                    name: true,
+                    email: true
+                }
+            }
+        }
+    });
+}
+
+export async function resolveQuery(queryId: string) {
+    const session = await auth();
+    if (!session?.user) throw new Error("Unauthorized");
+
+    await prisma.query.update({
+        where: { id: queryId },
+        data: {
+            status: "RESOLVED",
+            resolvedById: session.user.id,
+            resolvedAt: new Date()
+        }
+    });
+
+    revalidatePath("/admin/support");
+    revalidatePath("/student/queries");
+    return true;
+}
+
+export async function createQueryReply(queryId: string, response: string) {
+    const session = await auth();
+    if (!session?.user) throw new Error("Unauthorized");
+
+    await prisma.query.update({
+        where: { id: queryId },
+        data: {
+            response,
+            status: "RESOLVED",
+            resolvedById: session.user.id,
+            resolvedAt: new Date()
+        }
+    });
+
+    revalidatePath("/admin/support");
+    revalidatePath("/student/queries");
+    return true;
+}

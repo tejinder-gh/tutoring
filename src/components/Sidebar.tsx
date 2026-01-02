@@ -17,7 +17,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 interface SidebarProps {
-  role: "ADMIN" | "TEACHER" | "STUDENT";
+  role: "ADMIN" | "TEACHER" | "STUDENT" | "STAFF";
 }
 
 export default function Sidebar({ role }: SidebarProps) {
@@ -47,6 +47,11 @@ export default function Sidebar({ role }: SidebarProps) {
       { href: "/student/schedule", label: "My Schedule", icon: Calendar },
       { href: "/student/payments", label: "Payments", icon: FileText },
     ],
+    STAFF: [
+      { href: "/staff", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/staff/finance", label: "My Payslips", icon: FileText },
+      { href: "/staff/profile", label: "My Profile", icon: Users },
+    ]
   };
 
   const navItems = links[role];
