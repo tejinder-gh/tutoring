@@ -1,12 +1,13 @@
 import { getAuditLogs } from "@/app/actions/audit";
 import { auth } from "@/auth";
 import { AuditLogTable } from "@/components/admin/AuditLogTable";
+import { requirePermission } from "@/lib/permissions";
 
 export default async function AuditPage({ searchParams }: { searchParams: { page?: string } }) {
   const session = await auth();
   if (!session?.user) return <div>Unauthorized</div>;
 
-  // await requirePermission("read", "system"); // or admin check
+  await requirePermission("read", "system");
 
   const page = Number(searchParams?.page) || 1;
   const { logs, total, totalPages } = await getAuditLogs(page);

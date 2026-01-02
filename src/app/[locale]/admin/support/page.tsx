@@ -1,6 +1,6 @@
+import { getAdminQueries } from "@/app/actions/communication";
 import { auth } from "@/auth";
-import { QueryList } from "@/components/Support/QueryList"; // We will create this
-import { getAdminQueries } from "@/lib/actions/communication"; // We will add this
+import { QueryList } from "@/components/Support/QueryList";
 import { requirePermission } from "@/lib/permissions";
 import { redirect } from "next/navigation";
 

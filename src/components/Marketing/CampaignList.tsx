@@ -1,10 +1,11 @@
 "use client";
 
-import { updateCampaignStatus } from "@/app/actions/marketing";
+import { deleteCampaign, updateCampaignStatus } from "@/app/actions/marketing";
 import { CampaignStatus } from "@prisma/client";
-import { Pause, Play, Target } from "lucide-react";
+import { Edit, Pause, Play, Target, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { CampaignAnalyticsModal } from "./CampaignAnalyticsModal";
+import { EditCampaignDialog } from "./EditCampaignDialog";
 
 interface Campaign {
   id: string;
@@ -19,10 +20,18 @@ interface Campaign {
 export function CampaignList({ initialCampaigns }: { initialCampaigns: Campaign[] }) {
   const [isPending, startTransition] = useTransition();
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
 
   const handleStatusChange = (id: string, newStatus: CampaignStatus) => {
     startTransition(async () => {
       await updateCampaignStatus(id, newStatus);
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    if (!confirm("Are you sure you want to delete this campaign?")) return;
+    startTransition(async () => {
+      await deleteCampaign(id);
     });
   };
 
@@ -84,6 +93,20 @@ export function CampaignList({ initialCampaigns }: { initialCampaigns: Campaign[
                     <Pause size={18} />
                   </button>
                 )}
+                <button
+                  onClick={() => setEditingCampaign(campaign)}
+                  disabled={isPending}
+                  className="p-2 hover:bg-blue-500/10 text-blue-500 rounded" title="Edit"
+                >
+                  <Edit size={18} />
+                </button>
+                <button
+                  onClick={() => handleDelete(campaign.id)}
+                  disabled={isPending}
+                  className="p-2 hover:bg-red-500/10 text-red-500 rounded" title="Delete"
+                >
+                  <Trash2 size={18} />
+                </button>
               </div>
             </div>
           </div>
@@ -101,6 +124,14 @@ export function CampaignList({ initialCampaigns }: { initialCampaigns: Campaign[
           campaign={selectedCampaign}
           isOpen={!!selectedCampaign}
           onClose={() => setSelectedCampaign(null)}
+        />
+      )}
+
+      {/* Edit Dialog */}
+      {editingCampaign && (
+        <EditCampaignDialog
+          campaign={editingCampaign}
+          onClose={() => setEditingCampaign(null)}
         />
       )}
     </>

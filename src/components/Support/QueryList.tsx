@@ -1,216 +1,234 @@
 "use client";
 
-import { createQueryReply, resolveQuery } from "@/lib/actions/communication";
-import { CheckCircle, Clock, MessageSquare, Search, X } from "lucide-react";
-import { useMemo, useState, useTransition } from "react";
+import { QueryWithDetails, replyToQuery, updateQueryStatus } from "@/app/actions/communication";
+import { QueryStatus } from "@prisma/client";
+import { format } from "date-fns";
+import { AlertCircle, CheckCircle, Clock, Filter, MessageSquare, Send, User } from "lucide-react";
+import { useState, useTransition } from "react";
 
-interface Query {
-  id: string;
-  subject: string;
-  message: string;
-  status: string;
-  priority: string;
-  createdAt: Date;
-  student: {
-    name: string;
-    email: string;
-  };
-  response?: string | null;
-}
-
-export function QueryList({ initialQueries }: { initialQueries: Query[] }) {
-  const [queries, setQueries] = useState(initialQueries);
-  const [selectedQuery, setSelectedQuery] = useState<Query | null>(null);
+export function QueryList({ initialQueries }: { initialQueries: QueryWithDetails[] }) {
+  const [filterStatus, setFilterStatus] = useState<QueryStatus | "ALL">("ALL");
+  const [selectedQuery, setSelectedQuery] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const [isPending, startTransition] = useTransition();
 
-  // Filter queries based on search term
-  const filteredQueries = useMemo(() => {
-    if (!searchTerm.trim()) return queries;
-    const term = searchTerm.toLowerCase();
-    return queries.filter(
-      (q) =>
-        q.subject.toLowerCase().includes(term) ||
-        q.message.toLowerCase().includes(term) ||
-        q.student.name.toLowerCase().includes(term) ||
-        q.student.email.toLowerCase().includes(term)
-    );
-  }, [queries, searchTerm]);
+  const filteredQueries = initialQueries.filter(
+    (q) => filterStatus === "ALL" || q.status === filterStatus
+  );
 
-  const handleResolve = async (id: string) => {
+  const handleStatusUpdate = (id: string, status: QueryStatus) => {
     startTransition(async () => {
-      const success = await resolveQuery(id);
-      if (success) {
-        setQueries(q => q.map(i => i.id === id ? { ...i, status: "RESOLVED" } : i));
-        if (selectedQuery?.id === id) {
-          setSelectedQuery(prev => prev ? { ...prev, status: "RESOLVED" } : null);
-        }
-      }
+      await updateQueryStatus(id, status);
     });
   };
 
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedQuery) return;
+    if (!selectedQuery || !replyText.trim()) return;
 
     startTransition(async () => {
-      const success = await createQueryReply(selectedQuery.id, replyText);
-      if (success) {
-        setQueries(q => q.map(i => i.id === selectedQuery.id ? { ...i, status: "RESOLVED", response: replyText } : i));
-        setSelectedQuery(prev => prev ? { ...prev, status: "RESOLVED", response: replyText } : null);
-        setReplyText("");
-      }
+      await replyToQuery(selectedQuery, replyText);
+      setReplyText("");
+      // potentially close expanded view or show success
     });
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
-      {/* List Queries */}
-      <div className="lg:col-span-1 bg-background border border-border rounded-xl flex flex-col overflow-hidden">
-        <div className="p-4 border-b border-border bg-accent/10">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted h-4 w-4" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search queries..."
-              className="w-full pl-9 pr-10 py-2 bg-background border border-border rounded-lg text-sm"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-foreground"
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
-          {searchTerm && (
-            <p className="text-xs text-text-muted mt-2">
-              Showing {filteredQueries.length} of {queries.length} queries
-            </p>
-          )}
+    <div className="space-y-6">
+      {/* Filters */}
+      <div className="flex items-center gap-4 bg-card p-4 rounded-xl border border-border">
+        <div className="flex items-center gap-2 text-text-muted">
+          <Filter size={18} />
+          <span className="text-sm font-medium">Filter Status:</span>
         </div>
-        <div className="flex-1 overflow-y-auto p-2 space-y-2">
-          {filteredQueries.map(q => (
-            <div
-              key={q.id}
-              onClick={() => setSelectedQuery(q)}
-              className={`p-4 rounded-lg cursor-pointer transition border ${selectedQuery?.id === q.id
-                ? "bg-primary/10 border-primary"
-                : "bg-card hover:bg-accent border-border"
+        <div className="flex gap-2">
+          {["ALL", "OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"].map((status) => (
+            <button
+              key={status}
+              onClick={() => setFilterStatus(status as any)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${filterStatus === status
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-accent hover:bg-accent/70 text-text-muted"
                 }`}
             >
-              <div className="flex justify-between items-start mb-2">
-                <span className={`text-xs px-2 py-0.5 rounded font-bold ${q.priority === 'URGENT' ? 'bg-red-500/20 text-red-500' :
-                  q.priority === 'HIGH' ? 'bg-orange-500/20 text-orange-500' :
-                    'bg-blue-500/20 text-blue-500'
-                  }`}>
-                  {q.priority}
-                </span>
-                <span className={`text-xs ${q.status === 'OPEN' ? 'text-yellow-500' : 'text-green-500'
-                  }`}>
-                  {q.status}
-                </span>
-              </div>
-              <h4 className="font-bold text-sm mb-1 truncate">{q.subject}</h4>
-              <p className="text-xs text-text-muted mb-2">{q.student.name}</p>
-              <div className="flex items-center gap-2 text-[10px] text-text-muted">
-                <Clock size={10} />
-                {new Date(q.createdAt).toLocaleDateString()}
-              </div>
-            </div>
+              {status.replace("_", " ")}
+            </button>
           ))}
-          {queries.length === 0 && (
-            <div className="p-8 text-center text-text-muted text-sm">
-              No queries found
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Detail View */}
-      <div className="lg:col-span-2 bg-background border border-border rounded-xl flex flex-col h-full overflow-hidden">
-        {selectedQuery ? (
-          <>
-            <div className="p-6 border-b border-border bg-accent/5">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h2 className="text-xl font-bold mb-2">{selectedQuery.subject}</h2>
-                  <div className="flex items-center gap-4 text-sm text-text-muted">
-                    <span className="flex items-center gap-1">
-                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
-                        {selectedQuery.student.name[0]}
+      {/* Query List */}
+      <div className="grid gap-4">
+        {filteredQueries.map((query) => (
+          <div
+            key={query.id}
+            className={`bg-card border rounded-xl overflow-hidden transition-all ${selectedQuery === query.id ? "ring-2 ring-primary/20 border-primary" : "border-border"
+              }`}
+          >
+            {/* Header / Summary Row */}
+            <div
+              className="p-4 flex items-start gap-4 cursor-pointer hover:bg-accent/5"
+              onClick={() => setSelectedQuery(selectedQuery === query.id ? null : query.id)}
+            >
+              {/* Priority Indicator */}
+              <div
+                className={`mt-1 w-2 h-2 rounded-full shrink-0 ${query.priority === "URGENT"
+                    ? "bg-red-500 animate-pulse"
+                    : query.priority === "HIGH"
+                      ? "bg-orange-500"
+                      : query.priority === "NORMAL"
+                        ? "bg-blue-500"
+                        : "bg-slate-400"
+                  }`}
+                title={`Priority: ${query.priority}`}
+              />
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start mb-1">
+                  <h3 className="font-bold text-foreground truncate pr-4">
+                    {query.subject}
+                  </h3>
+                  <span className="text-xs text-text-muted whitespace-nowrap">
+                    {format(new Date(query.createdAt), "MMM d, h:mm a")}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3 text-sm text-text-muted mb-2">
+                  <span className="flex items-center gap-1">
+                    <User size={14} />
+                    {query.student.name}
+                  </span>
+                  <span>•</span>
+                  <StatusBadge status={query.status} />
+                </div>
+
+                <p className="text-sm text-text-muted line-clamp-2">
+                  {query.message}
+                </p>
+              </div>
+            </div>
+
+            {/* Expanded Content */}
+            {selectedQuery === query.id && (
+              <div className="border-t border-border bg-accent/5 p-4 md:p-6 animate-in slide-in-from-top-2">
+                {/* Full Message */}
+                <div className="mb-6">
+                  <h4 className="text-xs font-bold uppercase text-text-muted mb-2">
+                    Message
+                  </h4>
+                  <div className="bg-background p-4 rounded-lg border border-border text-sm leading-relaxed">
+                    {query.message}
+                  </div>
+                </div>
+
+                {/* Response Section */}
+                {query.response ? (
+                  <div className="mb-6">
+                    <h4 className="text-xs font-bold uppercase text-text-muted mb-2 flex items-center gap-2">
+                      <CheckCircle size={14} className="text-green-500" />
+                      Resolution Response
+                      <span className="font-normal normal-case ml-auto opacity-70">
+                        by {query.resolvedBy?.name}
+                      </span>
+                    </h4>
+                    <div className="bg-green-500/10 p-4 rounded-lg border border-green-500/20 text-sm leading-relaxed text-foreground">
+                      {query.response}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-6">
+                    <h4 className="text-xs font-bold uppercase text-text-muted mb-2">
+                      Reply
+                    </h4>
+                    <form onSubmit={handleReply}>
+                      <textarea
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        className="w-full min-h-[100px] p-3 rounded-lg border border-border bg-background text-sm focus:ring-2 focus:ring-primary/20 outline-none resize-y"
+                        placeholder="Type your response here..."
+                        disabled={isPending}
+                      />
+                      <div className="flex justify-end mt-2">
+                        <button
+                          type="submit"
+                          disabled={!replyText.trim() || isPending}
+                          className="btn-primary flex items-center gap-2 text-xs"
+                        >
+                          <Send size={14} />
+                          {isPending ? "Sending..." : "Send Reply & Resolve"}
+                        </button>
                       </div>
-                      {selectedQuery.student.name}
-                    </span>
-                    <span>•</span>
-                    <span>{selectedQuery.student.email}</span>
+                    </form>
                   </div>
-                </div>
-                {selectedQuery.status !== 'RESOLVED' && (
-                  <button
-                    onClick={() => handleResolve(selectedQuery.id)}
-                    disabled={isPending}
-                    className="btn-outline text-xs"
-                  >
-                    <CheckCircle size={14} className="mr-1" />
-                    Mark Resolved
-                  </button>
                 )}
-              </div>
-            </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              <div className="bg-accent/10 p-4 rounded-lg border border-border">
-                <p className="text-sm whitespace-pre-wrap">{selectedQuery.message}</p>
-              </div>
-
-              {selectedQuery.response && (
-                <div className="space-y-2 pl-4 border-l-2 border-primary">
-                  <span className="text-xs font-bold text-primary block">Staff Response</span>
-                  <p className="text-sm text-text-muted">{selectedQuery.response}</p>
-                </div>
-              )}
-            </div>
-
-            <div className="p-6 border-t border-border bg-accent/5">
-              {selectedQuery.status === 'RESOLVED' ? (
-                <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-center text-sm text-green-500 flex items-center justify-center gap-2">
-                  <CheckCircle size={16} />
-                  This ticket has been resolved
-                </div>
-              ) : (
-                <form onSubmit={handleReply} className="space-y-4">
-                  <textarea
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                    placeholder="Type your reply here..."
-                    className="w-full h-32 p-3 bg-background border border-border rounded-lg text-sm resize-none focus:ring-2 focus:ring-primary/20 outline-none"
-                    required
-                  />
-                  <div className="flex justify-end">
+                {/* Actions */}
+                <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
+                  <span className="text-xs font-medium text-text-muted mr-auto flex items-center">
+                    Actions:
+                  </span>
+                  {query.status !== "IN_PROGRESS" && query.status !== "RESOLVED" && query.status !== "CLOSED" && (
                     <button
-                      type="submit"
-                      disabled={isPending || !replyText.trim()}
-                      className="btn-primary"
+                      onClick={() => handleStatusUpdate(query.id, "IN_PROGRESS")}
+                      disabled={isPending}
+                      className="px-3 py-1.5 bg-blue-500/10 text-blue-500 rounded-md text-xs font-bold hover:bg-blue-500/20 transition disabled:opacity-50"
                     >
-                      {isPending ? "Sending..." : "Send Reply"}
+                      Mark In Progress
                     </button>
-                  </div>
-                </form>
-              )}
-            </div>
-          </>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-text-muted">
-            <MessageSquare size={48} className="mb-4 opacity-20" />
-            <p>Select a query to view details</p>
+                  )}
+
+                  {query.status !== "CLOSED" && (
+                    <button
+                      onClick={() => handleStatusUpdate(query.id, "CLOSED")}
+                      disabled={isPending}
+                      className="px-3 py-1.5 bg-slate-500/10 text-slate-500 rounded-md text-xs font-bold hover:bg-slate-500/20 transition disabled:opacity-50"
+                    >
+                      Close Ticket
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+
+        {filteredQueries.length === 0 && (
+          <div className="text-center py-12 bg-card border border-border rounded-xl border-dashed">
+            <MessageSquare size={40} className="mx-auto text-text-muted opacity-20 mb-3" />
+            <h3 className="font-medium text-text-muted">No queries found</h3>
+            <p className="text-xs text-text-muted/60">
+              {filterStatus === "ALL" ? "No support tickets have been created yet." : `No ${filterStatus.toLowerCase().replace('_', ' ')} tickets found.`}
+            </p>
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function StatusBadge({ status }: { status: QueryStatus }) {
+  const styles = {
+    OPEN: "bg-slate-500/10 text-slate-500",
+    IN_PROGRESS: "bg-blue-500/10 text-blue-500",
+    RESOLVED: "bg-green-500/10 text-green-500",
+    CLOSED: "bg-slate-500/20 text-slate-500 line-through opacity-70",
+  };
+
+  const icons = {
+    OPEN: <AlertCircle size={12} />,
+    IN_PROGRESS: <Clock size={12} />,
+    RESOLVED: <CheckCircle size={12} />,
+    CLOSED: <CheckCircle size={12} />,
+  };
+
+  return (
+    <span
+      className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wide border border-transparent ${styles[status] || styles.OPEN
+        }`}
+    >
+      {icons[status] || icons.OPEN}
+      {status.replace("_", " ")}
+    </span>
   );
 }

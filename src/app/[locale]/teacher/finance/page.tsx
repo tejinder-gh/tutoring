@@ -28,16 +28,19 @@ export default async function TeacherFinancePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {/* Active Salary Card */}
-        <div className="bg-linear-to-br from-primary/20 to-primary/5 border border-primary/20 p-6 rounded-xl">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-primary/20 rounded-lg text-primary">
+        <div className="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 p-6 rounded-xl shadow-sm relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <BadgeIndianRupee size={80} />
+          </div>
+          <div className="flex items-center gap-3 mb-4 relative">
+            <div className="p-3 bg-primary/20 rounded-lg text-primary shadow-inner">
               <BadgeIndianRupee size={24} />
             </div>
             <div>
-              <p className="text-sm font-medium text-text-muted">
+              <p className="text-sm font-medium text-text-muted uppercase tracking-wider">
                 Current Base Salary
               </p>
-              <h3 className="text-2xl font-bold">
+              <h3 className="text-3xl font-bold tracking-tight">
                 {salaryStructure
                   ? `₹${Number(salaryStructure.baseSalary).toLocaleString()}`
                   : "Not Set"}
@@ -45,20 +48,20 @@ export default async function TeacherFinancePage() {
             </div>
           </div>
           {salaryStructure && (
-            <div className="space-y-2 text-sm text-text-muted border-t border-primary/10 pt-4">
-              <div className="flex justify-between">
+            <div className="space-y-3 text-sm text-text-muted border-t border-primary/10 pt-4 relative">
+              <div className="flex justify-between items-center px-2 py-1 rounded hover:bg-white/5">
                 <span>Allowances</span>
-                <span className="font-medium text-green-500">
+                <span className="font-medium text-green-500 bg-green-500/10 px-2 py-0.5 rounded">
                   +{Number(salaryStructure.allowances)}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center px-2 py-1 rounded hover:bg-white/5">
                 <span>Deductions</span>
-                <span className="font-medium text-red-500">
+                <span className="font-medium text-red-500 bg-red-500/10 px-2 py-0.5 rounded">
                   -{Number(salaryStructure.deductions)}
                 </span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-primary/10 font-bold text-foreground">
+              <div className="flex justify-between pt-3 border-t border-primary/10 font-bold text-foreground text-lg">
                 <span>Net Monthly</span>
                 <span>
                   ₹

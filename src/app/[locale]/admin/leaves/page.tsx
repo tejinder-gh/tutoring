@@ -1,108 +1,25 @@
-"use client";
+import { getAllLeaveRequests } from "@/app/actions/leaves";
+import { auth } from "@/auth";
+import { AdminLeaveTable } from "@/components/admin/AdminLeaveTable";
+import { requirePermission } from "@/lib/permissions";
+import { redirect } from "next/navigation";
 
-import { getPendingLeaves, updateLeaveStatus } from '@/app/actions/leave';
-import { format } from 'date-fns';
-import { Check, Loader2, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+export default async function AdminLeavePage() {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
 
-export default function LeaveApprovalPage() {
-  const [leaves, setLeaves] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [processingId, setProcessingId] = useState<string | null>(null);
+  await requirePermission("read", "user");
 
-  useEffect(() => {
-    loadLeaves();
-  }, []);
-
-  const loadLeaves = async () => {
-    setLoading(true);
-    try {
-      const data = await getPendingLeaves();
-      setLeaves(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAction = async (leaveId: string, status: 'APPROVED' | 'REJECTED') => {
-    setProcessingId(leaveId);
-    try {
-      await updateLeaveStatus(leaveId, status);
-      // Optimistic update or reload
-      setLeaves(prev => prev.filter(l => l.id !== leaveId));
-    } catch (error) {
-      alert('Failed to update status');
-    } finally {
-      setProcessingId(null);
-    }
-  };
+  const leaves = await getAllLeaveRequests();
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">Leave Requests</h1>
-
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
-        {loading ? (
-          <div className="p-8 flex justify-center"><Loader2 className="animate-spin" /></div>
-        ) : leaves.length === 0 ? (
-          <div className="p-8 text-center text-slate-500">No pending leave requests.</div>
-        ) : (
-          <table className="w-full text-left">
-            <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-              <tr>
-                <th className="p-4 font-medium">Employee/Student</th>
-                <th className="p-4 font-medium">Role</th>
-                <th className="p-4 font-medium">Dates</th>
-                <th className="p-4 font-medium">Reason</th>
-                <th className="p-4 font-medium text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {leaves.map((leave) => (
-                <tr key={leave.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/50">
-                  <td className="p-4">
-                    <div className="font-medium">{leave.user.name}</div>
-                    <div className="text-xs text-slate-500">{leave.user.email}</div>
-                  </td>
-                  <td className="p-4 text-sm text-slate-600 dark:text-slate-400">
-                    {leave.user.role?.name || 'N/A'}
-                  </td>
-                  <td className="p-4 text-sm">
-                    <div className="font-medium text-slate-900 dark:text-white">
-                      {format(new Date(leave.startDate), 'MMM d')} - {format(new Date(leave.endDate), 'MMM d, yyyy')}
-                    </div>
-                  </td>
-                  <td className="p-4 text-sm text-slate-600 dark:text-slate-400 max-w-xs truncate" title={leave.reason}>
-                    {leave.reason}
-                  </td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => handleAction(leave.id, 'APPROVED')}
-                        disabled={!!processingId}
-                        className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 disabled:opacity-50"
-                        title="Approve"
-                      >
-                        {processingId === leave.id ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-                      </button>
-                      <button
-                        onClick={() => handleAction(leave.id, 'REJECTED')}
-                        disabled={!!processingId}
-                        className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 disabled:opacity-50"
-                        title="Reject"
-                      >
-                        {processingId === leave.id ? <Loader2 size={16} className="animate-spin" /> : <X size={16} />}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+    <div className="p-6 space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Leave Management</h1>
+        <p className="text-text-muted">Approve or reject staff and teacher leave requests</p>
       </div>
+
+      <AdminLeaveTable leaves={leaves as any} />
     </div>
   );
 }

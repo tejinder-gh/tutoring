@@ -116,3 +116,149 @@ export async function updateBankDetails(details: { bankName: string; accountNumb
 
     throw new Error("Profile not found");
 }
+
+// ADMIN PAYROLL ACTIONS
+
+export async function getPendingPayroll() {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Unauthorized");
+
+    // Get all active teachers with their salary structures
+    const teachers = await prisma.teacherProfile.findMany({
+        where: {
+            user: { isActive: true }
+        },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true
+                }
+            },
+            salaries: {
+                where: { isActive: true },
+                include: {
+                    receipts: {
+                        orderBy: { paymentDate: 'desc' },
+                        take: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // Get all active staff with their salary structures
+    const staff = await prisma.staffProfile.findMany({
+        where: {
+            user: { isActive: true }
+        },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true
+                }
+            },
+            salaries: {
+                where: { isActive: true },
+                include: {
+                    receipts: {
+                        orderBy: { paymentDate: 'desc' },
+                        take: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // Format the data for the UI
+    const teacherPayroll = teachers.map(t => ({
+        profileId: t.id,
+        userId: t.user.id,
+        name: t.user.name,
+        email: t.user.email,
+        type: 'TEACHER' as const,
+        salary: t.salaries[0] || null,
+        lastPayment: t.salaries[0]?.receipts[0] || null
+    }));
+
+    const staffPayroll = staff.map(s => ({
+        profileId: s.id,
+        userId: s.user.id,
+        name: s.user.name,
+        email: s.user.email,
+        type: 'STAFF' as const,
+        salary: s.salaries[0] || null,
+        lastPayment: s.salaries[0]?.receipts[0] || null
+    }));
+
+    return [...teacherPayroll, ...staffPayroll];
+}
+
+export async function processSalaryPayment(data: {
+    salaryId: string;
+    amount: number;
+    paymentMethod: string;
+    reference?: string;
+    notes?: string;
+}) {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Unauthorized");
+
+    try {
+        const receipt = await prisma.salaryReceipt.create({
+            data: {
+                salaryId: data.salaryId,
+                amount: data.amount,
+                paymentMethod: data.paymentMethod as any,
+                reference: data.reference,
+                notes: data.notes,
+                paymentDate: new Date()
+            },
+            include: {
+                salary: {
+                    include: {
+                        teacherProfile: {
+                            include: {
+                                user: {
+                                    include: { role: true }
+                                }
+                            }
+                        },
+                        staffProfile: {
+                            include: {
+                                user: {
+                                    include: { role: true }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Get the user (teacher or staff)
+        const user = receipt.salary.teacherProfile?.user || receipt.salary.staffProfile?.user;
+
+        // Create notification
+        if (user) {
+            await prisma.notification.create({
+                data: {
+                    userId: user.id,
+                    title: 'Salary Processed',
+                    message: `Your salary of ₹${data.amount} has been processed.`,
+                    type: 'SUCCESS',
+                    link: user.role?.name === 'TEACHER' ? '/teacher/finance' : '/staff/finance'
+                }
+            });
+        }
+
+        revalidatePath("/admin/finance/payroll");
+        return { success: true, data: receipt };
+    } catch (error) {
+        console.error("Failed to process salary payment:", error);
+        return { success: false, error: "Failed to process payment" };
+    }
+}
