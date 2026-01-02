@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/site";
 import nodemailer from "nodemailer";
 
 type EmailPayload = {
@@ -32,7 +33,7 @@ export const sendEmail = async (data: EmailPayload) => {
 
   try {
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || '"Skill-ed Support" <support@skill-ed.in>',
+      from: process.env.SMTP_FROM || `"${siteConfig.name} Support" <support@${siteConfig.name.toLowerCase().replace(/\s/g, '')}.in>`,
       to,
       subject,
       html,
@@ -50,10 +51,10 @@ export const emailTemplates = {
   paymentReceipt: (userName: string, courseName: string, amount: number, transactionId: string) => `
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
       <div style="background-color: #20284a; padding: 20px; text-align: center;">
-        <h1 style="color: #fff; margin: 0;">Skill-ed</h1>
+        <h1 style="color: #fff; margin: 0;">${siteConfig.name}</h1>
       </div>
       <div style="padding: 20px;">
-        <h2>Payment Reciept</h2>
+        <h2>Payment Receipt</h2>
         <p>Hi ${userName},</p>
         <p>Thank you for enrolling in <strong>${courseName}</strong>. We have received your payment of <strong>₹${amount}</strong>.</p>
         <p><strong>Transaction ID:</strong> ${transactionId}</p>
@@ -63,14 +64,14 @@ export const emailTemplates = {
         </div>
       </div>
       <div style="background-color: #f9f9f9; padding: 15px; text-align: center; font-size: 12px; color: #666;">
-        &copy; ${new Date().getFullYear()} Skill-ed. All rights reserved.
+        &copy; ${new Date().getFullYear()} ${siteConfig.name}. All rights reserved.
       </div>
     </div>
   `,
   welcome: (userName: string) => `
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
       <div style="background-color: #20284a; padding: 20px; text-align: center;">
-        <h1 style="color: #fff; margin: 0;">Welcome to Skill-ed!</h1>
+        <h1 style="color: #fff; margin: 0;">Welcome to ${siteConfig.name}!</h1>
       </div>
       <div style="padding: 20px;">
         <p>Hi ${userName},</p>

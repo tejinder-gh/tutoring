@@ -1,8 +1,8 @@
 "use client";
 
 import { createQueryReply, resolveQuery } from "@/lib/actions/communication";
-import { CheckCircle, Clock, MessageSquare, Search } from "lucide-react";
-import { useState, useTransition } from "react";
+import { CheckCircle, Clock, MessageSquare, Search, X } from "lucide-react";
+import { useMemo, useState, useTransition } from "react";
 
 interface Query {
   id: string;
@@ -22,7 +22,21 @@ export function QueryList({ initialQueries }: { initialQueries: Query[] }) {
   const [queries, setQueries] = useState(initialQueries);
   const [selectedQuery, setSelectedQuery] = useState<Query | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  // Filter queries based on search term
+  const filteredQueries = useMemo(() => {
+    if (!searchTerm.trim()) return queries;
+    const term = searchTerm.toLowerCase();
+    return queries.filter(
+      (q) =>
+        q.subject.toLowerCase().includes(term) ||
+        q.message.toLowerCase().includes(term) ||
+        q.student.name.toLowerCase().includes(term) ||
+        q.student.email.toLowerCase().includes(term)
+    );
+  }, [queries, searchTerm]);
 
   const handleResolve = async (id: string) => {
     startTransition(async () => {
@@ -59,25 +73,40 @@ export function QueryList({ initialQueries }: { initialQueries: Query[] }) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted h-4 w-4" />
             <input
               type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search queries..."
-              className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-lg text-sm"
+              className="w-full pl-9 pr-10 py-2 bg-background border border-border rounded-lg text-sm"
             />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-foreground"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
+          {searchTerm && (
+            <p className="text-xs text-text-muted mt-2">
+              Showing {filteredQueries.length} of {queries.length} queries
+            </p>
+          )}
         </div>
         <div className="flex-1 overflow-y-auto p-2 space-y-2">
-          {queries.map(q => (
+          {filteredQueries.map(q => (
             <div
               key={q.id}
               onClick={() => setSelectedQuery(q)}
               className={`p-4 rounded-lg cursor-pointer transition border ${selectedQuery?.id === q.id
-                  ? "bg-primary/10 border-primary"
-                  : "bg-card hover:bg-accent border-border"
+                ? "bg-primary/10 border-primary"
+                : "bg-card hover:bg-accent border-border"
                 }`}
             >
               <div className="flex justify-between items-start mb-2">
                 <span className={`text-xs px-2 py-0.5 rounded font-bold ${q.priority === 'URGENT' ? 'bg-red-500/20 text-red-500' :
-                    q.priority === 'HIGH' ? 'bg-orange-500/20 text-orange-500' :
-                      'bg-blue-500/20 text-blue-500'
+                  q.priority === 'HIGH' ? 'bg-orange-500/20 text-orange-500' :
+                    'bg-blue-500/20 text-blue-500'
                   }`}>
                   {q.priority}
                 </span>

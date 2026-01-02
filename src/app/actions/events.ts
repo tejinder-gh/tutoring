@@ -2,6 +2,7 @@
 "use server";
 
 import { auth } from "@/auth";
+import { requirePermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { EventType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -21,7 +22,8 @@ export async function createEvent(data: {
     throw new Error("Unauthorized");
   }
 
-  // TODO: Add role check (Teacher/Admin only)
+  // Teachers and Admins can create events
+  await requirePermission("manage", "batch");
 
   try {
     const event = await prisma.event.create({

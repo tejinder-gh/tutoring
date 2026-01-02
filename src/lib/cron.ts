@@ -1,19 +1,22 @@
 import { sendEmail } from '@/lib/email';
 import { prisma } from '@/lib/prisma';
-// import cron from 'node-cron';
 
-// Initialize Cron Jobs
+// Note: For production, use Vercel Cron Jobs via /api/cron/fee-reminder route
+// Or deploy node-cron in a separate worker process
+
+// Initialize Cron Jobs (for standalone server deployment)
 export function initCronJobs() {
-  console.log('Initializing Cron Jobs...');
-
-  // Run every day at 10:00 AM
+  console.log('Cron Jobs available via API routes.');
+  // For non-serverless deployments, you can use node-cron here:
+  // import cron from 'node-cron';
   // cron.schedule('0 10 * * *', async () => {
   //   console.log('Running Fee Reminder Cron Job...');
   //   await checkFeesDue();
   // });
 }
 
-async function checkFeesDue() {
+// Export for API route usage
+export async function checkFeesDue() {
   try {
     const today = new Date();
     const threeDaysFromNow = new Date();

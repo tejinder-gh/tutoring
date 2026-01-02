@@ -16,7 +16,8 @@ export type PermissionSubject =
   | 'finance'
   | 'report'
   | 'marketing'
-  | 'settings';
+  | 'settings'
+  | 'system';
 
 export const PERMISSIONS = {
   // User Management

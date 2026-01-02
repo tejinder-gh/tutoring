@@ -5,7 +5,7 @@ import {
 import { auth } from "@/auth";
 import { BankDetailsForm } from "@/components/Finance/BankDetailsForm";
 import { prisma } from "@/lib/prisma";
-import { Calendar, CreditCard, DollarSign } from "lucide-react";
+import { BadgeIndianRupee, Calendar, CreditCard } from "lucide-react";
 import { redirect } from "next/navigation";
 
 export default async function TeacherFinancePage() {
@@ -31,7 +31,7 @@ export default async function TeacherFinancePage() {
         <div className="bg-linear-to-br from-primary/20 to-primary/5 border border-primary/20 p-6 rounded-xl">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-3 bg-primary/20 rounded-lg text-primary">
-              <DollarSign size={24} />
+              <BadgeIndianRupee size={24} />
             </div>
             <div>
               <p className="text-sm font-medium text-text-muted">
@@ -39,7 +39,7 @@ export default async function TeacherFinancePage() {
               </p>
               <h3 className="text-2xl font-bold">
                 {salaryStructure
-                  ? `$${Number(salaryStructure.baseSalary).toLocaleString()}`
+                  ? `₹${Number(salaryStructure.baseSalary).toLocaleString()}`
                   : "Not Set"}
               </h3>
             </div>
@@ -61,7 +61,7 @@ export default async function TeacherFinancePage() {
               <div className="flex justify-between pt-2 border-t border-primary/10 font-bold text-foreground">
                 <span>Net Monthly</span>
                 <span>
-                  $
+                  ₹
                   {(
                     Number(salaryStructure.baseSalary) +
                     Number(salaryStructure.allowances) -
@@ -114,7 +114,7 @@ export default async function TeacherFinancePage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-green-600 font-bold">
-                    ${Number(receipt.amount).toLocaleString()}
+                    ₹{Number(receipt.amount).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 capitalize">
                     <div className="flex items-center gap-2">

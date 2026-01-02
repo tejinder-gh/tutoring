@@ -25,6 +25,10 @@ jest.mock('next/cache', () => ({
   revalidatePath: jest.fn(),
 }));
 
+jest.mock('@/lib/permissions', () => ({
+  requirePermission: jest.fn().mockResolvedValue({ id: 'user-1', role: { name: 'TEACHER' } }),
+}));
+
 describe('Events Server Actions', () => {
   beforeEach(() => {
     jest.clearAllMocks();

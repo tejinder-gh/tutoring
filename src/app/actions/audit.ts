@@ -1,13 +1,14 @@
 "use server";
 
 import { auth } from "@/auth";
+import { requirePermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 export async function getAuditLogs(page: number = 1, limit: number = 50) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
-  // TODO: Check for ADMIN permission
+  await requirePermission("read", "system");
 
   const skip = (page - 1) * limit;
 

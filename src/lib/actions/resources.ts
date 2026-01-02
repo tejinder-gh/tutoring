@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
+import { requirePermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { ResourceType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -26,7 +27,7 @@ export async function createResource(data: {
     return { success: false, error: "Unauthorized" };
   }
 
-  // TODO: Add permission check for admin/teacher roles
+  await requirePermission("manage", "course");
 
   try {
     const resource = await prisma.resource.create({
@@ -72,7 +73,7 @@ export async function updateResource(
     return { success: false, error: "Unauthorized" };
   }
 
-  // TODO: Add permission check for admin/teacher roles
+  await requirePermission("manage", "course");
 
   try {
     const resource = await prisma.resource.update({
@@ -97,7 +98,7 @@ export async function deleteResource(id: string) {
     return { success: false, error: "Unauthorized" };
   }
 
-  // TODO: Add permission check for admin/teacher roles
+  await requirePermission("manage", "course");
 
   try {
     await prisma.resource.delete({
@@ -121,7 +122,7 @@ export async function toggleResourceVisibility(id: string, isPublic: boolean) {
     return { success: false, error: "Unauthorized" };
   }
 
-  // TODO: Add permission check for admin/teacher roles
+  await requirePermission("manage", "course");
 
   try {
     const resource = await prisma.resource.update({
@@ -149,7 +150,7 @@ export async function getAllResources(filters?: {
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  // TODO: Add permission check for admin/teacher roles
+  await requirePermission("read", "course");
 
   const where: any = {};
 
@@ -246,7 +247,7 @@ export async function linkResourceToEntity(
     return { success: false, error: "Unauthorized" };
   }
 
-  // TODO: Add permission check for admin/teacher roles
+  await requirePermission("manage", "course");
 
   try {
     const updateData: any = {};
@@ -282,7 +283,7 @@ export async function unlinkResourceFromEntity(
     return { success: false, error: "Unauthorized" };
   }
 
-  // TODO: Add permission check for admin/teacher roles
+  await requirePermission("manage", "course");
 
   try {
     const updateData: any = {};

@@ -12,6 +12,7 @@ jest.mock('@/lib/prisma', () => ({
     staffProfile: { create: jest.fn() },
     salary: { create: jest.fn() },
     salaryReceipt: { create: jest.fn() },
+    $transaction: jest.fn(),
   },
 }));
 
@@ -30,8 +31,18 @@ describe('Staff & Financial Integration Tests', () => {
   });
 
   test('createStaff should create user and profile', async () => {
-    (prisma.user.create as jest.Mock).mockResolvedValue({ id: 'u1', email: 'staff@test.com' });
-    (prisma.staffProfile.create as jest.Mock).mockResolvedValue({ id: 'sp1', userId: 'u1' });
+    // Mock $transaction to execute the callback with a mock tx
+    (prisma.$transaction as jest.Mock).mockImplementation(async (callback) => {
+      const mockTx = {
+        user: {
+          create: jest.fn().mockResolvedValue({ id: 'u1', email: 'staff@test.com' })
+        },
+        staffProfile: {
+          create: jest.fn().mockResolvedValue({ id: 'sp1', userId: 'u1' })
+        }
+      };
+      return callback(mockTx);
+    });
 
     const result = await createStaff({
         name: 'Staff One',
@@ -41,8 +52,7 @@ describe('Staff & Financial Integration Tests', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(prisma.user.create).toHaveBeenCalled();
-    expect(prisma.staffProfile.create).toHaveBeenCalled();
+    expect(prisma.$transaction).toHaveBeenCalled();
   });
 
   test('upsertSalaryStructure should create salary record', async () => {

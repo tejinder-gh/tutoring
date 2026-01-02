@@ -14,33 +14,37 @@ export async function createStaff(data: {
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-     // TODO: Transaction?
-     // 1. Create User
-     const user = await prisma.user.create({
+     // Use transaction for atomic user + profile creation
+     const result = await prisma.$transaction(async (tx) => {
+       // 1. Create User
+       const user = await tx.user.create({
          data: {
-             name: data.name,
-             email: data.email,
-             password: "temp_password_hash", // In real app, send invite email
-             role: {
-                 connectOrCreate: {
-                     where: { name: "STAFF" },
-                     create: { name: "STAFF" }
-                 }
+           name: data.name,
+           email: data.email,
+           password: "temp_password_hash", // In real app, send invite email
+           role: {
+             connectOrCreate: {
+               where: { name: "STAFF" },
+               create: { name: "STAFF" }
              }
+           }
          }
-     });
+       });
 
-     // 2. Create Profile
-     const profile = await prisma.staffProfile.create({
+       // 2. Create Profile
+       const profile = await tx.staffProfile.create({
          data: {
-             userId: user.id,
-             department: data.department,
-             designation: data.designation
+           userId: user.id,
+           department: data.department,
+           designation: data.designation
          }
+       });
+
+       return { user, profile };
      });
 
      revalidatePath("/admin/staff");
-     return { success: true, data: { user, profile } };
+     return { success: true, data: result };
   } catch (error) {
     console.error("Failed to create staff:", error);
     return { success: false, error: "Failed to create staff" };

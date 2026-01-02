@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { ArrowLeft, Calculator, Save } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
 // Define the FeeFrequency type locally if not available from client yet,
 // though it should be available at runtime.
 type FeeFrequency = "ONE_TIME" | "MONTHLY";
@@ -223,39 +222,39 @@ export default async function BatchDetailsPage({
             <div className="p-4 bg-accent/5 rounded-lg border border-border">
               <div className="text-sm text-text-muted mb-1">Total Revenue</div>
               <div className="text-2xl font-bold text-foreground">
-                ${totalRevenue.toFixed(2)}
+                ₹{totalRevenue.toFixed(2)}
               </div>
               <div className="text-xs text-text-muted mt-1">
-                {totalNoOfParticipants} Students × ${fee} × {feeRecurrence} {batch.feeFrequency === "MONTHLY" ? "months" : "payment"}
+                {totalNoOfParticipants} Students × ₹{fee} × {feeRecurrence} {batch.feeFrequency === "MONTHLY" ? "months" : "payment"}
               </div>
             </div>
 
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-text-muted">Teacher Compensation</span>
-                <span className="text-foreground font-medium">${teacherCompensation.toFixed(2)}</span>
+                <span className="text-foreground font-medium">₹{teacherCompensation.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-text-muted">Teacher Commission</span>
-                <span className="text-foreground font-medium">${totalTeacherCommission.toFixed(2)}</span>
+                <span className="text-foreground font-medium">₹{totalTeacherCommission.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-text-muted">Overhead Cost ({durationInMonths}m)</span>
-                <span className="text-foreground font-medium">${totalOverhead.toFixed(2)}</span>
+                <span className="text-foreground font-medium">₹{totalOverhead.toFixed(2)}</span>
               </div>
 
               <div className="h-px bg-border my-2"></div>
 
               <div className="flex justify-between text-base font-semibold">
                 <span className="text-foreground">Total Cost</span>
-                <span className="text-red-400">${totalCost.toFixed(2)}</span>
+                <span className="text-red-400">₹{totalCost.toFixed(2)}</span>
               </div>
             </div>
 
             <div className={`p-4 rounded-lg border ${netProfit >= 0 ? "bg-green-500/10 border-green-500/20" : "bg-red-500/10 border-red-500/20"}`}>
               <div className="text-sm text-text-muted mb-1">Net Profit/Loss</div>
               <div className={`text-2xl font-bold ${netProfit >= 0 ? "text-green-500" : "text-red-500"}`}>
-                ${netProfit.toFixed(2)}
+                ₹{netProfit.toFixed(2)}
               </div>
             </div>
 

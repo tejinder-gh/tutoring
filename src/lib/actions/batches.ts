@@ -92,3 +92,104 @@ export async function updateBatch(id: string, formData: FormData) {
   revalidatePath(`/admin/batches/${id}`);
   redirect("/admin/batches");
 }
+
+// =============================================================================
+// BATCH ENROLLMENT ACTIONS
+// =============================================================================
+
+export async function getEnrollableStudents(batchId: string) {
+  // Get students not already enrolled in this batch
+  const batch = await prisma.batch.findUnique({
+    where: { id: batchId },
+    include: { enrollments: { select: { studentProfileId: true } } },
+  });
+
+  if (!batch) return [];
+
+  const enrolledStudentIds = batch.enrollments.map((e: { studentProfileId: string }) => e.studentProfileId);
+
+  const students = await prisma.studentProfile.findMany({
+    where: {
+      id: { notIn: enrolledStudentIds },
+    },
+    include: {
+      user: { select: { id: true, name: true, email: true } },
+    },
+  });
+
+  return students.map((s) => ({
+    id: s.id,
+    userId: s.userId,
+    name: s.user.name,
+    email: s.user.email,
+  }));
+}
+
+export async function enrollStudentInBatch(batchId: string, studentProfileId: string, discount = 0) {
+  const batch = await prisma.batch.findUnique({ where: { id: batchId } });
+  if (!batch) throw new Error("Batch not found");
+
+  // Check if already enrolled
+  const existing = await prisma.enrollment.findFirst({
+    where: { batchId, studentProfileId },
+  });
+
+  if (existing) throw new Error("Student already enrolled");
+
+  const enrollment = await prisma.enrollment.create({
+    data: {
+      batchId,
+      studentProfileId,
+      courseId: batch.courseId,
+      discount,
+      status: "ACTIVE",
+    },
+  });
+
+  // Also update student's batch reference
+  await prisma.studentProfile.update({
+    where: { id: studentProfileId },
+    data: { batchId },
+  });
+
+  revalidatePath(`/admin/batches/${batchId}`);
+  return { success: true, enrollment };
+}
+
+export async function removeStudentFromBatch(batchId: string, studentProfileId: string) {
+  await prisma.enrollment.deleteMany({
+    where: { batchId, studentProfileId },
+  });
+
+  // Clear student's batch reference
+  await prisma.studentProfile.update({
+    where: { id: studentProfileId },
+    data: { batchId: null },
+  });
+
+  revalidatePath(`/admin/batches/${batchId}`);
+  return { success: true };
+}
+
+export async function getBatchEnrollments(batchId: string) {
+  const enrollments = await prisma.enrollment.findMany({
+    where: { batchId },
+    include: {
+      studentProfile: {
+        include: {
+          user: { select: { id: true, name: true, email: true } },
+        },
+      },
+    },
+  });
+
+  return enrollments.map((e) => ({
+    id: e.id,
+    studentProfileId: e.studentProfileId,
+    studentName: e.studentProfile.user.name,
+    studentEmail: e.studentProfile.user.email,
+    status: e.status,
+    discount: Number(e.discount || 0),
+    enrolledAt: e.enrolledAt,
+  }));
+}
