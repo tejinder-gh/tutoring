@@ -567,6 +567,17 @@ async function main() {
   }
   console.log('✅ Permissions seeded');
 
+  // ===========================================================================
+  // 1.5. Create Branch
+  // ===========================================================================
+  const mainBranch = await prisma.branch.create({
+      data: {
+          name: 'Main Branch',
+          location: 'Headquarters',
+          isMain: true
+      }
+  });
+  console.log('✅ Branch created');
 
   // ===========================================================================
   // 2. Create Users & Profiles
@@ -577,12 +588,14 @@ async function main() {
       where: { email: 'director@future-ready.com' },
       update: {
           password: HASHED_PASSWORD,
-          role: { connect: { name: 'DIRECTOR' } }
+          role: { connect: { name: 'DIRECTOR' } },
+          branch: { connect: { id: mainBranch.id } }
       },
       create: {
           email: 'director@future-ready.com',
           name: 'Director Admin',
           password: HASHED_PASSWORD,
+          branch: { connect: { id: mainBranch.id } },
           role: { connect: { name: 'DIRECTOR' } },
           staffProfile: {
               create: {
@@ -598,13 +611,15 @@ async function main() {
       where: { email: 'admin@future-ready.com' },
       update: {
           password: HASHED_PASSWORD,
-          role: { connect: { name: 'ADMIN' } }
+          role: { connect: { name: 'ADMIN' } },
+          branch: { connect: { id: mainBranch.id } }
       },
       create: {
           email: 'admin@future-ready.com',
           name: 'Admin User',
           password: HASHED_PASSWORD,
           role: { connect: { name: 'ADMIN' } },
+          branch: { connect: { id: mainBranch.id } }
       }
   });
 
@@ -613,13 +628,15 @@ async function main() {
       where: { email: 'teacher@future-ready.com' },
       update: {
           password: HASHED_PASSWORD,
-          role: { connect: { name: 'TEACHER' } }
+          role: { connect: { name: 'TEACHER' } },
+          branch: { connect: { id: mainBranch.id } }
       },
       create: {
           email: 'teacher@future-ready.com',
           name: 'Sarah Teacher',
           password: HASHED_PASSWORD,
           role: { connect: { name: 'TEACHER' } },
+          branch: { connect: { id: mainBranch.id } },
           teacherProfile: {
               create: {
                   domain: 'Web Development',
@@ -638,13 +655,15 @@ async function main() {
       where: { email: 'student@future-ready.com' },
       update: {
           password: HASHED_PASSWORD,
-          role: { connect: { name: 'STUDENT' } }
+          role: { connect: { name: 'STUDENT' } },
+          branch: { connect: { id: mainBranch.id } }
       },
       create: {
           email: 'student@future-ready.com',
           name: 'Alex Student',
           password: HASHED_PASSWORD,
           role: { connect: { name: 'STUDENT' } },
+          branch: { connect: { id: mainBranch.id } },
           studentProfile: {
               create: {
                   enrollmentDate: new Date()

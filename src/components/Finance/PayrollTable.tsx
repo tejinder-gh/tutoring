@@ -5,7 +5,7 @@ import { DollarSign } from "lucide-react";
 import { useState } from "react";
 import { ProcessPaymentDialog } from "./ProcessPaymentDialog";
 
-type PayrollEntry = {
+export type PayrollEntry = {
   profileId: string;
   userId: string;
   name: string;
@@ -63,8 +63,8 @@ export function PayrollTable({ payroll }: { payroll: PayrollEntry[] }) {
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded text-xs font-bold ${entry.type === 'TEACHER'
-                          ? 'bg-blue-500/10 text-blue-500'
-                          : 'bg-purple-500/10 text-purple-500'
+                        ? 'bg-blue-500/10 text-blue-500'
+                        : 'bg-purple-500/10 text-purple-500'
                         }`}>
                         {entry.type}
                       </span>

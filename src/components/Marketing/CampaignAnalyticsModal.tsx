@@ -1,5 +1,6 @@
 "use client";
 
+import { Campaign } from "@prisma/client";
 import { BarChart3, Eye, MousePointer, Target, TrendingUp, Users, X } from "lucide-react";
 
 interface CampaignMetrics {
@@ -13,17 +14,6 @@ interface CampaignMetrics {
   conversionRate?: number;
 }
 
-interface Campaign {
-  id: string;
-  name: string;
-  type: string;
-  status: string;
-  budget?: number;
-  metrics?: CampaignMetrics;
-  startDate?: Date;
-  endDate?: Date;
-}
-
 export function CampaignAnalyticsModal({
   campaign,
   isOpen,
@@ -35,7 +25,7 @@ export function CampaignAnalyticsModal({
 }) {
   if (!isOpen) return null;
 
-  const metrics: CampaignMetrics = campaign.metrics || {};
+  const metrics: CampaignMetrics = (campaign.metrics as unknown as CampaignMetrics) || {};
 
   // Calculate derived metrics
   const ctr = metrics.impressions && metrics.clicks
@@ -53,6 +43,9 @@ export function CampaignAnalyticsModal({
   const roi = metrics.cost && metrics.conversions
     ? (((metrics.conversions * 1000 - metrics.cost) / metrics.cost) * 100).toFixed(0)
     : "N/A";
+
+  // Handle Decimal budget safely
+  const budgetValue = campaign.budget ? Number(campaign.budget.toString()) : 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -74,7 +67,7 @@ export function CampaignAnalyticsModal({
               </span>
               <span>•</span>
               <span className={`${campaign.status === "ACTIVE" ? "text-green-500" :
-                  campaign.status === "PAUSED" ? "text-yellow-500" : "text-gray-500"
+                campaign.status === "PAUSED" ? "text-yellow-500" : "text-gray-500"
                 }`}>
                 {campaign.status}
               </span>
@@ -149,7 +142,7 @@ export function CampaignAnalyticsModal({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
                 <p className="text-xs text-text-muted uppercase tracking-wide">Budget</p>
-                <p className="text-xl font-bold">₹{Number(campaign.budget || 0).toLocaleString()}</p>
+                <p className="text-xl font-bold">₹{budgetValue.toLocaleString()}</p>
               </div>
               <div>
                 <p className="text-xs text-text-muted uppercase tracking-wide">Spent</p>
@@ -168,8 +161,8 @@ export function CampaignAnalyticsModal({
 
           {/* ROI Summary */}
           <div className={`rounded-xl p-6 ${roi !== "N/A" && Number(roi) > 0
-              ? "bg-green-500/10 border border-green-500/20"
-              : "bg-yellow-500/10 border border-yellow-500/20"
+            ? "bg-green-500/10 border border-green-500/20"
+            : "bg-yellow-500/10 border border-yellow-500/20"
             }`}>
             <div className="flex items-center justify-between">
               <div>

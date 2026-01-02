@@ -194,3 +194,40 @@ export async function changePassword(currentPassword: string, newPassword: strin
     return { success: false, error: 'Failed to change password' };
   }
 }
+
+export type UpdateUserState = {
+  success?: boolean;
+  error?: string;
+};
+
+export async function updateUser(userId: string, formData: FormData): Promise<UpdateUserState> {
+    try {
+        await requirePermission('manage', 'user');
+
+        const name = formData.get('name') as string;
+        const email = formData.get('email') as string;
+        const phone = formData.get('phone') as string;
+        const branchId = formData.get('branchId') as string;
+        const isActive = formData.get('isActive') === 'on';
+
+        const data: any = { name, email, isActive };
+        if (phone) data.phone = phone;
+        if (branchId && branchId !== 'none') {
+            data.branchId = branchId;
+        } else if (branchId === 'none') {
+            data.branchId = null;
+        }
+
+        await prisma.user.update({
+            where: { id: userId },
+            data
+        });
+
+        revalidatePath('/admin/users');
+        revalidatePath(`/admin/users/${userId}/edit`);
+        return { success: true };
+    } catch (error) {
+        console.error("Error updating user:", error);
+        return { error: "Failed to update user" };
+    }
+}

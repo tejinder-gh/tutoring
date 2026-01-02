@@ -19,6 +19,7 @@ export async function createResource(data: {
   isPublic?: boolean;
   courseId?: string;
   lessonId?: string;
+  moduleId?: string;
   quizId?: string;
   assignmentId?: string;
 }) {
@@ -42,6 +43,7 @@ export async function createResource(data: {
         uploadedById: session.user.id,
         curriculumId: data.courseId ? (await prisma.curriculum.findFirst({ where: { courseId: data.courseId, teacherId: null } }))?.id : undefined,
         lessonId: data.lessonId,
+        moduleId: data.moduleId,
         quizId: data.quizId,
         assignmentId: data.assignmentId,
       },
@@ -144,7 +146,7 @@ export async function toggleResourceVisibility(id: string, isPublic: boolean) {
 export async function getAllResources(filters?: {
   type?: ResourceType;
   isPublic?: boolean;
-  entityType?: "course" | "lesson" | "quiz" | "assignment";
+  entityType?: "course" | "module" | "lesson" | "quiz" | "assignment";
   entityId?: string;
 }) {
   const session = await auth();
@@ -170,7 +172,7 @@ export async function getAllResources(filters?: {
     }
   }
 
-  const resources = await prisma.resource.findMany({
+  const resources: any = await prisma.resource.findMany({
     where,
     include: {
       uploadedBy: {
@@ -178,6 +180,9 @@ export async function getAllResources(filters?: {
       },
       curriculum: {
         select: { course: { select: { id: true, title: true } } },
+      },
+      module: {
+        select: { id: true, title: true },
       },
       lesson: {
         select: { id: true, title: true },
@@ -192,9 +197,23 @@ export async function getAllResources(filters?: {
     orderBy: { createdAt: "desc" },
   });
 
-  return resources.map(r => ({
-      ...r,
-      course: r.curriculum?.course || null
+  return resources.map((r: any) => ({
+    id: r.id,
+    title: r.title,
+    description: r.description,
+    url: r.url,
+    type: r.type,
+    fileSize: r.fileSize,
+    mimeType: r.mimeType,
+    isPublic: r.isPublic,
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+    uploadedBy: r.uploadedBy,
+    course: r.curriculum?.course || null,
+    module: r.module,
+    lesson: r.lesson,
+    quiz: r.quiz,
+    assignment: r.assignment,
   }));
 }
 
@@ -202,7 +221,7 @@ export async function getAllResources(filters?: {
  * Get resources by entity (course/lesson/quiz/assignment)
  */
 export async function getResourcesByEntity(
-  entityType: "course" | "lesson" | "quiz" | "assignment",
+  entityType: "course" | "module" | "lesson" | "quiz" | "assignment",
   entityId: string
 ) {
   const session = await auth();
@@ -239,7 +258,7 @@ export async function getResourcesByEntity(
  */
 export async function linkResourceToEntity(
   resourceId: string,
-  entityType: "course" | "lesson" | "quiz" | "assignment",
+  entityType: "course" | "module" | "lesson" | "quiz" | "assignment",
   entityId: string
 ) {
   const session = await auth();
@@ -276,7 +295,7 @@ export async function linkResourceToEntity(
  */
 export async function unlinkResourceFromEntity(
   resourceId: string,
-  entityType: "course" | "lesson" | "quiz" | "assignment"
+  entityType: "course" | "module" | "lesson" | "quiz" | "assignment"
 ) {
   const session = await auth();
   if (!session?.user?.id) {

@@ -51,14 +51,18 @@ export async function updateCampaignStatus(campaignId: string, status: CampaignS
   }
 }
 
-export async function updateCampaign(campaignId: string, data: {
-  name?: string;
-  type?: string;
-  description?: string;
-  budget?: number;
-  startDate?: string;
-  endDate?: string;
-}) {
+export async function updateCampaign(
+  campaignId: string,
+  data: {
+    name?: string;
+    description?: string;
+    type?: string;
+    budget?: number;
+    startDate?: Date;
+    endDate?: Date;
+    targetAudience?: any;
+  }
+) {
   const session = await auth();
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
@@ -66,12 +70,8 @@ export async function updateCampaign(campaignId: string, data: {
     const campaign = await prisma.campaign.update({
       where: { id: campaignId },
       data: {
-        name: data.name,
-        type: data.type,
-        description: data.description,
-        budget: data.budget,
-        startDate: data.startDate ? new Date(data.startDate) : undefined,
-        endDate: data.endDate ? new Date(data.endDate) : undefined,
+        ...data,
+        updatedAt: new Date(),
       },
     });
 
@@ -97,5 +97,49 @@ export async function deleteCampaign(campaignId: string) {
   } catch (error) {
     console.error("Failed to delete campaign:", error);
     return { success: false, error: "Failed to delete campaign" };
+  }
+}
+
+export async function getCampaignById(campaignId: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const campaign = await prisma.campaign.findUnique({
+    where: { id: campaignId },
+  });
+
+  return campaign;
+}
+
+export async function updateCampaignMetrics(
+  campaignId: string,
+  metrics: {
+    impressions?: number;
+    clicks?: number;
+    conversions?: number;
+    cost?: number;
+  }
+) {
+  const session = await auth();
+  if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+  try {
+    const campaign = await prisma.campaign.findUnique({
+      where: { id: campaignId },
+    });
+
+    const currentMetrics = (campaign?.metrics as any) || {};
+    const updatedMetrics = { ...currentMetrics, ...metrics };
+
+    await prisma.campaign.update({
+      where: { id: campaignId },
+      data: { metrics: updatedMetrics },
+    });
+
+    revalidatePath("/admin/marketing");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update metrics:", error);
+    return { success: false, error: "Failed to update metrics" };
   }
 }

@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from 'next/navigation';
+import { Toaster } from "sonner";
 import "../../globals.css";
 
 const geistSans = Geist({
@@ -63,6 +64,7 @@ export default async function RootLayout({
               <ConditionalLayout>
                 {children}
               </ConditionalLayout>
+              <Toaster position="top-center" richColors />
             </ThemeProvider>
           </AuthProvider>
         </NextIntlClientProvider>

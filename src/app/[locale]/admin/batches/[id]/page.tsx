@@ -1,4 +1,5 @@
 
+import { BatchEnrollmentManager } from "@/components/admin/BatchEnrollmentManager";
 import { updateBatch } from "@/lib/actions/batches";
 import { prisma } from "@/lib/prisma";
 import { ArrowLeft, Calculator, Save } from "lucide-react";
@@ -21,12 +22,30 @@ export default async function BatchDetailsPage({
       _count: {
         select: { students: true },
       },
+      enrollments: {
+        include: {
+          studentProfile: {
+            include: { user: true }
+          }
+        }
+      }
     },
   });
 
   if (!batch) {
     notFound();
   }
+
+  // Transform enrollments for the component
+  const initialEnrollments = batch.enrollments.map((enrollment) => ({
+    id: enrollment.id,
+    studentProfileId: enrollment.studentProfileId,
+    studentName: enrollment.studentProfile.user.name,
+    studentEmail: enrollment.studentProfile.user.email,
+    status: enrollment.status,
+    discount: Number(enrollment.discount || 0),
+    enrolledAt: enrollment.enrolledAt,
+  }));
 
   // Cost Analysis Calculation
   const totalNoOfParticipants = batch._count.students;
@@ -73,11 +92,12 @@ export default async function BatchDetailsPage({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Edit Form */}
-        <div className="lg:col-span-2">
+        {/* Left Column: Edit Form & Enrollments */}
+        <div className="lg:col-span-2 space-y-8">
           <div className="bg-accent/10 border border-border rounded-xl p-6 sm:p-8">
             <h2 className="text-xl font-bold text-foreground mb-6">Edit Details</h2>
             <form action={updateBatch.bind(null, batch.id)} className="space-y-6">
+              {/* Form fields... (kept as is, just wrapped in the form tag properly by the surrounding code context) */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Batch Name
@@ -209,6 +229,16 @@ export default async function BatchDetailsPage({
               </div>
             </form>
           </div>
+
+          {/* Enrollment Manager */}
+          <BatchEnrollmentManager
+            batchId={batch.id}
+            initialEnrollments={(batch.enrollments || []).map((e: any) => ({
+              ...e,
+              studentName: e.studentProfile.user.name,
+              studentEmail: e.studentProfile.user.email
+            }))}
+          />
         </div>
 
         {/* Right Column: Cost Analysis */}

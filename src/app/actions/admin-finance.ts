@@ -17,6 +17,8 @@ export interface FinanceOverview {
   totalDisbursed: number;
   pendingSalaries: number;
   pendingSalariesCount: number;
+  totalExpenses: number;
+  netProfit: number;
 }
 
 export async function getFinanceOverview(): Promise<FinanceOverview> {
@@ -35,6 +37,7 @@ export async function getFinanceOverview(): Promise<FinanceOverview> {
     pendingPaymentsResult,
     totalDisbursedResult,
     pendingSalariesResult,
+    totalExpensesResult,
   ] = await Promise.all([
     // Total revenue (all time)
     prisma.paymentReceipts.aggregate({
@@ -70,6 +73,13 @@ export async function getFinanceOverview(): Promise<FinanceOverview> {
         staffProfile: { include: { user: true } },
       },
     }),
+    // Total Expenses
+    prisma.expense.aggregate({
+        where: {
+            date: { gte: monthStart, lte: monthEnd }
+        },
+        _sum: { amount: true }
+    })
   ]);
 
   // Calculate pending salaries (active salaries not paid this month)
@@ -91,6 +101,8 @@ export async function getFinanceOverview(): Promise<FinanceOverview> {
     totalDisbursed: Number(totalDisbursedResult._sum.amount || 0),
     pendingSalaries: pendingSalaryAmount,
     pendingSalariesCount: unpaidSalaries.length,
+    totalExpenses: Number(totalExpensesResult._sum.amount || 0),
+    netProfit: Number(thisMonthRevenueResult._sum.amountPaid || 0) - Number(totalExpensesResult._sum.amount || 0) - Number(totalDisbursedResult._sum.amount || 0) // Revenue - Expenses - Salaries Paid
   };
 }
 

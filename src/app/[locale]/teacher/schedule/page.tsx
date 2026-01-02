@@ -1,7 +1,7 @@
 "use client";
 
 import { getMySchedule } from "@/app/actions/calendar";
-import { requestLeave } from "@/app/actions/leave";
+import { createLeaveRequest as requestLeave } from "@/app/actions/leaves";
 import LeaveRequestModal from "@/components/Calendar/LeaveRequestModal";
 import ScheduleEventDialog from "@/components/Calendar/ScheduleEventDialog";
 import WeeklySchedule from "@/components/Calendar/WeeklySchedule";
@@ -33,7 +33,11 @@ export default function TeacherSchedulePage() {
   }, [date]);
 
   const handleLeaveSubmit = async (data: { startDate: string; endDate: string; reason: string }) => {
-    await requestLeave(data);
+    await requestLeave({
+      ...data,
+      startDate: new Date(data.startDate),
+      endDate: new Date(data.endDate)
+    });
     // Refresh schedule
     const newData = await getMySchedule(date);
     setEvents(newData);

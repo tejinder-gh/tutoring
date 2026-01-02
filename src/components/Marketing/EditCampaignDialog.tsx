@@ -1,152 +1,147 @@
 "use client";
 
 import { updateCampaign } from "@/app/actions/marketing";
-import { Loader2, X } from "lucide-react";
-import { useTransition } from "react";
-
-interface Campaign {
-  id: string;
-  name: string;
-  type: string;
-  description?: string | null;
-  budget?: any;
-  startDate?: Date | null;
-  endDate?: Date | null;
-}
+import { Campaign } from "@prisma/client";
+import { X } from "lucide-react";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 export function EditCampaignDialog({
   campaign,
-  onClose
+  isOpen,
+  onClose,
 }: {
   campaign: Campaign;
+  isOpen: boolean;
   onClose: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [formData, setFormData] = useState({
+    name: campaign.name,
+    description: campaign.description || "",
+    type: campaign.type,
+    budget: campaign.budget?.toString() || "",
+    startDate: campaign.startDate ? new Date(campaign.startDate).toISOString().split("T")[0] : "",
+    endDate: campaign.endDate ? new Date(campaign.endDate).toISOString().split("T")[0] : "",
+  });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get("name") as string,
-      type: formData.get("type") as string,
-      description: formData.get("description") as string,
-      budget: Number(formData.get("budget")),
-      startDate: formData.get("startDate") as string || undefined,
-      endDate: formData.get("endDate") as string || undefined,
-    };
-
     startTransition(async () => {
-      const res = await updateCampaign(campaign.id, data);
-      if (res.success) {
+      const result = await updateCampaign(campaign.id, {
+        name: formData.name,
+        description: formData.description,
+        type: formData.type,
+        budget: formData.budget ? parseFloat(formData.budget) : undefined,
+        startDate: formData.startDate ? new Date(formData.startDate) : undefined,
+        endDate: formData.endDate ? new Date(formData.endDate) : undefined,
+      });
+
+      if (result.success) {
+        toast.success("Campaign updated successfully");
         onClose();
       } else {
-        alert("Failed to update campaign");
+        toast.error("Failed to update campaign");
       }
     });
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-background border border-border rounded-xl p-6 w-full max-w-md relative animate-in zoom-in-95 shadow-xl">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-text-muted hover:text-foreground"
-        >
-          <X size={20} />
-        </button>
+  if (!isOpen) return null;
 
-        <h2 className="text-xl font-bold mb-4">Edit Campaign</h2>
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-card border border-border rounded-xl p-6 max-w-lg w-full mx-4 shadow-xl">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold">Edit Campaign</h2>
+          <button onClick={onClose} className="p-2 hover:bg-accent rounded">
+            <X size={20} />
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Campaign Name
-            </label>
+            <label className="block text-sm font-medium mb-2">Campaign Name</label>
             <input
-              name="name"
-              defaultValue={campaign.name}
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="input-field w-full px-3 py-2 border rounded-md bg-background"
               required
-              className="w-full p-2 rounded border border-border bg-background focus:ring-2 focus:ring-primary/20 outline-none"
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Type</label>
-              <select
-                name="type"
-                defaultValue={campaign.type}
-                className="w-full p-2 rounded border border-border bg-background focus:ring-2 focus:ring-primary/20 outline-none"
-              >
-                <option value="EMAIL">Email</option>
-                <option value="SMS">SMS</option>
-                <option value="SOCIAL">Social Media</option>
-                <option value="GOOGLE_ADS">Google Ads</option>
-                <option value="FACEBOOK_ADS">Facebook Ads</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Budget (₹)
-              </label>
-              <input
-                name="budget"
-                type="number"
-                defaultValue={campaign.budget ? Number(campaign.budget) : undefined}
-                min="0"
-                className="w-full p-2 rounded border border-border bg-background focus:ring-2 focus:ring-primary/20 outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Start Date</label>
-              <input
-                name="startDate"
-                type="date"
-                defaultValue={campaign.startDate ? new Date(campaign.startDate).toISOString().split('T')[0] : undefined}
-                className="w-full p-2 rounded border border-border bg-background focus:ring-2 focus:ring-primary/20 outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">End Date</label>
-              <input
-                name="endDate"
-                type="date"
-                defaultValue={campaign.endDate ? new Date(campaign.endDate).toISOString().split('T')[0] : undefined}
-                className="w-full p-2 rounded border border-border bg-background focus:ring-2 focus:ring-primary/20 outline-none"
-              />
-            </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Description
-            </label>
+            <label className="block text-sm font-medium mb-2">Type</label>
+            <select
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              className="input-field w-full px-3 py-2 border rounded-md bg-background"
+              required
+            >
+              <option value="EMAIL">Email</option>
+              <option value="SMS">SMS</option>
+              <option value="SOCIAL">Social Media</option>
+              <option value="GOOGLE_ADS">Google Ads</option>
+              <option value="FACEBOOK_ADS">Facebook Ads</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Description</label>
             <textarea
-              name="description"
-              defaultValue={campaign.description || ""}
-              rows={3}
-              className="w-full p-2 rounded border border-border bg-background resize-none focus:ring-2 focus:ring-primary/20 outline-none"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="input-field w-full px-3 py-2 border rounded-md bg-background min-h-[100px]"
             />
           </div>
 
-          <div className="flex justify-end gap-2 mt-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">Budget (₹)</label>
+            <input
+              type="number"
+              value={formData.budget}
+              onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+              className="input-field w-full px-3 py-2 border rounded-md bg-background"
+              step="0.01"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Start Date</label>
+              <input
+                type="date"
+                value={formData.startDate}
+                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                className="input-field w-full px-3 py-2 border rounded-md bg-background"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">End Date</label>
+              <input
+                type="date"
+                value={formData.endDate}
+                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                className="input-field w-full px-3 py-2 border rounded-md bg-background"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="btn-outline"
+              className="px-4 py-2 border rounded-md hover:bg-accent"
+              disabled={isPending}
             >
               Cancel
             </button>
             <button
               type="submit"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90"
               disabled={isPending}
-              className="btn-primary flex items-center gap-2"
             >
-              {isPending && <Loader2 size={16} className="animate-spin" />}
-              {isPending ? "Updating..." : "Update Campaign"}
+              {isPending ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>

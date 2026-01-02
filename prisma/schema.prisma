@@ -24,6 +24,68 @@ datasource db {
 // ENUMS
 // =============================================================================
 
+/// Branch model for multi-location support
+model Branch {
+  id        String   @id @default(cuid())
+  name      String
+  location  String?
+  isMain    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  batches   Batch[]
+  leads     Lead[]
+  expenses  Expense[]
+  payments  PaymentReceipts[]
+  resources Resource[]
+  todos     Todo[]
+}
+
+/// Expense model for bookkeeping
+model Expense {
+  id          String   @id @default(cuid())
+  title       String
+  amount      Decimal
+  category    String   @default("OPERATIONAL") // Rent, Utilities, Salary, etc.
+  date        DateTime @default(now())
+  description String?
+  branchId    String?
+  branch      Branch?  @relation(fields: [branchId], references: [id])
+  recordedBy  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([branchId])
+  @@index([date])
+}
+
+/// Task management
+model Todo {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  dueDate     DateTime?
+
+  assignedToId String
+  assignedTo   User   @relation("TodoAssignedTo", fields: [assignedToId], references: [id])
+
+  assignedById String
+  assignedBy   User   @relation("TodoAssignedBy", fields: [assignedById], references: [id])
+
+  branchId    String?
+  branch      Branch? @relation(fields: [branchId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([assignedToId])
+  @@index([assignedById])
+  @@index([branchId])
+}
+
 /// User roles in the tutoring center hierarchy
 /// Each role has specific access levels and permissions
 // Role enum removed in favor of Role model
@@ -223,6 +285,14 @@ model User {
   discountedStudents StudentProfile[] @relation("DiscountBy")
   referredTeachers   TeacherProfile[] @relation("ReferredBy")
 
+  // Todo relations
+  assignedTodos      Todo[]           @relation("TodoAssignedTo")
+  createdTodos       Todo[]           @relation("TodoAssignedBy")
+
+  // Branch relation
+  branchId String?
+  branch   Branch? @relation(fields: [branchId], references: [id])
+
   // Password reset tokens
   passwordResetTokens PasswordResetToken[]
 
@@ -404,6 +474,10 @@ model Module {
   updatedAt DateTime @updatedAt
 
   lessons Lesson[]
+  assignments Assignment[]
+  quizzes     Quiz[]
+  resources   Resource[]
+  richTextContent String? /// Rich text notes for the module
 
   @@index([curriculumId, order])
 }
@@ -424,6 +498,7 @@ model Lesson {
 
   videoUrl  String? /// Video lesson URL
   order     Int      @default(0) /// Order within module
+  weightage Float    @default(1.0) /// Weightage of the lesson for progress calculation
   moduleId  String
   module    Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   isActive  Boolean  @default(true)
@@ -468,6 +543,8 @@ model Assignment {
   curriculum      Curriculum   @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
   lessonId    String?
   lesson      Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  moduleId    String?
+  module      Module?  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   submissions Submission[]
   resources   Resource[]
@@ -523,6 +600,8 @@ model Quiz {
   curriculum       Curriculum   @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
   lessonId     String?
   lesson       Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  moduleId     String?
+  module       Module?  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   duration     Int? /// Minutes allowed (null = unlimited)
   passingScore Int      @default(70) /// Percentage required to pass
   isActive     Boolean  @default(true)
@@ -638,8 +717,12 @@ model Batch {
   enrollments Enrollment[]
   events      Event[]
 
+  branchId    String?
+  branch      Branch?   @relation(fields: [branchId], references: [id])
+
   @@index([courseId])
   @@index([isActive])
+  @@index([branchId])
 }
 
 model Event {
@@ -770,9 +853,13 @@ model PaymentReceipts {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
+  branchId       String?
+  branch         Branch?       @relation(fields: [branchId], references: [id])
+
   @@index([userId])
   @@index([courseId])
   @@index([paymentDate])
+  @@index([branchId])
 }
 
 // =============================================================================
@@ -797,9 +884,13 @@ model Lead {
 
   activities LeadActivity[]
 
+  branchId       String?
+  branch         Branch?       @relation(fields: [branchId], references: [id])
+
   @@index([status])
   @@index([source])
   @@index([assignedTo])
+  @@index([branchId])
 }
 
 /// Activity log for lead interactions
@@ -974,6 +1065,8 @@ model Resource {
   curriculum       Curriculum?     @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
   lessonId     String?
   lesson       Lesson?     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  moduleId     String?
+  module       Module?     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   quizId       String?
   quiz         Quiz?       @relation(fields: [quizId], references: [id], onDelete: Cascade)
   assignmentId String?
@@ -986,12 +1079,16 @@ model Resource {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  branchId     String?
+  branch       Branch?  @relation(fields: [branchId], references: [id])
+
   @@index([curriculumId])
   @@index([lessonId])
   @@index([quizId])
   @@index([assignmentId])
   @@index([uploadedById])
   @@index([isPublic])
+  @@index([branchId])
 }
 
 // =============================================================================

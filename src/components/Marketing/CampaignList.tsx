@@ -7,20 +7,10 @@ import { useState, useTransition } from "react";
 import { CampaignAnalyticsModal } from "./CampaignAnalyticsModal";
 import { EditCampaignDialog } from "./EditCampaignDialog";
 
-interface Campaign {
-  id: string;
-  name: string;
-  status: CampaignStatus;
-  type: string;
-  budget?: any; // Decimal
-  metrics?: any; // JSON
-  createdAt: Date;
-}
-
-export function CampaignList({ initialCampaigns }: { initialCampaigns: Campaign[] }) {
+export function CampaignList({ initialCampaigns }: { initialCampaigns: any[] }) {
   const [isPending, startTransition] = useTransition();
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
-  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
+  const [editingCampaign, setEditingCampaign] = useState<any>(null);
 
   const handleStatusChange = (id: string, newStatus: CampaignStatus) => {
     startTransition(async () => {
@@ -131,6 +121,7 @@ export function CampaignList({ initialCampaigns }: { initialCampaigns: Campaign[
       {editingCampaign && (
         <EditCampaignDialog
           campaign={editingCampaign}
+          isOpen={!!editingCampaign}
           onClose={() => setEditingCampaign(null)}
         />
       )}

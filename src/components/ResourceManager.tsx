@@ -313,7 +313,7 @@ export default function ResourceManager({
         </div>
       </div>
 
-      {/* Add Resource Modal (TODO: Implement modal component) */}
+      {/* Add Resource Modal */}
       <ResourceUploadDialog
         isOpen={isAddingNew}
         onClose={() => setIsAddingNew(false)}

@@ -351,7 +351,45 @@ const getCachedDashboardMetricsData = unstable_cache(
 
 export async function getDashboardMetrics(period: TrendPeriod = 'MONTHLY') {
     const session = await auth();
-    if (!session?.user?.id) return null;
-
     return getCachedDashboardMetricsData(period);
+}
+
+export async function getLeadAnalytics(branchId?: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  // await requirePermission("read", "marketing"); // Or general admin access
+
+  const where: any = {};
+  if (branchId) {
+    where.branchId = branchId;
+  }
+
+  // 1. Leads by Count per Status
+  const statusCounts = await prisma.lead.groupBy({
+    by: ['status'],
+    where,
+    _count: { status: true }
+  });
+
+  // 2. Conversion Ratio (CONVERTED / Total)
+  const totalLeads = statusCounts.reduce((acc, curr) => acc + curr._count.status, 0);
+  const convertedLeads = statusCounts.find(s => s.status === 'CONVERTED')?._count.status || 0;
+
+  const conversionRatio = totalLeads > 0 ? (convertedLeads / totalLeads) * 100 : 0;
+
+  // 3. Leads by Source
+  const sourceCounts = await prisma.lead.groupBy({
+     by: ['source'],
+     where,
+     _count: { source: true }
+  });
+
+  return {
+    statusDistribution: statusCounts.map(s => ({ name: s.status, value: s._count.status })),
+    sourceDistribution: sourceCounts.map(s => ({ name: s.source, value: s._count.source })),
+    conversionRatio: Math.round(conversionRatio * 100) / 100,
+    totalLeads,
+    convertedLeads
+  };
 }

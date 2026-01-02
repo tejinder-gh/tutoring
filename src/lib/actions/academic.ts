@@ -43,6 +43,7 @@ export async function createCourse(formData: FormData) {
 
 export async function addModule(courseId: string, formData: FormData) {
     const title = formData.get("title") as string;
+    const richTextContent = formData.get("richTextContent") as string;
 
     const curriculum = await prisma.curriculum.findFirst({ where: { courseId, teacherId: null } });
     if (!curriculum) return; // Should handle error
@@ -58,6 +59,7 @@ export async function addModule(courseId: string, formData: FormData) {
     await prisma.module.create({
         data: {
             title,
+            richTextContent: richTextContent || null,
             curriculumId: curriculum.id,
             order: newOrder
         }
@@ -69,11 +71,14 @@ export async function addModule(courseId: string, formData: FormData) {
 export async function addLesson(moduleId: string, courseId: string, formData: FormData) {
     const title = formData.get("title") as string;
     const content = formData.get("content") as string;
+    const weightageStr = formData.get("weightage") as string;
+    const weightage = weightageStr ? parseFloat(weightageStr) : 1.0;
 
     await prisma.lesson.create({
         data: {
             title,
             content,
+            weightage: isNaN(weightage) ? 1.0 : weightage,
             moduleId
         }
     });
@@ -84,6 +89,7 @@ export async function addLesson(moduleId: string, courseId: string, formData: Fo
 export async function createAssignment(courseId: string, formData: FormData) {
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
+    const moduleId = formData.get("moduleId") as string;
     const dueInDaysStr = formData.get("dueInDays") as string;
 
     // Parse dueInDays to integer, default to null if not provided
@@ -97,9 +103,32 @@ export async function createAssignment(courseId: string, formData: FormData) {
             title,
             description: description || "",
             dueInDays: isNaN(dueInDays as number) ? null : dueInDays,
+            moduleId: moduleId || null,
             curriculumId: curriculum.id
         }
     });
 
     revalidatePath(`/admin/courses/${courseId}`);
+}
+
+export async function addNoteToModule(moduleId: string, content: string) {
+    if (!moduleId || !content) return;
+
+    await prisma.module.update({
+        where: { id: moduleId },
+        data: { richTextContent: content }
+    });
+
+    // We don't know the courseId here easily to revalidate path efficiently without a lookup,
+    // but in a server action called from client, we usually revalidate the current path.
+    // For now we can fetch it to be safe if strictly needed, or rely on client to call revalidate.
+    // Let's look it up.
+    const module = await prisma.module.findUnique({
+        where: { id: moduleId },
+        select: { curriculum: { select: { courseId: true } } }
+    });
+
+    if (module?.curriculum?.courseId) {
+        revalidatePath(`/admin/courses/${module.curriculum.courseId}`);
+    }
 }

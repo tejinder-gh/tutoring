@@ -17,6 +17,7 @@ export async function createQuiz(data: {
   description?: string;
   courseId: string;
   lessonId?: string;
+  moduleId?: string;
   duration?: number;
   passingScore?: number;
 }) {
@@ -40,6 +41,7 @@ export async function createQuiz(data: {
         description: data.description,
         curriculumId: curriculum.id,
         lessonId: data.lessonId || null,
+        moduleId: data.moduleId || null,
         duration: data.duration || null,
         passingScore: data.passingScore ?? 70,
       },

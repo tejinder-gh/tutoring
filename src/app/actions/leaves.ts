@@ -55,14 +55,41 @@ export async function getMyLeaves() {
 }
 
 // For Admin
-export async function getAllLeaveRequests(status?: LeaveStatus) {
+export async function getAllLeaveRequests(filters?: {
+    status?: LeaveStatus;
+    role?: string;
+    startDate?: Date;
+    endDate?: Date;
+}) {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Unauthorized");
 
-    await requirePermission("read", "user"); // Assuming HR/Admin permission
+    await requirePermission("read", "user");
+
+    const whereClause: any = {};
+
+    if (filters?.status) {
+        whereClause.status = filters.status;
+    }
+
+    if (filters?.role) {
+        whereClause.user = {
+            role: {
+                name: filters.role
+            }
+        };
+    }
+
+    if (filters?.startDate) {
+        whereClause.startDate = { gte: filters.startDate };
+    }
+
+    if (filters?.endDate) {
+        whereClause.endDate = { lte: filters.endDate };
+    }
 
     const leaves = await prisma.leave.findMany({
-        where: status ? { status } : undefined,
+        where: whereClause,
         include: {
             user: {
                 select: {

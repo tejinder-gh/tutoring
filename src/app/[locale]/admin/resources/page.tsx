@@ -7,7 +7,14 @@ export default async function ResourcesPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  // TODO: Add proper permission check for admin/teacher roles
+  // Require read access to resources/courses
+  try {
+    const { requirePermission } = await import("@/lib/permissions");
+    await requirePermission("read", "course");
+  } catch (e) {
+    // If permission check fails or imports fail, redirect or error
+    redirect("/");
+  }
 
   const resources = await getAllResources();
 

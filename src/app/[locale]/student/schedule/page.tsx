@@ -1,7 +1,7 @@
 "use client";
 
 import { getMySchedule } from "@/app/actions/calendar";
-import { requestLeave } from "@/app/actions/leave";
+import { createLeaveRequest } from "@/app/actions/leaves";
 import LeaveRequestModal from "@/components/Calendar/LeaveRequestModal";
 import WeeklySchedule from "@/components/Calendar/WeeklySchedule";
 import { Plus } from "lucide-react";
@@ -31,7 +31,11 @@ export default function StudentSchedulePage() {
   }, [date]);
 
   const handleLeaveSubmit = async (data: { startDate: string; endDate: string; reason: string }) => {
-    await requestLeave(data);
+    await createLeaveRequest({
+      startDate: new Date(data.startDate),
+      endDate: new Date(data.endDate),
+      reason: data.reason
+    });
     // Refresh schedule
     const newData = await getMySchedule(date);
     setEvents(newData);

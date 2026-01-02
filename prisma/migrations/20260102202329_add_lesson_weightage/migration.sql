@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Lesson" ADD COLUMN     "weightage" DOUBLE PRECISION NOT NULL DEFAULT 1.0;

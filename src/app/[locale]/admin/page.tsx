@@ -3,32 +3,43 @@ import { SimpleBarChart, SimpleLineChart } from '@/components/Analytics/Charts';
 import StatCard from '@/components/Analytics/StatCard';
 import { Link } from '@/i18n/routing';
 import { requirePermission } from '@/lib/permissions';
-import { BadgeIndianRupee, GraduationCap, Users } from 'lucide-react';
+import { BadgeIndianRupee, Filter, GraduationCap, Users } from 'lucide-react';
 import { prisma } from '../../../lib/prisma';
-import { getAdminAnalytics, getDashboardMetrics, TrendPeriod } from '../../actions/analytics';
+import { getAdminAnalytics, getDashboardMetrics, getLeadAnalytics, TrendPeriod } from '../../actions/analytics';
+
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminPage({ searchParams }: { searchParams: { period?: string } }) {
+export default async function AdminPage({ searchParams }: { searchParams: { period?: string; branchId?: string } }) {
   await requirePermission('read', 'user');
   const session = await auth();
 
   const period: TrendPeriod = (searchParams.period as TrendPeriod) || 'MONTHLY';
+  const branchId = searchParams.branchId;
 
-  const [leads, students, analytics, dashboardMetrics, auditLogs] = await Promise.all([
-    prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
+  const [leads, students, analytics, dashboardMetrics, leadAnalytics, auditLogs, branches] = await Promise.all([
+    prisma.lead.findMany({
+      where: branchId ? { branchId } : undefined,
+      orderBy: { createdAt: 'desc' },
+      include: { branch: true }
+    }),
     prisma.user.findMany({
-      where: { role: { name: 'STUDENT' } },
-      include: { studentProfile: true, role: true },
+      where: {
+        role: { name: 'STUDENT' },
+        ...(branchId ? { branchId } : {})
+      },
+      include: { studentProfile: true, role: true, branch: true },
       orderBy: { createdAt: 'desc' },
     }),
     getAdminAnalytics(period),
     getDashboardMetrics(period),
+    getLeadAnalytics(branchId),
     prisma.auditLog.findMany({
       take: 10,
       orderBy: { createdAt: 'desc' },
       include: { user: { select: { name: true, email: true } } }
-    })
+    }),
+    prisma.branch.findMany()
   ]);
 
   const periods: { label: string; value: TrendPeriod }[] = [
@@ -73,6 +84,48 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
             </Link>
           ))}
         </div>
+      </div>
+
+      {/* Branch Selector */}
+      <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-lg border">
+          <Filter className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm font-medium">Branch:</span>
+          <div className="flex gap-2">
+            <Link
+              href={`/admin?period=${period}`}
+              className={`text-sm hover:underline ${!branchId ? 'font-bold text-primary' : 'text-muted-foreground'}`}
+            >
+              All
+            </Link>
+            {branches.map(b => (
+              <Link
+                key={b.id}
+                href={`/admin?period=${period}&branchId=${b.id}`}
+                className={`text-sm hover:underline ${branchId === b.id ? 'font-bold text-primary' : 'text-muted-foreground'}`}
+              >
+                {b.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Lead Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-card border rounded-xl p-6 shadow-sm">
+          <div className="text-sm text-muted-foreground font-medium mb-1">Lead Conversion</div>
+          <div className="text-3xl font-bold">{leadAnalytics.conversionRatio}%</div>
+          <div className="text-xs text-muted-foreground mt-2">
+            {leadAnalytics.convertedLeads} converted / {leadAnalytics.totalLeads} total
+          </div>
+        </div>
+        {leadAnalytics.statusDistribution.slice(0, 3).map(stat => (
+          <div key={stat.name} className="bg-card border rounded-xl p-6 shadow-sm">
+            <div className="text-sm text-muted-foreground font-medium mb-1">{stat.name} Leads</div>
+            <div className="text-3xl font-bold">{stat.value}</div>
+          </div>
+        ))}
       </div>
 
       {/* Stats */}

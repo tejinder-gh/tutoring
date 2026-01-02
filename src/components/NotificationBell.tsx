@@ -35,10 +35,16 @@ export default function NotificationBell() {
     }
   };
 
-  // Poll every 30 seconds
+  // Poll every 60 seconds, but only if visible
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
+
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        fetchNotifications();
+      }
+    }, 60000);
+
     return () => clearInterval(interval);
   }, []);
 

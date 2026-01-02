@@ -1,6 +1,6 @@
 import { getPendingPayroll } from "@/app/actions/finance";
 import { auth } from "@/auth";
-import { PayrollTable } from "@/components/Finance/PayrollTable";
+import { PayrollEntry, PayrollTable } from "@/components/Finance/PayrollTable";
 import { requirePermission } from "@/lib/permissions";
 import { redirect } from "next/navigation";
 
@@ -19,7 +19,7 @@ export default async function PayrollPage() {
         <p className="text-text-muted">Process salary payments for teachers and staff</p>
       </div>
 
-      <PayrollTable payroll={payroll as any} />
+      <PayrollTable payroll={payroll as PayrollEntry[]} />
     </div>
   );
 }

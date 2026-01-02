@@ -38,6 +38,8 @@ export default function Sidebar({ role }: SidebarProps) {
       { href: "/teacher/assignments", label: "Assignments", icon: FileText },
       { href: "/teacher/attendance", label: "Attendance", icon: Calendar },
       { href: "/teacher/schedule", label: "Schedule", icon: Calendar },
+      { href: "/teacher/communication", label: "Communication", icon: MessageSquare },
+      { href: "/teacher/profile", label: "Profile", icon: Users },
     ],
     STUDENT: [
       { href: "/student", label: "Dashboard", icon: LayoutDashboard },

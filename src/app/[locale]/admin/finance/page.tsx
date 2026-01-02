@@ -6,19 +6,18 @@ import {
   getRevenueTrends,
 } from "@/app/actions/admin-finance";
 import { auth } from "@/auth";
+import { SalaryProcessingSection } from "@/components/admin/SalaryProcessingSection";
 import { SimpleBarChart, SimpleLineChart } from "@/components/Analytics/Charts";
 import StatCard from "@/components/Analytics/StatCard";
 import { requirePermission } from "@/lib/permissions";
 import { format } from "date-fns";
 import {
-  ArrowDownRight,
-  ArrowUpRight,
   BadgeIndianRupee,
   Calculator,
   CreditCard,
   TrendingUp,
   Users,
-  Wallet,
+  Wallet
 } from "lucide-react";
 import Link from "next/link";
 
@@ -195,69 +194,9 @@ export default async function AdminFinancePage() {
           </div>
         </div>
 
-        {/* Pending Salaries */}
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
-          <div className="p-4 border-b border-border flex justify-between items-center">
-            <h3 className="font-bold text-lg">Pending Salaries (This Month)</h3>
-            <span className="text-xs text-text-muted">
-              {unpaidSalaries.length} pending
-            </span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-accent/30 text-text-muted">
-                <tr>
-                  <th className="text-left p-3 font-medium">Employee</th>
-                  <th className="text-left p-3 font-medium">Type</th>
-                  <th className="text-right p-3 font-medium">Net Salary</th>
-                  <th className="text-center p-3 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {salaries.slice(0, 10).map((salary) => (
-                  <tr key={salary.id} className="hover:bg-accent/10">
-                    <td className="p-3">
-                      <div className="font-medium">{salary.employee.name}</div>
-                      <div className="text-xs text-text-muted">
-                        {salary.employee.department}
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <span
-                        className={`text-xs px-2 py-1 rounded font-medium ${salary.employee.type === "TEACHER"
-                            ? "bg-blue-500/10 text-blue-500"
-                            : "bg-green-500/10 text-green-500"
-                          }`}
-                      >
-                        {salary.employee.type}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right font-bold">
-                      ₹{salary.netSalary.toLocaleString()}
-                    </td>
-                    <td className="p-3 text-center">
-                      {salary.paidThisMonth ? (
-                        <span className="inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-500 px-2 py-1 rounded">
-                          <ArrowUpRight size={12} /> Paid
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-xs bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded">
-                          <ArrowDownRight size={12} /> Pending
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                {salaries.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="p-8 text-center text-text-muted">
-                      No salary records found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+        {/* Pending Salaries - Interactive Section */}
+        <div className="col-span-full">
+          <SalaryProcessingSection pendingSalaries={salaries} />
         </div>
       </div>
 
@@ -316,10 +255,10 @@ export default async function AdminFinancePage() {
                   <td className="p-3 text-right">
                     <span
                       className={`px-2 py-1 rounded text-xs font-bold ${batch.profitMargin >= 30
-                          ? "bg-green-500/10 text-green-500"
-                          : batch.profitMargin >= 10
-                            ? "bg-yellow-500/10 text-yellow-500"
-                            : "bg-red-500/10 text-red-500"
+                        ? "bg-green-500/10 text-green-500"
+                        : batch.profitMargin >= 10
+                          ? "bg-yellow-500/10 text-yellow-500"
+                          : "bg-red-500/10 text-red-500"
                         }`}
                     >
                       {batch.profitMargin}%
