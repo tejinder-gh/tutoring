@@ -74,7 +74,6 @@ export default function LessonEditor({
       if (!contentUrl) {
         throw new Error('No URL returned from upload');
       }
-
       // Save lesson with new contentUrl
       const result = await saveLessonContent(lessonId, markdown, contentUrl, 'markdown');
 
@@ -165,7 +164,7 @@ export default function LessonEditor({
         <ul className="list-disc list-inside space-y-1">
           <li>Use GitHub Flavored Markdown for formatting</li>
           <li>Changes are auto-saved to your browser every second</li>
-          <li>Click "Save Lesson" to upload content to the server</li>
+          <li>Click &quot;Save Lesson&quot; to upload content to the server</li>
           <li>Preview pane shows how content will appear to students</li>
         </ul>
       </div>

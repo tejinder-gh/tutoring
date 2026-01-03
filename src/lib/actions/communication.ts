@@ -69,7 +69,7 @@ export async function resolveQuery(queryId: string) {
         where: { id: queryId },
         data: {
             status: "RESOLVED",
-            resolvedById: session.user.id,
+            ...(session.user.id ? { resolvedById: session.user.id } : {}),
             resolvedAt: new Date()
         }
     });
@@ -88,7 +88,7 @@ export async function createQueryReply(queryId: string, response: string) {
         data: {
             response,
             status: "RESOLVED",
-            resolvedById: session.user.id,
+            ...(session.user.id ? { resolvedById: session.user.id } : {}),
             resolvedAt: new Date()
         }
     });

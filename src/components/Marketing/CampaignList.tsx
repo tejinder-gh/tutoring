@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteCampaign, updateCampaignStatus } from "@/app/actions/marketing";
-import { CampaignStatus } from "@prisma/client";
+import type { CampaignStatus } from "@prisma/client";
 import { Edit, Pause, Play, Target, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { CampaignAnalyticsModal } from "./CampaignAnalyticsModal";

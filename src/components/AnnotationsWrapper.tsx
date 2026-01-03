@@ -1,6 +1,6 @@
 "use client";
 
-import { LessonHighlight } from "@prisma/client";
+import type { LessonHighlight } from "@prisma/client";
 import { Sidebar } from "lucide-react";
 import { useState } from "react";
 import AnnotationsSidebar from "./AnnotationsSidebar";

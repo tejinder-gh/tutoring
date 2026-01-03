@@ -28,7 +28,6 @@ export async function requirePermission(
 
   if (!user) redirect('/login');
 
-  // @ts-ignore - Prisma types are compatible
   const hasAccess = hasPermission(user as UserWithRole, action, subject);
 
   if (!hasAccess) {

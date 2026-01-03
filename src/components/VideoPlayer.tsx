@@ -25,13 +25,13 @@ function getVideoType(url: string): "youtube" | "vimeo" | "direct" {
 function getYouTubeId(url: string): string | null {
   const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
   const match = url.match(regex);
-  return match ? match[1] : null;
+  return match ? (match[1] || null) : null;
 }
 
 function getVimeoId(url: string): string | null {
   const regex = /vimeo\.com\/(\d+)/;
   const match = url.match(regex);
-  return match ? match[1] : null;
+  return match ? (match[1] || null) : null;
 }
 
 export default function VideoPlayer({
@@ -178,7 +178,7 @@ export default function VideoPlayer({
 
       {/* Controls overlay */}
       <div
-        className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${showControls ? "opacity-100" : "opacity-0"
+        className={`absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${showControls ? "opacity-100" : "opacity-0"
           }`}
       >
         {/* Center play button */}

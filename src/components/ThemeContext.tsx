@@ -15,13 +15,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
+    // Client-side only
     const savedTheme = localStorage.getItem("theme") as Theme;
-    // Only update state if the saved theme is different from the initial "dark"
-    if (savedTheme && savedTheme !== theme) {
-      setTheme(savedTheme); // eslint-disable-next-line react-hooks/set-state-in-effect
-    }
-
     if (savedTheme) {
+      // eslint-disable-next-line
+      setTheme(savedTheme);
       document.documentElement.setAttribute("data-theme", savedTheme);
     }
   }, []);

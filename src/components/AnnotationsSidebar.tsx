@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteHighlight } from "@/lib/actions/annotations";
-import { LessonHighlight } from "@prisma/client";
+import type { LessonHighlight } from "@prisma/client";
 import { BookOpen, Trash2, X } from "lucide-react";
 
 interface AnnotationsSidebarProps {

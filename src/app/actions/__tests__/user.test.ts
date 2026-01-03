@@ -1,29 +1,34 @@
-import { requirePermission } from '@/lib/permissions';
 import { db } from "@/lib/db";
+import { requirePermission } from '@/lib/permissions';
 import bcrypt from 'bcryptjs';
 import { createUser } from '../user';
 
 // Mock dependencies
-jest.mock('@/lib/prisma', () => ({
-  prisma: {
-    user: {
-      findUnique: jest.fn(),
-      create: jest.fn(),
-    },
-    role: {
-      findUnique: jest.fn(),
-    },
-    studentProfile: {
-      create: jest.fn(),
-    },
-    teacherProfile: {
-      create: jest.fn(),
-    },
-    staffProfile: {
-      create: jest.fn(),
-    },
-    $transaction: jest.fn((callback) => callback(prisma)),
+// Mock dependencies
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockPrisma: any = {
+  user: {
+    findUnique: jest.fn(),
+    create: jest.fn(),
   },
+  role: {
+    findUnique: jest.fn(),
+  },
+  studentProfile: {
+    create: jest.fn(),
+  },
+  teacherProfile: {
+    create: jest.fn(),
+  },
+  staffProfile: {
+    create: jest.fn(),
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $transaction: jest.fn((callback: any) => callback(mockPrisma)),
+};
+
+jest.mock('@/lib/db', () => ({
+  db: mockPrisma,
 }));
 
 jest.mock('@/lib/permissions', () => ({

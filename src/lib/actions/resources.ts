@@ -1,8 +1,8 @@
 "use server";
 
 import { auth } from "@/auth";
-import { requirePermission } from "@/lib/permissions";
 import { db } from "@/lib/db";
+import { requirePermission } from "@/lib/permissions";
 import { ResourceType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -31,21 +31,23 @@ export async function createResource(data: {
   await requirePermission("manage", "course");
 
   try {
+    const curriculumId = data.courseId ? (await db.curriculum.findFirst({ where: { courseId: data.courseId, teacherId: null } }))?.id : undefined;
+
     const resource = await db.resource.create({
       data: {
         title: data.title,
-        description: data.description,
+        ...(data.description ? { description: data.description } : {}),
         url: data.url,
         type: data.type,
-        fileSize: data.fileSize,
-        mimeType: data.mimeType,
+        ...(data.fileSize ? { fileSize: data.fileSize } : {}),
+        ...(data.mimeType ? { mimeType: data.mimeType } : {}),
         isPublic: data.isPublic ?? false,
         uploadedById: session.user.id,
-        curriculumId: data.courseId ? (await db.curriculum.findFirst({ where: { courseId: data.courseId, teacherId: null } }))?.id : undefined,
-        lessonId: data.lessonId,
-        moduleId: data.moduleId,
-        quizId: data.quizId,
-        assignmentId: data.assignmentId,
+        ...(curriculumId ? { curriculumId } : {}),
+        ...(data.lessonId ? { lessonId: data.lessonId } : {}),
+        ...(data.moduleId ? { moduleId: data.moduleId } : {}),
+        ...(data.quizId ? { quizId: data.quizId } : {}),
+        ...(data.assignmentId ? { assignmentId: data.assignmentId } : {}),
       },
     });
 
@@ -154,6 +156,7 @@ export async function getAllResources(filters?: {
 
   await requirePermission("read", "course");
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
 
   if (filters?.type) {
@@ -172,7 +175,7 @@ export async function getAllResources(filters?: {
     }
   }
 
-  const resources: any = await db.resource.findMany({
+  const resources = await db.resource.findMany({
     where,
     include: {
       uploadedBy: {
@@ -197,6 +200,7 @@ export async function getAllResources(filters?: {
     orderBy: { createdAt: "desc" },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return resources.map((r: any) => ({
     id: r.id,
     title: r.title,
@@ -227,6 +231,7 @@ export async function getResourcesByEntity(
   const session = await auth();
   if (!session?.user?.id) return [];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
   if (entityType === 'course') {
       where.curriculum = { courseId: entityId };
@@ -235,7 +240,7 @@ export async function getResourcesByEntity(
   }
 
   // Students can only see public resources
-  const userRole = (session.user as any).role?.name;
+  const userRole = (session.user as { role?: { name: string } }).role?.name;
   if (userRole === "STUDENT") {
     where.isPublic = true;
   }
@@ -269,6 +274,7 @@ export async function linkResourceToEntity(
   await requirePermission("manage", "course");
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {};
     if (entityType === 'course') {
         const c = await db.curriculum.findFirst({ where: { courseId: entityId, teacherId: null } });
@@ -305,6 +311,7 @@ export async function unlinkResourceFromEntity(
   await requirePermission("manage", "course");
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {};
     if (entityType === 'course') {
          updateData.curriculumId = null;

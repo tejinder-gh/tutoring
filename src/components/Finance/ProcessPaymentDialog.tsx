@@ -41,8 +41,8 @@ export function ProcessPaymentDialog({
         salaryId: entry.salary!.id,
         amount: Number(customAmount),
         paymentMethod: formData.get("paymentMethod") as string,
-        reference: formData.get("reference") as string || undefined,
-        notes: formData.get("notes") as string || undefined
+        ...(formData.get("reference") ? { reference: formData.get("reference") as string } : {}),
+        ...(formData.get("notes") ? { notes: formData.get("notes") as string } : {})
       });
 
       if (res.success) {

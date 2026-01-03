@@ -38,7 +38,12 @@ export default function CourseSidebar({
     const moduleWithCurrentLesson = modules.find((m) =>
       m.lessons.some((l) => l.id === currentLessonId)
     );
-    return new Set(moduleWithCurrentLesson ? [moduleWithCurrentLesson.id] : [modules[0]?.id]);
+    // Explicitly handle undefined to ensure we return Set<string>
+    if (moduleWithCurrentLesson) {
+      return new Set([moduleWithCurrentLesson.id]);
+    }
+    const firstModuleId = modules[0]?.id;
+    return new Set(firstModuleId ? [firstModuleId] : []);
   });
 
   const pathname = usePathname();
@@ -74,7 +79,7 @@ export default function CourseSidebar({
           </div>
           <div className="h-2 bg-accent/50 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-500"
+              className="h-full bg-linear-to-r from-primary to-primary/80 rounded-full transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -129,8 +134,8 @@ export default function CourseSidebar({
                         key={lesson.id}
                         href={`/student/learn/${courseId}/${lesson.id}`}
                         className={`flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg transition-all ${isActive
-                            ? "bg-primary/10 text-primary"
-                            : "hover:bg-accent/50 text-text-muted hover:text-foreground"
+                          ? "bg-primary/10 text-primary"
+                          : "hover:bg-accent/50 text-text-muted hover:text-foreground"
                           }`}
                       >
                         {lesson.completed ? (

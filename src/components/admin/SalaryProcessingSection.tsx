@@ -1,6 +1,7 @@
 "use client";
 
-import { processBulkSalaryPayment, processSalaryPayment, SalaryWithDetails } from "@/app/actions/admin-finance";
+import type { SalaryWithDetails } from "@/app/actions/admin-finance";
+import { processBulkSalaryPayment, processSalaryPayment } from "@/app/actions/admin-finance";
 import { ArrowUpRight, CheckCircle, DollarSign } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Leave } from "@prisma/client";
+import type { Leave } from "@prisma/client";
 import { format } from "date-fns";
 
 interface LeaveHistoryTableProps {

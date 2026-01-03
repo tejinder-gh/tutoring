@@ -1,6 +1,7 @@
 "use client";
 
-import { QueryWithDetails, replyToQuery, updateQueryStatus } from "@/app/actions/communication";
+import type { QueryWithDetails } from "@/app/actions/communication";
+import { replyToQuery, updateQueryStatus } from "@/app/actions/communication";
 import { QueryStatus } from "@prisma/client";
 import { format } from "date-fns";
 import { AlertCircle, CheckCircle, Clock, Filter, MessageSquare, Send, User } from "lucide-react";
@@ -47,8 +48,8 @@ export function QueryList({ initialQueries }: { initialQueries: QueryWithDetails
               key={status}
               onClick={() => setFilterStatus(status as any)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${filterStatus === status
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-accent hover:bg-accent/70 text-text-muted"
+                ? "bg-primary text-primary-foreground"
+                : "bg-accent hover:bg-accent/70 text-text-muted"
                 }`}
             >
               {status.replace("_", " ")}
@@ -73,12 +74,12 @@ export function QueryList({ initialQueries }: { initialQueries: QueryWithDetails
               {/* Priority Indicator */}
               <div
                 className={`mt-1 w-2 h-2 rounded-full shrink-0 ${query.priority === "URGENT"
-                    ? "bg-red-500 animate-pulse"
-                    : query.priority === "HIGH"
-                      ? "bg-orange-500"
-                      : query.priority === "NORMAL"
-                        ? "bg-blue-500"
-                        : "bg-slate-400"
+                  ? "bg-red-500 animate-pulse"
+                  : query.priority === "HIGH"
+                    ? "bg-orange-500"
+                    : query.priority === "NORMAL"
+                      ? "bg-blue-500"
+                      : "bg-slate-400"
                   }`}
                 title={`Priority: ${query.priority}`}
               />

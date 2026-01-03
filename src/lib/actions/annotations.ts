@@ -35,7 +35,7 @@ export async function createHighlight(
         startOffset: data.startOffset,
         endOffset: data.endOffset,
         color: data.color || "#FFD700",
-        note: data.note,
+        ...(data.note ? { note: data.note } : {}),
       },
     });
 
@@ -208,8 +208,8 @@ export async function toggleBookmark(
         data: {
           lessonId,
           userId: session.user.id,
-          title: data?.title,
-          note: data?.note,
+          ...(data?.title ? { title: data.title } : {}),
+          ...(data?.note ? { note: data.note } : {}),
           position: data?.position || 0,
         },
       });

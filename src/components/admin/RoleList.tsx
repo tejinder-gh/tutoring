@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteRole } from "@/lib/actions/roles";
-import { Permission, Role } from "@prisma/client";
+import type { Permission, Role } from "@prisma/client";
 import { Edit, Plus, Shield, Trash2, Users } from "lucide-react";
 import { useState } from "react";
 import { RoleEditor } from "./RoleEditor";
@@ -31,7 +31,7 @@ export function RoleList({ roles, permissions }: Props) {
 
   if (editingRole !== undefined || isCreating) {
     return (
-      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all relative overflow-hidden group bg-linear-to-br from-card to-accent/5 duration-200">
         <div className="p-6 border-b border-border bg-accent/5">
           <h2 className="text-2xl font-bold tracking-tight">{isCreating ? "Create New Role" : `Edit ${editingRole?.name}`}</h2>
           <p className="text-text-muted">Define the permissions and access levels for this role.</p>

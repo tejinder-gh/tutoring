@@ -6,7 +6,7 @@ import {
   removeStudentFromBatch,
 } from "@/lib/actions/batches";
 import { Loader2, Search, Trash2, UserPlus, X } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 
 interface Student {
   id: string;
@@ -39,15 +39,16 @@ export function BatchEnrollmentManager({
   const [isLoading, setIsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (showDialog) {
-      setIsLoading(true);
-      getEnrollableStudents(batchId).then((data) => {
-        setStudents(data);
-        setIsLoading(false);
-      });
-    }
-  }, [showDialog, batchId]);
+  /* useEffect removed */
+
+  const openDialog = () => {
+    setShowDialog(true);
+    setIsLoading(true);
+    getEnrollableStudents(batchId).then((data) => {
+      setStudents(data);
+      setIsLoading(false);
+    });
+  };
 
   const filteredStudents = students.filter(
     (s) =>
@@ -101,7 +102,7 @@ export function BatchEnrollmentManager({
           <p className="text-sm text-text-muted">{enrollments.length} students</p>
         </div>
         <button
-          onClick={() => setShowDialog(true)}
+          onClick={openDialog}
           className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:opacity-90 text-sm"
         >
           <UserPlus size={16} />
@@ -135,8 +136,8 @@ export function BatchEnrollmentManager({
                 <td className="p-3">
                   <span
                     className={`text-xs px-2 py-1 rounded font-medium ${enrollment.status === "ACTIVE"
-                        ? "bg-green-500/10 text-green-500"
-                        : "bg-gray-500/10 text-gray-500"
+                      ? "bg-green-500/10 text-green-500"
+                      : "bg-gray-500/10 text-gray-500"
                       }`}
                   >
                     {enrollment.status}

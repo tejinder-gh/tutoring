@@ -2,7 +2,7 @@
 
 import { createResource } from "@/lib/actions/resources";
 import { UploadButton } from "@/utils/uploadthing";
-import { ResourceType } from "@prisma/client";
+import type { ResourceType } from "@prisma/client";
 import { AlertCircle, FileText, Link as LinkIcon, Loader2, X } from "lucide-react";
 import { useState } from "react";
 
@@ -62,8 +62,8 @@ export default function ResourceUploadDialog({
         description,
         url: resourceUrl,
         type: finalType,
-        fileSize: uploadedFile?.size,
-        mimeType: uploadedFile?.type,
+        ...(uploadedFile?.size ? { fileSize: uploadedFile.size } : {}),
+        ...(uploadedFile?.type ? { mimeType: uploadedFile.type } : {}),
         isPublic: true, // Default to public
       });
 
@@ -168,16 +168,18 @@ export default function ResourceUploadDialog({
                     <UploadButton
                       endpoint="resourceFile"
                       onClientUploadComplete={(res) => {
-                        const file = res[0];
-                        setUploadedFile({
-                          url: file.url,
-                          name: file.name,
-                          size: file.size,
-                          type: file.type,
-                        });
-                        // Auto-fill title if empty
-                        if (!title) setTitle(file.name);
-                        setError(null);
+                        if (res && res.length > 0 && res[0]) {
+                          const file = res[0];
+                          setUploadedFile({
+                            url: file.url,
+                            name: file.name,
+                            size: file.size,
+                            type: file.type,
+                          });
+                          // Auto-fill title if empty
+                          if (!title) setTitle(file.name);
+                          setError(null);
+                        }
                       }}
                       onUploadError={(error: Error) => {
                         setError(`Upload failed: ${error.message}`);

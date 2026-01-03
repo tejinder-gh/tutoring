@@ -1,7 +1,7 @@
 "use client";
 
 import { createHighlight, deleteHighlight } from "@/lib/actions/annotations";
-import { LessonHighlight } from "@prisma/client";
+import type { LessonHighlight } from "@prisma/client";
 import { useEffect, useRef, useState } from "react";
 import { remark } from "remark";
 import html from "remark-html";

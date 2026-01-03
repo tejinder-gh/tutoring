@@ -1,7 +1,7 @@
 "use client";
 
 import { updateCampaign } from "@/app/actions/marketing";
-import { Campaign } from "@prisma/client";
+import type { Campaign } from "@prisma/client";
 import { X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -32,9 +32,9 @@ export function EditCampaignDialog({
         name: formData.name,
         description: formData.description,
         type: formData.type,
-        budget: formData.budget ? parseFloat(formData.budget) : undefined,
-        startDate: formData.startDate ? new Date(formData.startDate) : undefined,
-        endDate: formData.endDate ? new Date(formData.endDate) : undefined,
+        ...(formData.budget ? { budget: parseFloat(formData.budget) } : {}),
+        ...(formData.startDate ? { startDate: new Date(formData.startDate) } : {}),
+        ...(formData.endDate ? { endDate: new Date(formData.endDate) } : {}),
       });
 
       if (result.success) {

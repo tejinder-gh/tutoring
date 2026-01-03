@@ -1,6 +1,6 @@
 "use client";
 
-import { Campaign } from "@prisma/client";
+import type { Campaign } from "@prisma/client";
 import { BarChart3, Eye, MousePointer, Target, TrendingUp, Users, X } from "lucide-react";
 
 interface CampaignMetrics {

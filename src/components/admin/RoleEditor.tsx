@@ -15,7 +15,7 @@ type RoleWithPermissions = {
 };
 
 type Props = {
-  role?: RoleWithPermissions;
+  role?: RoleWithPermissions | undefined;
   allPermissions: Permission[];
   onClose?: () => void;
 };
@@ -29,8 +29,11 @@ export function RoleEditor({ role, allPermissions, onClose }: Props) {
 
   // Group permissions by subject for better UI
   const permissionsBySubject = allPermissions.reduce((acc, perm) => {
-    if (!acc[perm.subject]) acc[perm.subject] = [];
-    acc[perm.subject].push(perm);
+    const subject = perm.subject;
+    if (!acc[subject]) {
+      acc[subject] = [];
+    }
+    acc[subject].push(perm);
     return acc;
   }, {} as Record<string, Permission[]>);
 
