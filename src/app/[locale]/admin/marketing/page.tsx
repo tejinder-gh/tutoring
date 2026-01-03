@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { CampaignList } from "@/components/Marketing/CampaignList";
 import { CreateCampaignDialog } from "@/components/Marketing/CreateCampaignDialog";
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export default async function MarketingPage() {
   const session = await auth();
@@ -10,7 +10,7 @@ export default async function MarketingPage() {
 
   await requirePermission("read", "marketing");
 
-  const campaigns = await prisma.campaign.findMany({
+  const campaigns = await db.campaign.findMany({
     orderBy: { createdAt: "desc" },
   });
 

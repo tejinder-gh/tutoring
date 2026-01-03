@@ -1,6 +1,6 @@
 import { getStaffSalaryStructure } from "@/app/actions/finance";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { Bell, Calendar, DollarSign, User } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -8,7 +8,7 @@ export default async function StaffDashboard() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const staffProfile = await prisma.staffProfile.findUnique({
+  const staffProfile = await db.staffProfile.findUnique({
     where: { userId: session.user.id },
     include: { user: true }
   });
@@ -21,7 +21,7 @@ export default async function StaffDashboard() {
   const salaryStructure = await getStaffSalaryStructure();
 
   // Get recent announcements (type ALL or specifically for everyone)
-  const announcements = await prisma.announcement.findMany({
+  const announcements = await db.announcement.findMany({
     where: { effect: "ALL" },
     take: 5,
     orderBy: { createdAt: "desc" }

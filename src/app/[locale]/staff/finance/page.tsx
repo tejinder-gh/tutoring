@@ -4,7 +4,7 @@ import {
 } from "@/app/actions/finance";
 import { auth } from "@/auth";
 import { BankDetailsForm } from "@/components/Finance/BankDetailsForm";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { BadgeIndianRupee, Calendar, CreditCard } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -15,7 +15,7 @@ export default async function StaffFinancePage() {
   const salaryStructure = await getStaffSalaryStructure();
   const receipts = await getStaffSalaries();
 
-  const staffProfile = await prisma.staffProfile.findUnique({
+  const staffProfile = await db.staffProfile.findUnique({
     where: { userId: session.user.id },
   });
 

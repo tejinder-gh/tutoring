@@ -1,11 +1,11 @@
 
 import { createBatch } from "@/lib/actions/batches";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 
 export default async function NewBatchPage() {
-  const courses = await prisma.course.findMany({
+  const courses = await db.course.findMany({
     select: { id: true, title: true },
   });
 

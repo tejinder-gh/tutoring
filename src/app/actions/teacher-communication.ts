@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -28,13 +28,13 @@ export async function createTeacherAnnouncement(formData: FormData) {
 
   // Verify teacher has access to this course if courseId is provided
   if (courseId) {
-    const isTeacher = await prisma.teacherProfile.findFirst({
+    const isTeacher = await db.teacherProfile.findFirst({
         where: { userId: session.user.id, courses: { some: { id: courseId } } }
     });
     if (!isTeacher) return { error: "You do not teach this course" };
   }
 
-  await prisma.announcement.create({
+  await db.announcement.create({
     data: {
       title,
       content,
@@ -52,14 +52,20 @@ export async function replyToQuery(queryId: string, formData: FormData) {
     const session = await auth();
     if (!session?.user?.id) return { error: "Unauthorized" };
 
-    const response = formData.get("response") as string;
-    if (!response || response.trim().length === 0) return { error: "Response required" };
+    const ReplySchema = z.object({
+        response: z.string().min(1, "Response required")
+    });
+
+    const validation = ReplySchema.safeParse({ response: formData.get("response") });
+    if (!validation.success) return { error: validation.error.flatten().fieldErrors.response?.[0] || "Invalid data" };
+
+    const { response } = validation.data;
 
     // Verify query belongs to a student in teacher's purview?
     // For now, assume if they can see it, they can reply.
     // In a real app, strict checks: Does query.student belong to a batch taught by teacher?
 
-    await prisma.query.update({
+    await db.query.update({
         where: { id: queryId },
         data: {
             response,

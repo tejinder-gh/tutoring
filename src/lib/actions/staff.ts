@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -30,7 +30,7 @@ export async function createTeacher(formData: FormData) {
   const { name, email, password, domain } = validation.data;
 
   // Check existing user
-  const existingUser = await prisma.user.findUnique({ where: { email } });
+  const existingUser = await db.user.findUnique({ where: { email } });
   if (existingUser) {
       // In prod, return error state
       console.error("User exists");
@@ -39,7 +39,7 @@ export async function createTeacher(formData: FormData) {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  await prisma.user.create({
+  await db.user.create({
       data: {
           name,
           email,

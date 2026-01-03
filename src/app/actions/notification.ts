@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export async function getNotifications(page = 1, limit = 10) {
@@ -14,14 +14,14 @@ export async function getNotifications(page = 1, limit = 10) {
   const skip = (page - 1) * limit;
 
   const [notifications, total, unreadCount] = await Promise.all([
-    prisma.notification.findMany({
+    db.notification.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
       skip,
       take: limit,
     }),
-    prisma.notification.count({ where: { userId } }),
-    prisma.notification.count({ where: { userId, isRead: false } })
+    db.notification.count({ where: { userId } }),
+    db.notification.count({ where: { userId, isRead: false } })
   ]);
 
   return {
@@ -35,7 +35,7 @@ export async function markAsRead(notificationId: string) {
   const session = await auth();
   if (!session?.user?.id) return;
 
-  await prisma.notification.update({
+  await db.notification.update({
     where: { id: notificationId, userId: session.user.id },
     data: { isRead: true },
   });
@@ -47,7 +47,7 @@ export async function markAllAsRead() {
   const session = await auth();
   if (!session?.user?.id) return;
 
-  await prisma.notification.updateMany({
+  await db.notification.updateMany({
     where: { userId: session.user.id, isRead: false },
     data: { isRead: true },
   });

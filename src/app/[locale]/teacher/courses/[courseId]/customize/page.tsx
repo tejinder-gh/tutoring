@@ -6,7 +6,7 @@ import {
 } from "@/app/actions/curriculum-editor";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/routing";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { AlertCircle, ArrowLeft, CheckCircle, Edit, Plus, Trash2 } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -17,13 +17,13 @@ export default async function CustomizeCurriculumPage({ params }: { params: { co
   const { courseId } = params;
 
   // Ensure teacher owns this version
-  const teacherProfile = await prisma.teacherProfile.findUnique({
+  const teacherProfile = await db.teacherProfile.findUnique({
     where: { userId: session.user.id }
   });
 
   if (!teacherProfile) return <div>Access Denied</div>;
 
-  const curriculum = await prisma.curriculum.findUnique({
+  const curriculum = await db.curriculum.findUnique({
     where: {
       courseId_teacherId: {
         courseId,

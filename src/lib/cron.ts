@@ -1,5 +1,5 @@
 import { sendEmail } from '@/lib/email';
-import { prisma } from '@/lib/prisma';
+import { db } from "@/lib/db";
 
 // Note: For production, use Vercel Cron Jobs via /api/cron/fee-reminder route
 // Or deploy node-cron in a separate worker process
@@ -23,7 +23,7 @@ export async function checkFeesDue() {
     threeDaysFromNow.setDate(today.getDate() + 3);
 
     // Find payments due within the next 3 days or already overdue
-    const paymentReceipts = await prisma.paymentReceipts.findMany({
+    const paymentReceipts = await db.paymentReceipts.findMany({
       where: {
         pendingAmount: {
           gt: 0,
@@ -68,7 +68,7 @@ export async function checkFeesDue() {
       });
 
       // 2. Create Notification for Student
-      await prisma.notification.create({
+      await db.notification.create({
         data: {
           userId: receipt.user.id,
           title: isOverdue ? 'Fee Overdue' : 'Fee Reminder',
@@ -85,7 +85,7 @@ export async function checkFeesDue() {
 
     // Bulk notify admins about the run
     if (paymentReceipts.length > 0) {
-        const admins = await prisma.user.findMany({
+        const admins = await db.user.findMany({
             where: { role: { name: 'ADMIN' } } // Assuming role relation or checking role name
         });
 

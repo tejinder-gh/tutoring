@@ -2,12 +2,12 @@
 import { UserActions } from "@/components/admin/UserActions";
 import { UserInviteDialog } from "@/components/admin/UserInviteDialog";
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { Mail, Phone, Shield } from "lucide-react";
 
 export default async function AdminUsersPage() {
   await requirePermission('manage', 'user');
-  const users = await prisma.user.findMany({
+  const users = await db.user.findMany({
     include: {
       studentProfile: true,
       teacherProfile: true,

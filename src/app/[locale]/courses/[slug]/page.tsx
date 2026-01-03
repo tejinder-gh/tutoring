@@ -1,6 +1,6 @@
 import CheckoutButton from '@/components/Payment/CheckoutButton'
 import { siteConfig } from '@/config/site'
-import { prisma } from '@/lib/prisma'
+import { db } from "@/lib/db"
 import { Award, BookOpen, CheckCircle2, PlayCircle, Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
@@ -15,7 +15,7 @@ type Props = {
 }
 
 async function getCourse(slug: string) {
-  const course = await prisma.course.findUnique({
+  const course = await db.course.findUnique({
     where: { slug },
     include: {
       curriculums: {
@@ -109,7 +109,7 @@ export default async function CoursePage({ params }: Props) {
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
+        <div className={`absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/20 to-transparent opacity-50 z-0 pointer-events-none`} />
         <div className="container mx-auto px-6 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">

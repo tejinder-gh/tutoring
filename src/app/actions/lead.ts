@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { AuditAction, AuditResource, logActivity } from "@/lib/audit";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { LeadSource, LeadStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -28,7 +28,7 @@ export async function createLead(data: {
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    const lead = await prisma.lead.create({
+    const lead = await db.lead.create({
       data: {
         name: data.name,
         email: data.email ?? null,
@@ -41,7 +41,7 @@ export async function createLead(data: {
     });
 
     // Log creation
-    await prisma.leadActivity.create({
+    await db.leadActivity.create({
       data: {
         leadId: lead.id,
         type: "CREATED",
@@ -77,7 +77,7 @@ export async function getLeads(page = 1, limit = 20) {
   const skip = (page - 1) * limit;
 
   const [leads, total] = await Promise.all([
-    prisma.lead.findMany({
+    db.lead.findMany({
       orderBy: { createdAt: "desc" },
       skip,
       take: limit,
@@ -86,7 +86,7 @@ export async function getLeads(page = 1, limit = 20) {
          _count: { select: { activities: true } }
       }
     }),
-    prisma.lead.count(),
+    db.lead.count(),
   ]);
 
   return { leads, total };
@@ -99,7 +99,7 @@ export async function getLeadById(leadId: string) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  return prisma.lead.findUnique({
+  return db.lead.findUnique({
     where: { id: leadId },
     include: {
       activities: {
@@ -117,7 +117,7 @@ export async function logLeadActivity(leadId: string, type: string, notes: strin
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    await prisma.leadActivity.create({
+    await db.leadActivity.create({
       data: {
         leadId,
         type,
@@ -142,15 +142,15 @@ export async function updateLeadStatus(leadId: string, status: LeadStatus) {
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    const oldLead = await prisma.lead.findUnique({ where: { id: leadId } });
+    const oldLead = await db.lead.findUnique({ where: { id: leadId } });
 
-    const updated = await prisma.lead.update({
+    const updated = await db.lead.update({
       where: { id: leadId },
       data: { status },
     });
 
     // Semantic logging
-    await prisma.leadActivity.create({
+    await db.leadActivity.create({
       data: {
         leadId,
         type: "STATUS_CHANGE",

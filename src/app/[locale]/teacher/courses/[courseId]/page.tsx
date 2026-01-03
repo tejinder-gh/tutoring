@@ -1,7 +1,7 @@
 import { getEffectiveCurriculum } from "@/app/actions/curriculum-versioning";
 import { auth } from "@/auth";
 import { CustomizeCurriculumButton } from "@/components/curriculum/CustomizeCurriculumButton";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { ArrowLeft, FileText, Video } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -17,7 +17,7 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
   const params = await props.params;
 
   // Verify teacher access to this course
-  const teacherProfile = await prisma.teacherProfile.findUnique({
+  const teacherProfile = await db.teacherProfile.findUnique({
     where: { userId: session.user.id },
     include: { courses: { where: { id: params.courseId } } }
   });
@@ -37,7 +37,7 @@ export default async function TeacherCourseDetailPage(props: PageProps) {
     );
   }
 
-  const course = await prisma.course.findUnique({
+  const course = await db.course.findUnique({
     where: { id: params.courseId },
   });
 

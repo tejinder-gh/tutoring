@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
 export default async function CoursesPage() {
-  const courses = await prisma.course.findMany({
+  const courses = await db.course.findMany({
     include: {
       _count: {
         select: { enrollments: true }

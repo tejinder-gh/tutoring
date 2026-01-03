@@ -1,7 +1,7 @@
 import { updateUser } from "@/app/actions/user";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/routing";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { ArrowLeft, Save } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 
@@ -10,14 +10,14 @@ export default async function EditUserPage({ params }: { params: { id: string } 
   // In real app use requirePermission, here manual check or rely on action
   if (!session?.user) redirect("/auth/login");
 
-  const user = await prisma.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: params.id },
     include: { branch: true, role: true }
   });
 
   if (!user) notFound();
 
-  const branches = await prisma.branch.findMany();
+  const branches = await db.branch.findMany();
 
   async function updateAction(formData: FormData) {
     "use server";

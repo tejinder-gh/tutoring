@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export async function createStaff(data: {
@@ -15,7 +15,7 @@ export async function createStaff(data: {
 
   try {
      // Use transaction for atomic user + profile creation
-     const result = await prisma.$transaction(async (tx) => {
+     const result = await db.$transaction(async (tx) => {
        // 1. Create User
        const user = await tx.user.create({
          data: {
@@ -61,7 +61,7 @@ export async function upsertSalaryStructure(staffProfileId: string, data: {
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
     try {
-        const salary = await prisma.salary.create({
+        const salary = await db.salary.create({
             data: {
                 staffProfileId,
                 baseSalary: data.baseSalary,
@@ -85,7 +85,7 @@ export async function processSalaryPayment(salaryId: string, amount: number) {
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
     try {
-        const receipt = await prisma.salaryReceipt.create({
+        const receipt = await db.salaryReceipt.create({
             data: {
                 salaryId,
                 amount,

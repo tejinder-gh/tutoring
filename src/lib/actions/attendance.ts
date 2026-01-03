@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { AttendanceStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -21,17 +21,17 @@ export async function submitAttendance(batchId: string, formData: FormData) {
      const userId = key.replace("status_", "");
       const status = value as AttendanceStatus;
 
-      const existing = await prisma.attendance.findFirst({
+      const existing = await db.attendance.findFirst({
           where: { userId, date }
       });
 
       if (existing) {
-          await prisma.attendance.update({
+          await db.attendance.update({
               where: { id: existing.id },
               data: { status }
           });
       } else {
-          await prisma.attendance.create({
+          await db.attendance.create({
               data: { userId, date, status }
           });
       }

@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export async function createTeacherCurriculumDraft(courseId: string) {
@@ -11,7 +11,7 @@ export async function createTeacherCurriculumDraft(courseId: string) {
   }
 
   // 1. Get Teacher Profile
-  const teacherProfile = await prisma.teacherProfile.findUnique({
+  const teacherProfile = await db.teacherProfile.findUnique({
     where: { userId: session.user.id },
   });
 
@@ -20,7 +20,7 @@ export async function createTeacherCurriculumDraft(courseId: string) {
   }
 
   // 2. Check if a version already exists
-  const existingVersion = await prisma.curriculum.findUnique({
+  const existingVersion = await db.curriculum.findUnique({
     where: {
       courseId_teacherId: {
         courseId,
@@ -34,7 +34,7 @@ export async function createTeacherCurriculumDraft(courseId: string) {
   }
 
   // 3. Fetch default (Director's) curriculum to clone
-  const defaultCurriculum = await prisma.curriculum.findFirst({
+  const defaultCurriculum = await db.curriculum.findFirst({
     where: {
       courseId,
       teacherId: null,
@@ -72,7 +72,7 @@ export async function createTeacherCurriculumDraft(courseId: string) {
 
   // 4. Create new Curriculum (Clone)
   // We use a transaction to ensure all parts are created
-  const newCurriculum = await prisma.$transaction(async (tx: any) => {
+  const newCurriculum = await db.$transaction(async (tx: any) => {
     const curriculum = await tx.curriculum.create({
       data: {
         courseId,
@@ -192,7 +192,7 @@ export async function getEffectiveCurriculum(courseId: string) {
 
   // Default: Director's version
   const getDirectorVersion = async () => {
-    return prisma.curriculum.findFirst({
+    return db.curriculum.findFirst({
       where: { courseId, teacherId: null },
       include: {
           modules: {
@@ -206,9 +206,9 @@ export async function getEffectiveCurriculum(courseId: string) {
   };
 
   if (!user?.id) return getDirectorVersion();
-  const teacherProfile = await prisma.teacherProfile.findUnique({ where: { userId: user.id } });
+  const teacherProfile = await db.teacherProfile.findUnique({ where: { userId: user.id } });
   if (teacherProfile) {
-    const teacherVersion = await prisma.curriculum.findUnique({
+    const teacherVersion = await db.curriculum.findUnique({
       where: {
         courseId_teacherId: {
           courseId,
@@ -229,7 +229,7 @@ export async function getEffectiveCurriculum(courseId: string) {
   }
 
   // 2. If Student -> Check Enrollment -> Batch -> Teacher -> Approved Version
-  const studentProfile = await prisma.studentProfile.findUnique({
+  const studentProfile = await db.studentProfile.findUnique({
       where: { userId: user.id },
       include: {
           enrollments: {
@@ -250,7 +250,7 @@ export async function getEffectiveCurriculum(courseId: string) {
     const teacherId = enrollment?.batch?.teacherId;
 
     if (teacherId) {
-      const teacherCurriculum = await prisma.curriculum.findUnique({
+      const teacherCurriculum = await db.curriculum.findUnique({
         where: {
           courseId_teacherId: {
             courseId,

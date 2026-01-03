@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { auth } from '@/auth';
-import { prisma } from '@/lib/prisma';
+import { db } from "@/lib/db";
 import { createEvent, getBatchesForTeacher } from '../events';
 
 // Mock dependencies
@@ -51,13 +51,13 @@ describe('Events Server Actions', () => {
 
     test('should create event successfully if authenticated', async () => {
       (auth as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-      (prisma.event.create as jest.Mock).mockResolvedValue({ id: 'event-1', ...mockEventData });
+      (db.event.create as jest.Mock).mockResolvedValue({ id: 'event-1', ...mockEventData });
 
       const result = await createEvent(mockEventData);
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
-      expect(prisma.event.create).toHaveBeenCalledWith({
+      expect(db.event.create).toHaveBeenCalledWith({
         data: {
           ...mockEventData,
           startTime: new Date(mockEventData.startTime),
@@ -68,7 +68,7 @@ describe('Events Server Actions', () => {
 
     test('should throw error on database failure', async () => {
       (auth as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-      (prisma.event.create as jest.Mock).mockRejectedValue(new Error('DB Error'));
+      (db.event.create as jest.Mock).mockRejectedValue(new Error('DB Error'));
 
       await expect(createEvent(mockEventData)).rejects.toThrow('Failed to create event');
     });
@@ -83,7 +83,7 @@ describe('Events Server Actions', () => {
 
     test('should return empty array if no teacher profile found', async () => {
       (auth as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-      (prisma.teacherProfile.findUnique as jest.Mock).mockResolvedValue(null);
+      (db.teacherProfile.findUnique as jest.Mock).mockResolvedValue(null);
 
       const result = await getBatchesForTeacher();
       expect(result).toEqual([]);
@@ -106,7 +106,7 @@ describe('Events Server Actions', () => {
           },
         ],
       };
-      (prisma.teacherProfile.findUnique as jest.Mock).mockResolvedValue(mockTeacherProfile);
+      (db.teacherProfile.findUnique as jest.Mock).mockResolvedValue(mockTeacherProfile);
 
       const result = await getBatchesForTeacher();
       expect(result).toHaveLength(2);

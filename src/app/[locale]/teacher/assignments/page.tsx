@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
@@ -10,7 +10,7 @@ export default async function TeacherAssignmentsPage() {
 
   // Fetch courses taught by this teacher
   // 1. Get Teacher Profile ID
-  const teacherProfile = await prisma.teacherProfile.findUnique({
+  const teacherProfile = await db.teacherProfile.findUnique({
     where: { userId: session.user.id },
     select: { id: true }
   });
@@ -20,7 +20,7 @@ export default async function TeacherAssignmentsPage() {
   }
 
   // 2. Get Courses with Effective Curriculum (Teacher's version OR Default)
-  const courses = await prisma.course.findMany({
+  const courses = await db.course.findMany({
     where: { teachers: { some: { id: teacherProfile.id } } },
     include: {
       curriculums: {

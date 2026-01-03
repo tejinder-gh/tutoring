@@ -1,5 +1,5 @@
 import { addLesson, addModule, createAssignment } from "@/lib/actions/academic";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { ArrowLeft, FileText, Video } from "lucide-react";
 import Link from "next/link";
 
@@ -9,7 +9,7 @@ interface PageProps {
 
 export default async function CourseDetailPage(props: PageProps) {
   const params = await props.params;
-  const course = await prisma.course.findUnique({
+  const course = await db.course.findUnique({
     where: { id: params.courseId },
     include: {
       curriculums: {

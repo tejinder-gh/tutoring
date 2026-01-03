@@ -1,6 +1,6 @@
 import { createTeacherAnnouncement, replyToQuery } from "@/app/actions/teacher-communication";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { Bell, MessageSquare, Send } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -8,7 +8,7 @@ export default async function TeacherCommunicationPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const teacherProfile = await prisma.teacherProfile.findUnique({
+  const teacherProfile = await db.teacherProfile.findUnique({
     where: { userId: session.user.id },
     include: { courses: true }
   });
@@ -17,7 +17,7 @@ export default async function TeacherCommunicationPage() {
 
   const courseIds = teacherProfile.courses.map(c => c.id);
 
-  const queries = await prisma.query.findMany({
+  const queries = await db.query.findMany({
     where: {
       student: {
         studentProfile: {
@@ -35,7 +35,7 @@ export default async function TeacherCommunicationPage() {
     orderBy: { createdAt: 'desc' }
   });
 
-  const announcements = await prisma.announcement.findMany({
+  const announcements = await db.announcement.findMany({
     where: { authorId: session.user.id },
     orderBy: { createdAt: 'desc' }
   });

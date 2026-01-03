@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -11,7 +11,7 @@ export async function getEnrolledCourses() {
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  const enrollments = await prisma.enrollment.findMany({
+  const enrollments = await db.enrollment.findMany({
     where: {
       studentProfile: { userId: session.user.id },
       status: "ACTIVE",
@@ -92,10 +92,10 @@ export async function getCourseWithProgress(courseId: string) {
   if (!session?.user?.id) return null;
 
   // 1. Get student's batch teacher for this course
-  const enrollment = await prisma.enrollment.findUnique({
+  const enrollment = await db.enrollment.findUnique({
     where: {
       studentProfileId_courseId: {
-        studentProfileId: (await prisma.studentProfile.findUnique({ where: { userId: session.user.id }, select: { id: true } }))?.id || "",
+        studentProfileId: (await db.studentProfile.findUnique({ where: { userId: session.user.id }, select: { id: true } }))?.id || "",
         courseId
       }
     },
@@ -105,7 +105,7 @@ export async function getCourseWithProgress(courseId: string) {
   const teacherId = enrollment?.batch?.teacherId;
 
   // 2. Fetch course with relevant curriculums
-  const course = await prisma.course.findUnique({
+  const course = await db.course.findUnique({
     where: { id: courseId },
     include: {
       curriculums: {
@@ -185,7 +185,7 @@ export async function getLesson(lessonId: string) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const lesson = await prisma.lesson.findUnique({
+  const lesson = await db.lesson.findUnique({
     where: { id: lessonId },
     include: {
       resources: true,
@@ -242,7 +242,7 @@ export async function markLessonComplete(lessonId: string) {
   }
 
   try {
-    await prisma.lessonProgress.upsert({
+    await db.lessonProgress.upsert({
       where: {
         lessonId_userId: {
           lessonId,
@@ -279,7 +279,7 @@ export async function markLessonIncomplete(lessonId: string) {
   }
 
   try {
-    await prisma.lessonProgress.upsert({
+    await db.lessonProgress.upsert({
       where: {
         lessonId_userId: {
           lessonId,
@@ -315,7 +315,7 @@ export async function updateWatchTime(lessonId: string, seconds: number) {
   }
 
   try {
-    await prisma.lessonProgress.upsert({
+    await db.lessonProgress.upsert({
       where: {
         lessonId_userId: {
           lessonId,

@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { db } from "@/lib/db";
 import { sendEmailNotification, sendWhatsAppNotification } from '@/utils/notifications';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Save lead to database
-    const lead = await prisma.lead.create({
+    const lead = await db.lead.create({
       data: {
         name,
         phone,
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const leads = await prisma.lead.findMany({
+    const leads = await db.lead.findMany({
       orderBy: { createdAt: 'desc' },
     });
     return NextResponse.json(leads);

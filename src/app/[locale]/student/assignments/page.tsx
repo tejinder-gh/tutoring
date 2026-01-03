@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import AssignmentCard from "./AssignmentCard";
 
 export const dynamic = 'force-dynamic';
@@ -8,7 +8,7 @@ export default async function StudentAssignmentsPage() {
   const session = await auth();
   if (!session?.user?.id) return <div>Unauthorized</div>;
 
-  const profile = await prisma.studentProfile.findUnique({
+  const profile = await db.studentProfile.findUnique({
     where: { userId: session.user.id },
     include: {
       batch: {

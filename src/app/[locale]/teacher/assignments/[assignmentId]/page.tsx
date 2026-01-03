@@ -1,5 +1,5 @@
 import { submitGrade } from "@/lib/actions/grading";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { ArrowLeft, CheckCircle, FileText } from "lucide-react";
 import Link from "next/link";
 
@@ -9,7 +9,7 @@ interface PageProps {
 
 export default async function GradingPage(props: PageProps) {
     const params = await props.params;
-    const assignment = await prisma.assignment.findUnique({
+    const assignment = await db.assignment.findUnique({
         where: { id: params.assignmentId },
         include: {
             curriculum: {

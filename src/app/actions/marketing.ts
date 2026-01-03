@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { CampaignStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -15,7 +15,7 @@ export async function createCampaign(data: {
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    const campaign = await prisma.campaign.create({
+    const campaign = await db.campaign.create({
       data: {
         name: data.name,
         type: data.type,
@@ -38,7 +38,7 @@ export async function updateCampaignStatus(campaignId: string, status: CampaignS
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    const campaign = await prisma.campaign.update({
+    const campaign = await db.campaign.update({
       where: { id: campaignId },
       data: { status },
     });
@@ -67,7 +67,7 @@ export async function updateCampaign(
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    const campaign = await prisma.campaign.update({
+    const campaign = await db.campaign.update({
       where: { id: campaignId },
       data: {
         ...data,
@@ -88,7 +88,7 @@ export async function deleteCampaign(campaignId: string) {
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    await prisma.campaign.delete({
+    await db.campaign.delete({
       where: { id: campaignId },
     });
 
@@ -104,7 +104,7 @@ export async function getCampaignById(campaignId: string) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const campaign = await prisma.campaign.findUnique({
+  const campaign = await db.campaign.findUnique({
     where: { id: campaignId },
   });
 
@@ -124,14 +124,14 @@ export async function updateCampaignMetrics(
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    const campaign = await prisma.campaign.findUnique({
+    const campaign = await db.campaign.findUnique({
       where: { id: campaignId },
     });
 
     const currentMetrics = (campaign?.metrics as any) || {};
     const updatedMetrics = { ...currentMetrics, ...metrics };
 
-    await prisma.campaign.update({
+    await db.campaign.update({
       where: { id: campaignId },
       data: { metrics: updatedMetrics },
     });

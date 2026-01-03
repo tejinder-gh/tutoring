@@ -2,9 +2,9 @@ import { auth } from '@/auth';
 import { SimpleBarChart, SimpleLineChart } from '@/components/Analytics/Charts';
 import StatCard from '@/components/Analytics/StatCard';
 import { Link } from '@/i18n/routing';
+import { db } from '@/lib/db';
 import { requirePermission } from '@/lib/permissions';
 import { BadgeIndianRupee, Filter, GraduationCap, Users } from 'lucide-react';
-import { prisma } from '../../../lib/prisma';
 import type { TrendPeriod } from '../../actions/analytics';
 import { getAdminAnalytics, getDashboardMetrics, getLeadAnalytics } from '../../actions/analytics';
 
@@ -19,12 +19,12 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
   const branchId = searchParams.branchId;
 
   const [leads, students, analytics, dashboardMetrics, leadAnalytics, auditLogs, branches] = await Promise.all([
-    prisma.lead.findMany({
+    db.lead.findMany({
       where: branchId ? { branchId } : {},
       orderBy: { createdAt: 'desc' },
       include: { branch: true }
     }),
-    prisma.user.findMany({
+    db.user.findMany({
       where: {
         role: { name: 'STUDENT' },
         ...(branchId ? { branchId } : {})
@@ -35,12 +35,12 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
     getAdminAnalytics(period),
     getDashboardMetrics(period),
     getLeadAnalytics(branchId),
-    prisma.auditLog.findMany({
+    db.auditLog.findMany({
       take: 10,
       orderBy: { createdAt: 'desc' },
       include: { user: { select: { name: true, email: true } } }
     }),
-    prisma.branch.findMany()
+    db.branch.findMany()
   ]);
 
   const periods: { label: string; value: TrendPeriod }[] = [

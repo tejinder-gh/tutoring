@@ -1,7 +1,7 @@
 "use client";
 
 import { updateLeaveStatus } from "@/app/actions/leaves";
-import { Leave } from "@prisma/client";
+import type { Leave } from "@prisma/client";
 import { format } from "date-fns";
 import { Check, X } from "lucide-react";
 import { useState, useTransition } from "react";

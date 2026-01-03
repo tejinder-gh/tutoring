@@ -3,7 +3,7 @@
 
 import { auth } from "@/auth";
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { EventType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -26,7 +26,7 @@ export async function createEvent(data: {
   await requirePermission("manage", "batch");
 
   try {
-    const event = await prisma.event.create({
+    const event = await db.event.create({
       data: {
         title: data.title,
         startTime: new Date(data.startTime),
@@ -52,7 +52,7 @@ export async function getBatchesForTeacher() {
     const session = await auth();
     if (!session?.user?.id) return [];
 
-    const teacherProfile = await prisma.teacherProfile.findUnique({
+    const teacherProfile = await db.teacherProfile.findUnique({
         where: { userId: session.user.id },
         include: {
             courses: {

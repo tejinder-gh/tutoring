@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export async function updateLessonContent(lessonId: string, content: string) {
@@ -9,7 +9,7 @@ export async function updateLessonContent(lessonId: string, content: string) {
   if (!session?.user?.id) throw new Error("Unauthorized");
 
   // Verify ownership (Teacher must own the curriculum this lesson belongs to)
-  const lesson = await prisma.lesson.findUnique({
+  const lesson = await db.lesson.findUnique({
     where: { id: lessonId },
     include: { module: { include: { curriculum: true } } }
   });
@@ -17,12 +17,12 @@ export async function updateLessonContent(lessonId: string, content: string) {
   if (!lesson) throw new Error("Lesson not found");
 
   // Strict check: Only allow editing if the curriculum belongs to the current teacher
-  const teacherProfile = await prisma.teacherProfile.findUnique({ where: { userId: session.user.id } });
+  const teacherProfile = await db.teacherProfile.findUnique({ where: { userId: session.user.id } });
   if (!teacherProfile || lesson.module.curriculum.teacherId !== teacherProfile.id) {
     throw new Error("You can only edit your own curriculum version");
   }
 
-  await prisma.lesson.update({
+  await db.lesson.update({
     where: { id: lessonId },
     data: { richTextContent: content }
   });
@@ -35,7 +35,7 @@ export async function submitCurriculumAction(curriculumId: string) {
     const session = await auth();
     if(!session?.user?.id) throw new Error("Unauthorized");
 
-    await prisma.curriculum.update({
+    await db.curriculum.update({
         where: { id: curriculumId },
         data: { status: "PENDING_APPROVAL" }
     });
@@ -52,7 +52,7 @@ export async function updateModule(moduleId: string, formData: FormData) {
 
     const title = formData.get("title") as string;
 
-    await prisma.module.update({
+    await db.module.update({
         where: { id: moduleId },
         data: { title }
     });
@@ -66,13 +66,13 @@ export async function createLesson(moduleId: string, title: string) {
     if (!session?.user?.id) throw new Error("Unauthorized");
 
     // Get max order
-    const lastLesson = await prisma.lesson.findFirst({
+    const lastLesson = await db.lesson.findFirst({
         where: { moduleId },
         orderBy: { order: 'desc' }
     });
     const order = (lastLesson?.order || 0) + 1;
 
-    await prisma.lesson.create({
+    await db.lesson.create({
         data: {
             title,
             moduleId,
@@ -89,13 +89,13 @@ export async function createModule(curriculumId: string, title: string) {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Unauthorized");
 
-    const lastModule = await prisma.module.findFirst({
+    const lastModule = await db.module.findFirst({
         where: { curriculumId },
         orderBy: { order: 'desc' }
     });
     const order = (lastModule?.order || 0) + 1;
 
-    await prisma.module.create({
+    await db.module.create({
         data: {
             title,
             curriculumId,
@@ -111,7 +111,7 @@ export async function publishCurriculum(curriculumId: string) {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Unauthorized");
 
-    await prisma.curriculum.update({
+    await db.curriculum.update({
         where: { id: curriculumId },
         data: { status: "APPROVED" } // Auto approve for teacher's own live version for now? Or PENDING?
         // Let's say teachers can publish to live immediately in this flow as per the button "Publish Changes"

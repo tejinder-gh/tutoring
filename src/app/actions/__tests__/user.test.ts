@@ -1,5 +1,5 @@
 import { requirePermission } from '@/lib/permissions';
-import { prisma } from '@/lib/prisma';
+import { db } from "@/lib/db";
 import bcrypt from 'bcryptjs';
 import { createUser } from '../user';
 
@@ -51,10 +51,10 @@ describe('User Actions', () => {
 
         it('should require specific permissions', async () => {
              (requirePermission as jest.Mock).mockResolvedValue(true);
-             (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
-             (prisma.role.findUnique as jest.Mock).mockResolvedValue({ id: 'role-1', name: 'STUDENT' });
+             (db.user.findUnique as jest.Mock).mockResolvedValue(null);
+             (db.role.findUnique as jest.Mock).mockResolvedValue({ id: 'role-1', name: 'STUDENT' });
              (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_pw');
-             (prisma.user.create as jest.Mock).mockResolvedValue({ id: 'user-1' });
+             (db.user.create as jest.Mock).mockResolvedValue({ id: 'user-1' });
 
              await createUser({}, mockFormData);
 
@@ -63,7 +63,7 @@ describe('User Actions', () => {
 
         it('should fail if user already exists', async () => {
             (requirePermission as jest.Mock).mockResolvedValue(true);
-            (prisma.user.findUnique as jest.Mock).mockResolvedValue({ id: 'existing-user' });
+            (db.user.findUnique as jest.Mock).mockResolvedValue({ id: 'existing-user' });
 
             const result = await createUser({}, mockFormData);
 
@@ -72,8 +72,8 @@ describe('User Actions', () => {
 
         it('should fail if role not found', async () => {
             (requirePermission as jest.Mock).mockResolvedValue(true);
-            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
-            (prisma.role.findUnique as jest.Mock).mockResolvedValue(null);
+            (db.user.findUnique as jest.Mock).mockResolvedValue(null);
+            (db.role.findUnique as jest.Mock).mockResolvedValue(null);
 
             const result = await createUser({}, mockFormData);
 
@@ -82,16 +82,16 @@ describe('User Actions', () => {
 
         it('should create user and student profile successfully', async () => {
              (requirePermission as jest.Mock).mockResolvedValue(true);
-             (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
-             (prisma.role.findUnique as jest.Mock).mockResolvedValue({ id: 'role-1', name: 'STUDENT' });
+             (db.user.findUnique as jest.Mock).mockResolvedValue(null);
+             (db.role.findUnique as jest.Mock).mockResolvedValue({ id: 'role-1', name: 'STUDENT' });
              (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_pw');
-             (prisma.user.create as jest.Mock).mockResolvedValue({ id: 'user-1' });
+             (db.user.create as jest.Mock).mockResolvedValue({ id: 'user-1' });
 
              const result = await createUser({}, mockFormData);
 
              expect(result).toEqual({ success: true });
              // Verify user creation
-             expect(prisma.user.create).toHaveBeenCalledWith(expect.objectContaining({
+             expect(db.user.create).toHaveBeenCalledWith(expect.objectContaining({
                  data: expect.objectContaining({
                      name: 'Test User',
                      email: 'test@example.com',
@@ -99,7 +99,7 @@ describe('User Actions', () => {
                  })
              }));
              // Verify student profile creation
-             expect(prisma.studentProfile.create).toHaveBeenCalledWith({
+             expect(db.studentProfile.create).toHaveBeenCalledWith({
                  data: { userId: 'user-1' }
              });
         });
@@ -111,15 +111,15 @@ describe('User Actions', () => {
              teacherData.append('role', 'TEACHER');
 
              (requirePermission as jest.Mock).mockResolvedValue(true);
-             (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
-             (prisma.role.findUnique as jest.Mock).mockResolvedValue({ id: 'role-2', name: 'TEACHER' });
+             (db.user.findUnique as jest.Mock).mockResolvedValue(null);
+             (db.role.findUnique as jest.Mock).mockResolvedValue({ id: 'role-2', name: 'TEACHER' });
              (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_pw');
-             (prisma.user.create as jest.Mock).mockResolvedValue({ id: 'user-2' });
+             (db.user.create as jest.Mock).mockResolvedValue({ id: 'user-2' });
 
              const result = await createUser({}, teacherData);
 
              expect(result).toEqual({ success: true });
-             expect(prisma.teacherProfile.create).toHaveBeenCalledWith(expect.objectContaining({
+             expect(db.teacherProfile.create).toHaveBeenCalledWith(expect.objectContaining({
                  data: expect.objectContaining({
                      userId: 'user-2',
                      domain: 'General'

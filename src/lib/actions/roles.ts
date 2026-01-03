@@ -1,7 +1,7 @@
 "use server";
 
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -27,7 +27,7 @@ export async function createRole(formData: FormData): Promise<RoleActionResponse
 
     const data = roleSchema.parse(rawData);
 
-    await prisma.role.create({
+    await db.role.create({
       data: {
         name: data.name,
         description: data.description ?? null,
@@ -69,7 +69,7 @@ export async function updateRole(
 
     // First disconnect all, then connect new ones (simple replacement strategy)
     // Or simpler: just use `set` if supported, but `set` replaces relations.
-    await prisma.role.update({
+    await db.role.update({
       where: { id },
       data: {
         name: data.name,
@@ -99,7 +99,7 @@ export async function deleteRole(id: string): Promise<RoleActionResponse> {
   await requirePermission("manage", "settings");
 
   try {
-    const role = await prisma.role.findUnique({
+    const role = await db.role.findUnique({
       where: { id },
       include: { _count: { select: { users: true } } },
     });
@@ -109,7 +109,7 @@ export async function deleteRole(id: string): Promise<RoleActionResponse> {
     if (role._count.users > 0)
       return { success: false, error: "Cannot delete role with assigned users" };
 
-    await prisma.role.delete({ where: { id } });
+    await db.role.delete({ where: { id } });
     revalidatePath("/admin/settings/roles");
     return { success: true };
   } catch (error) {

@@ -1,11 +1,11 @@
 import { createAnnouncement } from "@/lib/actions/communication";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { Megaphone, Plus } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminAnnouncementsPage() {
-  const announcements = await prisma.announcement.findMany({
+  const announcements = await db.announcement.findMany({
     orderBy: { createdAt: 'desc' },
     include: { author: true }
   });

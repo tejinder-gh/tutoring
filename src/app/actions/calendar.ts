@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { addDays, set, startOfWeek } from "date-fns";
 
 export async function getMySchedule(date: Date) {
@@ -15,7 +15,7 @@ export async function getMySchedule(date: Date) {
   const endDate = addDays(startDate, 7);
 
   // 1. Fetch User Leaves
-  const leaves = await prisma.leave.findMany({
+  const leaves = await db.leave.findMany({
     where: {
       userId: userId,
       status: { in: ['APPROVED', 'PENDING'] },
@@ -41,7 +41,7 @@ export async function getMySchedule(date: Date) {
   // Check if User is Student or Teacher and get relevant batch IDs
   let relevantBatchIds: string[] = [];
 
-  const studentProfile = await prisma.studentProfile.findUnique({
+  const studentProfile = await db.studentProfile.findUnique({
       where: { userId },
       include: {
           enrollments: {
@@ -57,7 +57,7 @@ export async function getMySchedule(date: Date) {
           .filter((id: any): id is string => !!id);
   }
 
-  const teacherProfile = await prisma.teacherProfile.findUnique({
+  const teacherProfile = await db.teacherProfile.findUnique({
       where: { userId },
       include: {
           courses: {
@@ -76,7 +76,7 @@ export async function getMySchedule(date: Date) {
   }
 
   // Fetch batches with their details
-  const batches = await prisma.batch.findMany({
+  const batches = await db.batch.findMany({
       where: { id: { in: relevantBatchIds }, isActive: true },
       include: { course: true }
   });
@@ -122,7 +122,7 @@ export async function getMySchedule(date: Date) {
   }
 
   // 3. Fetch Batch Events (Tests, Deadlines, etc.)
-  const customEvents = await prisma.event.findMany({
+  const customEvents = await db.event.findMany({
     where: {
       batchId: { in: relevantBatchIds },
       startTime: { gte: startDate, lte: endDate }

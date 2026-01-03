@@ -4,7 +4,7 @@ import { SimpleBarChart } from "@/components/Analytics/Charts";
 import StatCard from "@/components/Analytics/StatCard";
 import ProgressBar from "@/components/ProgressBar";
 import { getEnrolledCourses } from "@/lib/actions/progress";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { Award, BookOpen, Clock, GraduationCap } from "lucide-react";
 import Link from "next/link";
 
@@ -15,13 +15,13 @@ export default async function StudentDashboard() {
     if (!session?.user?.id) return <div>Unauthorized</div>;
 
     const [profile, announcements, enrolledCourses, analytics] = await Promise.all([
-        prisma.studentProfile.findUnique({
+        db.studentProfile.findUnique({
             where: { userId: session.user.id },
             include: {
                 batch: { include: { course: true } }
             }
         }),
-        prisma.announcement.findMany({
+        db.announcement.findMany({
             take: 3,
             orderBy: { createdAt: 'desc' },
             include: { author: { select: { name: true } } }

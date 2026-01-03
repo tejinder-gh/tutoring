@@ -1,5 +1,5 @@
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import CreateQuizForm from "./CreateQuizForm";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +9,7 @@ export default async function NewQuizPage() {
 
   // Get courses for dropdown
   // Get courses for dropdown
-  const coursesData = await prisma.course.findMany({
+  const coursesData = await db.course.findMany({
     where: { isActive: true },
     include: {
       curriculums: {

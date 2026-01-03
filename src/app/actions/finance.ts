@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 // TEACHER ACTIONS
@@ -10,13 +10,13 @@ export async function getTeacherSalaries() {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const teacherProfile = await prisma.teacherProfile.findUnique({
+  const teacherProfile = await db.teacherProfile.findUnique({
     where: { userId: session.user.id },
   });
 
   if (!teacherProfile) return [];
 
-  const salaries = await prisma.salary.findMany({
+  const salaries = await db.salary.findMany({
       where: { teacherProfileId: teacherProfile.id },
       include: {
           receipts: {
@@ -32,13 +32,13 @@ export async function getTeacherSalaryStructure() {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Unauthorized");
 
-    const teacherProfile = await prisma.teacherProfile.findUnique({
+    const teacherProfile = await db.teacherProfile.findUnique({
       where: { userId: session.user.id },
     });
 
     if (!teacherProfile) return null;
 
-    return await prisma.salary.findFirst({
+    return await db.salary.findFirst({
         where: {
             teacherProfileId: teacherProfile.id,
             isActive: true
@@ -52,13 +52,13 @@ export async function getStaffSalaries() {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Unauthorized");
 
-    const staffProfile = await prisma.staffProfile.findUnique({
+    const staffProfile = await db.staffProfile.findUnique({
       where: { userId: session.user.id },
     });
 
     if (!staffProfile) return [];
 
-    const salaries = await prisma.salary.findMany({
+    const salaries = await db.salary.findMany({
         where: { staffProfileId: staffProfile.id },
         include: {
             receipts: {
@@ -74,13 +74,13 @@ export async function getStaffSalaryStructure() {
       const session = await auth();
       if (!session?.user?.id) throw new Error("Unauthorized");
 
-      const staffProfile = await prisma.staffProfile.findUnique({
+      const staffProfile = await db.staffProfile.findUnique({
         where: { userId: session.user.id },
       });
 
       if (!staffProfile) return null;
 
-      return await prisma.salary.findFirst({
+      return await db.salary.findFirst({
           where: {
               staffProfileId: staffProfile.id,
               isActive: true
@@ -93,9 +93,9 @@ export async function updateBankDetails(details: { bankName: string; accountNumb
     if (!session?.user?.id) throw new Error("Unauthorized");
 
     // Check if Teacher
-    const teacherProfile = await prisma.teacherProfile.findUnique({ where: { userId: session.user.id }});
+    const teacherProfile = await db.teacherProfile.findUnique({ where: { userId: session.user.id }});
     if (teacherProfile) {
-        await prisma.teacherProfile.update({
+        await db.teacherProfile.update({
             where: { id: teacherProfile.id },
             data: { bankDetails: details }
         });
@@ -104,9 +104,9 @@ export async function updateBankDetails(details: { bankName: string; accountNumb
     }
 
     // Check if Staff
-    const staffProfile = await prisma.staffProfile.findUnique({ where: { userId: session.user.id }});
+    const staffProfile = await db.staffProfile.findUnique({ where: { userId: session.user.id }});
     if (staffProfile) {
-        await prisma.staffProfile.update({
+        await db.staffProfile.update({
             where: { id: staffProfile.id },
             data: { bankDetails: details }
         });
@@ -124,7 +124,7 @@ export async function getPendingPayroll() {
     if (!session?.user?.id) throw new Error("Unauthorized");
 
     // Get all active teachers with their salary structures
-    const teachers = await prisma.teacherProfile.findMany({
+    const teachers = await db.teacherProfile.findMany({
         where: {
             user: { isActive: true }
         },
@@ -149,7 +149,7 @@ export async function getPendingPayroll() {
     });
 
     // Get all active staff with their salary structures
-    const staff = await prisma.staffProfile.findMany({
+    const staff = await db.staffProfile.findMany({
         where: {
             user: { isActive: true }
         },
@@ -208,7 +208,7 @@ export async function processSalaryPayment(data: {
     if (!session?.user?.id) throw new Error("Unauthorized");
 
     try {
-        const receipt = await prisma.salaryReceipt.create({
+        const receipt = await db.salaryReceipt.create({
             data: {
                 salaryId: data.salaryId,
                 amount: data.amount,
@@ -244,7 +244,7 @@ export async function processSalaryPayment(data: {
 
         // Create notification
         if (user) {
-            await prisma.notification.create({
+            await db.notification.create({
                 data: {
                     userId: user.id,
                     title: 'Salary Processed',

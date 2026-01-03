@@ -1,7 +1,7 @@
 
 import { BatchEnrollmentManager } from "@/components/admin/BatchEnrollmentManager";
 import { updateBatch } from "@/lib/actions/batches";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { ArrowLeft, Calculator, Save } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -16,7 +16,7 @@ export default async function BatchDetailsPage({
 }) {
   const { id } = await params;
 
-  const batch = await prisma.batch.findUnique({
+  const batch = await db.batch.findUnique({
     where: { id },
     include: {
       _count: {

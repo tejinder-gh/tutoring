@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
 export default async function TeachersPage() {
-  const teachers = await prisma.teacherProfile.findMany({
+  const teachers = await db.teacherProfile.findMany({
     include: {
       user: true,
       _count: {

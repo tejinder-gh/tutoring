@@ -3,7 +3,7 @@
 import { siteConfig } from "@/config/site";
 import { env } from "@/env.mjs";
 import { sendEmail } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
@@ -12,7 +12,7 @@ import crypto from "crypto";
  */
 export async function requestPasswordReset(email: string) {
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await db.user.findUnique({ where: { email } });
 
     if (!user) {
       // Don't reveal if user exists for security
@@ -20,7 +20,7 @@ export async function requestPasswordReset(email: string) {
     }
 
     // Invalidate any existing tokens for this user
-    await prisma.passwordResetToken.updateMany({
+    await db.passwordResetToken.updateMany({
       where: { userId: user.id, used: false },
       data: { used: true }
     });
@@ -30,7 +30,7 @@ export async function requestPasswordReset(email: string) {
     const expiresAt = new Date(Date.now() + 3600000); // 1 hour from now
 
     // Store token in database
-    await prisma.passwordResetToken.create({
+    await db.passwordResetToken.create({
       data: {
         token,
         userId: user.id,
@@ -75,7 +75,7 @@ export async function requestPasswordReset(email: string) {
  */
 export async function validateResetToken(token: string) {
   try {
-    const resetToken = await prisma.passwordResetToken.findUnique({
+    const resetToken = await db.passwordResetToken.findUnique({
       where: { token },
       include: { user: { select: { id: true, name: true, email: true } } }
     });
@@ -113,7 +113,7 @@ export async function resetPassword(token: string, newPassword: string) {
     }
 
     // Find and validate the token
-    const resetToken = await prisma.passwordResetToken.findUnique({
+    const resetToken = await db.passwordResetToken.findUnique({
       where: { token },
       include: { user: true }
     });
@@ -134,12 +134,12 @@ export async function resetPassword(token: string, newPassword: string) {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update user's password and mark token as used
-    await prisma.$transaction([
-      prisma.user.update({
+    await db.$transaction([
+      db.user.update({
         where: { id: resetToken.userId },
         data: { password: hashedPassword }
       }),
-      prisma.passwordResetToken.update({
+      db.passwordResetToken.update({
         where: { id: resetToken.id },
         data: { used: true }
       })

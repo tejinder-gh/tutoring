@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export enum AuditAction {
   CREATE = "CREATE",
@@ -51,7 +51,7 @@ export async function logActivity({
       return;
     }
 
-    await prisma.auditLog.create({
+    await db.auditLog.create({
       data: {
         userId: actorId,
         action: action.toString(),

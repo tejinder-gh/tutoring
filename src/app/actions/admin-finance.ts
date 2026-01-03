@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { endOfMonth, startOfMonth, subMonths } from "date-fns";
 
 // =============================================================================
@@ -40,28 +40,28 @@ export async function getFinanceOverview(): Promise<FinanceOverview> {
     totalExpensesResult,
   ] = await Promise.all([
     // Total revenue (all time)
-    prisma.paymentReceipts.aggregate({
+    db.paymentReceipts.aggregate({
       _sum: { amountPaid: true },
     }),
     // This month's revenue
-    prisma.paymentReceipts.aggregate({
+    db.paymentReceipts.aggregate({
       where: {
         paymentDate: { gte: monthStart, lte: monthEnd },
       },
       _sum: { amountPaid: true },
     }),
     // Pending payments (where pendingAmount > 0)
-    prisma.paymentReceipts.aggregate({
+    db.paymentReceipts.aggregate({
       where: { pendingAmount: { gt: 0 } },
       _sum: { pendingAmount: true },
       _count: true,
     }),
     // Total salary disbursed
-    prisma.salaryReceipt.aggregate({
+    db.salaryReceipt.aggregate({
       _sum: { amount: true },
     }),
     // Pending salaries (active salaries without recent receipt)
-    prisma.salary.findMany({
+    db.salary.findMany({
       where: { isActive: true },
       include: {
         receipts: {
@@ -74,7 +74,7 @@ export async function getFinanceOverview(): Promise<FinanceOverview> {
       },
     }),
     // Total Expenses
-    prisma.expense.aggregate({
+    db.expense.aggregate({
         where: {
             date: { gte: monthStart, lte: monthEnd }
         },
@@ -142,7 +142,7 @@ export async function getRecentPayments(
   const skip = (page - 1) * limit;
 
   const [payments, total] = await Promise.all([
-    prisma.paymentReceipts.findMany({
+    db.paymentReceipts.findMany({
       skip,
       take: limit,
       orderBy: { paymentDate: "desc" },
@@ -151,7 +151,7 @@ export async function getRecentPayments(
         course: { select: { id: true, title: true } },
       },
     }),
-    prisma.paymentReceipts.count(),
+    db.paymentReceipts.count(),
   ]);
 
   return {
@@ -195,7 +195,7 @@ export async function getPendingSalaries(): Promise<SalaryWithDetails[]> {
 
   const monthStart = startOfMonth(new Date());
 
-  const salaries = await prisma.salary.findMany({
+  const salaries = await db.salary.findMany({
     where: { isActive: true },
     include: {
       receipts: {
@@ -249,10 +249,10 @@ export async function processSalaryPayment(
 
   await requirePermission("manage", "finance");
 
-  const salary = await prisma.salary.findUnique({ where: { id: salaryId } });
+  const salary = await db.salary.findUnique({ where: { id: salaryId } });
   if (!salary) throw new Error("Salary record not found");
 
-  const receipt = await prisma.salaryReceipt.create({
+  const receipt = await db.salaryReceipt.create({
     data: {
       salaryId,
       amount,
@@ -271,13 +271,13 @@ export async function processBulkSalaryPayment(salaryIds: string[]) {
 
   await requirePermission("manage", "finance");
 
-  const salaries = await prisma.salary.findMany({
+  const salaries = await db.salary.findMany({
     where: { id: { in: salaryIds } },
   });
 
-  const receipts = await prisma.$transaction(
+  const receipts = await db.$transaction(
     salaries.map((s) =>
-      prisma.salaryReceipt.create({
+      db.salaryReceipt.create({
         data: {
           salaryId: s.id,
           amount:
@@ -318,7 +318,7 @@ export async function getBatchProfitability(): Promise<BatchProfitability[]> {
 
   await requirePermission("read", "finance");
 
-  const batches = await prisma.batch.findMany({
+  const batches = await db.batch.findMany({
     where: { isActive: true },
     include: {
       course: true,
@@ -377,7 +377,7 @@ export async function getRevenueTrends(months = 6) {
     const monthStart = startOfMonth(subMonths(now, i));
     const monthEnd = endOfMonth(subMonths(now, i));
 
-    const result = await prisma.paymentReceipts.aggregate({
+    const result = await db.paymentReceipts.aggregate({
       where: {
         paymentDate: { gte: monthStart, lte: monthEnd },
       },

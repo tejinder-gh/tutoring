@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 // =============================================================================
@@ -27,7 +27,7 @@ export async function createHighlight(
   }
 
   try {
-    const highlight = await prisma.lessonHighlight.create({
+    const highlight = await db.lessonHighlight.create({
       data: {
         lessonId,
         userId: session.user.id,
@@ -63,7 +63,7 @@ export async function updateHighlight(
   }
 
   try {
-    const highlight = await prisma.lessonHighlight.update({
+    const highlight = await db.lessonHighlight.update({
       where: {
         id,
         userId: session.user.id, // Ensure ownership
@@ -89,7 +89,7 @@ export async function deleteHighlight(id: string) {
   }
 
   try {
-    await prisma.lessonHighlight.delete({
+    await db.lessonHighlight.delete({
       where: {
         id,
         userId: session.user.id, // Ensure ownership
@@ -111,7 +111,7 @@ export async function getHighlightsByLesson(lessonId: string) {
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  const highlights = await prisma.lessonHighlight.findMany({
+  const highlights = await db.lessonHighlight.findMany({
     where: {
       lessonId,
       userId: session.user.id,
@@ -129,7 +129,7 @@ export async function getAllHighlights() {
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  const highlights = await prisma.lessonHighlight.findMany({
+  const highlights = await db.lessonHighlight.findMany({
     where: {
       userId: session.user.id,
     },
@@ -185,7 +185,7 @@ export async function toggleBookmark(
 
   try {
     // Check if exists
-    const existing = await prisma.lessonBookmark.findUnique({
+    const existing = await db.lessonBookmark.findUnique({
       where: {
         lessonId_userId: {
           lessonId,
@@ -196,7 +196,7 @@ export async function toggleBookmark(
 
     if (existing) {
       // Access delete
-      await prisma.lessonBookmark.delete({
+      await db.lessonBookmark.delete({
         where: { id: existing.id },
       });
       revalidatePath(`/student/bookmarks`);
@@ -204,7 +204,7 @@ export async function toggleBookmark(
       return { success: true, isBookmarked: false };
     } else {
       // Create
-      const bookmark = await prisma.lessonBookmark.create({
+      const bookmark = await db.lessonBookmark.create({
         data: {
           lessonId,
           userId: session.user.id,
@@ -230,7 +230,7 @@ export async function getLessonBookmark(lessonId: string) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const bookmark = await prisma.lessonBookmark.findUnique({
+  const bookmark = await db.lessonBookmark.findUnique({
     where: {
       lessonId_userId: {
         lessonId,
@@ -249,7 +249,7 @@ export async function getUserBookmarks() {
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  const bookmarks = await prisma.lessonBookmark.findMany({
+  const bookmarks = await db.lessonBookmark.findMany({
     where: {
       userId: session.user.id,
     },

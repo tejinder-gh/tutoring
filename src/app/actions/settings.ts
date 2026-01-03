@@ -1,11 +1,11 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export async function getSettings() {
-  const settings = await prisma.setting.findMany();
+  const settings = await db.setting.findMany();
   // Transform array to object
   return settings.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {});
 }
@@ -24,20 +24,25 @@ export async function updateSettings(formData: FormData) {
       "contact.address"
   ];
 
-  for (const key of keys) {
-      const value = formData.get(key);
-      if (value !== null) {
-          await prisma.setting.upsert({
-              where: { key },
-              update: { value: value.toString() },
-              create: {
-                  key,
-                  value: value.toString(),
-                  category: "general"
-              }
+  await db.$transaction(
+    keys
+      .map((key) => {
+        const value = formData.get(key);
+        if (value !== null) {
+          return db.setting.upsert({
+            where: { key },
+            update: { value: value.toString() },
+            create: {
+              key,
+              value: value.toString(),
+              category: "general",
+            },
           });
-      }
-  }
+        }
+        return null;
+      })
+      .filter((p) => p !== null) as any[]
+  );
 
   revalidatePath("/admin/settings/general");
 }

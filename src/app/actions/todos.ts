@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export interface TodoData {
@@ -20,21 +20,21 @@ export async function createTodo(data: TodoData) {
     // Check permissions - Admin/Manager can assign
     // await requirePermission("manage", "todos"); // or "staff"
 
-    const todo = await prisma.todo.create({
+    const todo = await db.todo.create({
         data: {
             title: data.title,
-            description: data.description,
+            description: data.description ?? null,
             priority: data.priority,
-            dueDate: data.dueDate,
+            dueDate: data.dueDate ?? null,
             assignedToId: data.assignedToId,
             assignedById: session.user.id,
-            branchId: data.branchId,
+            branchId: data.branchId ?? null,
             status: "PENDING"
         }
     });
 
     // Notify user?
-    await prisma.notification.create({
+    await db.notification.create({
         data: {
             userId: data.assignedToId,
             title: "New Task Assigned",
@@ -52,7 +52,7 @@ export async function updateTodoStatus(id: string, status: "PENDING" | "IN_PROGR
     const session = await auth();
     if (!session?.user?.id) throw new Error("Unauthorized");
 
-    const todo = await prisma.todo.findUnique({ where: { id } });
+    const todo = await db.todo.findUnique({ where: { id } });
     if (!todo) throw new Error("Todo not found");
 
     // Allow assignee or creator or admin to update status
@@ -61,7 +61,7 @@ export async function updateTodoStatus(id: string, status: "PENDING" | "IN_PROGR
          // For now allow assignee
     }
 
-    await prisma.todo.update({
+    await db.todo.update({
         where: { id },
         data: { status }
     });
@@ -75,7 +75,7 @@ export async function deleteTodo(id: string) {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Unauthorized");
 
-    const todo = await prisma.todo.findUnique({ where: { id } });
+    const todo = await db.todo.findUnique({ where: { id } });
     if (!todo) throw new Error("Todo not found");
 
     if (todo.assignedById !== session.user.id) {
@@ -83,7 +83,7 @@ export async function deleteTodo(id: string) {
         // await requirePermission("manage", "todos");
     }
 
-    await prisma.todo.delete({ where: { id } });
+    await db.todo.delete({ where: { id } });
     revalidatePath("/admin/todos");
     return { success: true };
 }
@@ -92,7 +92,7 @@ export async function getAssignedTodos() {
     const session = await auth();
     if (!session?.user?.id) return [];
 
-    return await prisma.todo.findMany({
+    return await db.todo.findMany({
         where: { assignedToId: session.user.id },
         orderBy: { dueDate: 'asc' }, // Urgent first
         include: {
@@ -105,7 +105,7 @@ export async function getCreatedTodos() {
     const session = await auth();
     if (!session?.user?.id) return [];
 
-    return await prisma.todo.findMany({
+    return await db.todo.findMany({
         where: { assignedById: session.user.id },
         orderBy: { createdAt: 'desc' },
         include: {
@@ -123,7 +123,7 @@ export async function getAllTodos(branchId?: string) {
     const where: any = {};
     if (branchId) where.branchId = branchId;
 
-    return await prisma.todo.findMany({
+    return await db.todo.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         include: {

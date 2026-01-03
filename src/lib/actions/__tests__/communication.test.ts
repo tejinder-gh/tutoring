@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { auth } from '@/auth';
-import { prisma } from '@/lib/prisma';
+import { db } from "@/lib/db";
 import { createAnnouncement, createQuery } from '../communication';
 
 // Mock dependencies
@@ -36,7 +36,7 @@ describe('Communication Actions Integration Tests', () => {
 
             await createQuery(formData);
 
-            expect(prisma.query.create).toHaveBeenCalledWith(expect.objectContaining({
+            expect(db.query.create).toHaveBeenCalledWith(expect.objectContaining({
                 data: expect.objectContaining({ subject: 'Help', studentId: 'student-1' })
             }));
         });
@@ -58,7 +58,7 @@ describe('Communication Actions Integration Tests', () => {
 
             await createAnnouncement(formData);
 
-            expect(prisma.announcement.create).toHaveBeenCalledWith(expect.objectContaining({
+            expect(db.announcement.create).toHaveBeenCalledWith(expect.objectContaining({
                 data: expect.objectContaining({ title: 'Notice', authorId: 'admin-1' })
             }));
         });

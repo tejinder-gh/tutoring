@@ -1,9 +1,17 @@
 'use server';
 
+import { db } from "@/lib/db";
 import { requirePermission } from '@/lib/permissions';
-import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { revalidatePath } from 'next/cache';
+import { z } from "zod";
+
+const CreateUserSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  role: z.string().min(1, "Role is required"),
+  password: z.string().optional(),
+});
 
 export type CreateUserState = {
   success?: boolean;
@@ -21,23 +29,27 @@ export async function createUser(prevState: CreateUserState, formData: FormData)
     // 1. Check permissions
     await requirePermission('manage', 'user');
 
-    const name = formData.get('name') as string;
-    const email = formData.get('email') as string;
-    const roleName = formData.get('role') as string;
-    const password = (formData.get('password') as string) || 'Welcome123!';
+    const rawData = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      role: formData.get('role'),
+      password: formData.get('password') || undefined
+    };
 
     // 2. Validate input
-    const fieldErrors: CreateUserState['fieldErrors'] = {};
-    if (!name || name.trim().length < 2) fieldErrors.name = ['Name must be at least 2 characters'];
-    if (!email || !/\S+@\S+\.\S+/.test(email)) fieldErrors.email = ['Invalid email address'];
-    if (!roleName) fieldErrors.role = ['Role is required'];
-
-    if (Object.keys(fieldErrors).length > 0) {
-      return { error: 'Validation failed', fieldErrors };
+    const validation = CreateUserSchema.safeParse(rawData);
+    if (!validation.success) {
+      return {
+        error: 'Validation failed',
+        fieldErrors: validation.error.flatten().fieldErrors as any
+      };
     }
 
+    const { name, email, role: roleName, password: providedPassword } = validation.data;
+    const password = providedPassword || 'Welcome123!';
+
     // 3. Check if user exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await db.user.findUnique({
       where: { email },
     });
 
@@ -46,7 +58,7 @@ export async function createUser(prevState: CreateUserState, formData: FormData)
     }
 
     // 4. Find role
-    const role = await prisma.role.findUnique({
+    const role = await db.role.findUnique({
       where: { name: roleName },
     });
 
@@ -58,7 +70,7 @@ export async function createUser(prevState: CreateUserState, formData: FormData)
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 6. Create user and profile
-    await prisma.$transaction(async (tx: any) => {
+    await db.$transaction(async (tx: any) => {
       const user = await tx.user.create({
         data: {
           name,
@@ -118,7 +130,7 @@ export async function getCurrentUser() {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const user = await prisma.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: session.user.id },
     select: {
       id: true,
@@ -146,7 +158,7 @@ export async function updateProfile(data: {
     if (data.name) updateData.name = data.name;
     if (data.phone !== undefined) updateData.phone = data.phone || null;
 
-    await prisma.user.update({
+    await db.user.update({
       where: { id: session.user.id },
       data: updateData,
     });
@@ -166,7 +178,7 @@ export async function changePassword(currentPassword: string, newPassword: strin
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: session.user.id },
       select: { password: true },
     });
@@ -183,7 +195,7 @@ export async function changePassword(currentPassword: string, newPassword: strin
 
     // Hash and update new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await prisma.user.update({
+    await db.user.update({
       where: { id: session.user.id },
       data: { password: hashedPassword },
     });
@@ -218,7 +230,7 @@ export async function updateUser(userId: string, formData: FormData): Promise<Up
             data.branchId = null;
         }
 
-        await prisma.user.update({
+        await db.user.update({
             where: { id: userId },
             data
         });

@@ -1,13 +1,13 @@
 "use server";
 
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 // Export students to CSV format
 export async function exportStudentsCSV() {
   await requirePermission("read", "user");
 
-  const students = await prisma.studentProfile.findMany({
+  const students = await db.studentProfile.findMany({
     include: {
       user: {
         select: {
@@ -48,7 +48,7 @@ export async function exportPaymentsCSV(startDate?: string, endDate?: string) {
     if (endDate) where.createdAt.lte = new Date(endDate);
   }
 
-  const payments = await prisma.paymentReceipts.findMany({
+  const payments = await db.paymentReceipts.findMany({
     where,
     include: {
       user: { select: { name: true, email: true } },
@@ -86,7 +86,7 @@ export async function exportPaymentsCSV(startDate?: string, endDate?: string) {
 export async function exportLeadsCSV() {
   await requirePermission("read", "user"); // lead exports require user read access
 
-  const leads = await prisma.lead.findMany({
+  const leads = await db.lead.findMany({
     orderBy: { createdAt: "desc" },
   });
 
@@ -110,7 +110,7 @@ export async function exportLeadsCSV() {
 export async function exportBatchesCSV() {
   await requirePermission("read", "batch");
 
-  const batches = await prisma.batch.findMany({
+  const batches = await db.batch.findMany({
     include: {
       course: { select: { title: true } },
       _count: { select: { students: true, enrollments: true } },

@@ -1,6 +1,6 @@
 import { updateTeacherProfile } from "@/app/actions/teacher-profile";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { Briefcase, Edit3, GraduationCap, Mail, Phone, User } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -8,7 +8,7 @@ export default async function TeacherProfilePage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const teacher = await prisma.teacherProfile.findUnique({
+  const teacher = await db.teacherProfile.findUnique({
     where: { userId: session.user.id },
     include: { user: true },
   });

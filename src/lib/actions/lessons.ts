@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -11,7 +11,7 @@ export async function getLessonContent(lessonId: string) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const lesson = await prisma.lesson.findUnique({
+  const lesson = await db.lesson.findUnique({
     where: { id: lessonId },
     select: {
       id: true,
@@ -56,7 +56,7 @@ export async function getLessonContentForEdit(lessonId: string) {
     return { success: false, error: "Unauthorized" };
   }
 
-  const lesson = await prisma.lesson.findUnique({
+  const lesson = await db.lesson.findUnique({
     where: { id: lessonId },
     select: {
       id: true,
@@ -120,7 +120,7 @@ export async function saveLessonContent(
   }
 
   try {
-    const lesson = await prisma.lesson.update({
+    const lesson = await db.lesson.update({
       where: { id: lessonId },
       data: {
         contentUrl,
@@ -154,7 +154,7 @@ export async function migrateLessonContent(lessonId: string) {
   }
 
   try {
-    const lesson = await prisma.lesson.findUnique({
+    const lesson = await db.lesson.findUnique({
       where: { id: lessonId },
       select: { id: true, content: true, contentUrl: true },
     });
@@ -198,7 +198,7 @@ export async function getLessonsNeedingMigration() {
     return { success: false, error: "Unauthorized" };
   }
 
-  const lessons = await prisma.lesson.findMany({
+  const lessons = await db.lesson.findMany({
     where: {
       content: { not: null },
       contentUrl: null,
@@ -252,7 +252,7 @@ export async function updateLessonMetadata(
   }
 
   try {
-    const lesson = await prisma.lesson.update({
+    const lesson = await db.lesson.update({
       where: { id: lessonId },
       data,
     });

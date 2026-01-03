@@ -1,7 +1,7 @@
 "use client";
 
 import { createRole, updateRole } from "@/lib/actions/roles";
-import { Permission } from "@prisma/client";
+import type { Permission } from "@prisma/client";
 import { Check, Save, Shield, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

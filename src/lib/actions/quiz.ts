@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { QuestionType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -27,7 +27,7 @@ export async function createQuiz(data: {
   }
 
   try {
-    const curriculum = await prisma.curriculum.findFirst({
+    const curriculum = await db.curriculum.findFirst({
         where: { courseId: data.courseId, teacherId: null }
     });
 
@@ -35,7 +35,7 @@ export async function createQuiz(data: {
         return { success: false, error: "Curriculum not found for this course" };
     }
 
-    const quiz = await prisma.quiz.create({
+    const quiz = await db.quiz.create({
       data: {
         title: data.title,
         description: data.description ?? null,
@@ -74,7 +74,7 @@ export async function updateQuiz(
   }
 
   try {
-    const quiz = await prisma.quiz.update({
+    const quiz = await db.quiz.update({
       where: { id: quizId },
       data,
     });
@@ -107,13 +107,13 @@ export async function addQuestion(
 
   try {
     // Get current max order
-    const lastQuestion = await prisma.question.findFirst({
+    const lastQuestion = await db.question.findFirst({
       where: { quizId },
       orderBy: { order: "desc" },
     });
     const newOrder = lastQuestion ? lastQuestion.order + 1 : 0;
 
-    const question = await prisma.question.create({
+    const question = await db.question.create({
       data: {
         quizId,
         text: data.text,
@@ -162,7 +162,7 @@ export async function updateQuestion(
   }
 
   try {
-    const question = await prisma.question.update({
+    const question = await db.question.update({
       where: { id: questionId },
       data,
       include: { quiz: { select: { id: true } } },
@@ -186,7 +186,7 @@ export async function deleteQuestion(questionId: string) {
   }
 
   try {
-    const question = await prisma.question.delete({
+    const question = await db.question.delete({
       where: { id: questionId },
       select: { quiz: { select: { id: true } } },
     });
@@ -203,7 +203,7 @@ export async function deleteQuestion(questionId: string) {
  * Get all quizzes (admin view)
  */
 export async function getAllQuizzes() {
-  const quizzes = await prisma.quiz.findMany({
+  const quizzes = await db.quiz.findMany({
     include: {
       curriculum: { select: { course: { select: { id: true, title: true } } } },
       lesson: { select: { id: true, title: true } },
@@ -222,7 +222,7 @@ export async function getAllQuizzes() {
  * Get quiz with questions (admin view)
  */
 export async function getQuizWithQuestions(quizId: string) {
-  const quiz = await prisma.quiz.findUnique({
+  const quiz = await db.quiz.findUnique({
     where: { id: quizId },
     include: {
       curriculum: { select: { course: { select: { id: true, title: true } } } },
@@ -250,7 +250,7 @@ export async function getQuizForStudent(quizId: string) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const quiz = await prisma.quiz.findUnique({
+  const quiz = await db.quiz.findUnique({
     where: { id: quizId, isActive: true },
     include: {
       curriculum: { select: { course: { select: { id: true, title: true } } } },
@@ -281,7 +281,7 @@ export async function startQuizAttempt(quizId: string) {
 
   try {
     // Check if there's already an incomplete attempt
-    const existingAttempt = await prisma.quizAttempt.findFirst({
+    const existingAttempt = await db.quizAttempt.findFirst({
       where: {
         quizId,
         userId: session.user.id,
@@ -293,7 +293,7 @@ export async function startQuizAttempt(quizId: string) {
       return { success: true, attempt: existingAttempt };
     }
 
-    const attempt = await prisma.quizAttempt.create({
+    const attempt = await db.quizAttempt.create({
       data: {
         quizId,
         userId: session.user.id,
@@ -321,7 +321,7 @@ export async function submitQuizAttempt(
 
   try {
     // Get the attempt with quiz and questions
-    const attempt = await prisma.quizAttempt.findUnique({
+    const attempt = await db.quizAttempt.findUnique({
       where: { id: attemptId, userId: session.user.id },
       include: {
         quiz: {
@@ -397,7 +397,7 @@ export async function submitQuizAttempt(
     }).filter(Boolean);
 
     // Create responses
-    await prisma.questionResponse.createMany({
+    await db.questionResponse.createMany({
       data: responseData as any[],
     });
 
@@ -406,7 +406,7 @@ export async function submitQuizAttempt(
     const passed = score >= attempt.quiz.passingScore;
 
     // Update attempt
-    await prisma.quizAttempt.update({
+    await db.quizAttempt.update({
       where: { id: attemptId },
       data: {
         submittedAt: new Date(),
@@ -430,7 +430,7 @@ export async function getQuizResult(attemptId: string) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const attempt = await prisma.quizAttempt.findUnique({
+  const attempt = await db.quizAttempt.findUnique({
     where: { id: attemptId, userId: session.user.id },
     include: {
       quiz: {
@@ -459,7 +459,7 @@ export async function getQuizzesForCourse(courseId: string) {
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  const quizzes = await prisma.quiz.findMany({
+  const quizzes = await db.quiz.findMany({
     where: { curriculum: { courseId, teacherId: null }, isActive: true },
     include: {
       lesson: { select: { id: true, title: true } },

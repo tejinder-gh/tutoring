@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export interface ExpenseData {
@@ -42,7 +42,7 @@ export async function getExpenses(filters?: {
     where.category = filters.category;
   }
 
-  return await prisma.expense.findMany({
+  return await db.expense.findMany({
     where,
     orderBy: { date: "desc" },
     include: {
@@ -57,7 +57,7 @@ export async function addExpense(data: ExpenseData) {
 
   await requirePermission("manage", "finance");
 
-  const expense = await prisma.expense.create({
+  const expense = await db.expense.create({
     data: {
       ...data,
       recordedBy: session.user.id,
@@ -74,7 +74,7 @@ export async function updateExpense(id: string, data: Partial<ExpenseData>) {
 
   await requirePermission("manage", "finance");
 
-  const expense = await prisma.expense.update({
+  const expense = await db.expense.update({
     where: { id },
     data,
   });
@@ -89,7 +89,7 @@ export async function deleteExpense(id: string) {
 
   await requirePermission("manage", "finance");
 
-  await prisma.expense.delete({
+  await db.expense.delete({
     where: { id },
   });
 
@@ -101,7 +101,7 @@ export async function getExpenseCategories() {
   // Return unique categories used in the DB + default ones
   const defaults = ["OPERATIONAL", "RENT", "UTILITIES", "SALARY", "MARKETING", "EQUIPMENT", "OTHER"];
 
-  const used = await prisma.expense.groupBy({
+  const used = await db.expense.groupBy({
     by: ['category'],
   });
 

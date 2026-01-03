@@ -1,5 +1,5 @@
 import { submitAttendance } from "@/lib/actions/attendance";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -9,7 +9,7 @@ interface PageProps {
 
 export default async function MarkAttendancePage(props: PageProps) {
     const params = await props.params;
-    const batch = await prisma.batch.findUnique({
+    const batch = await db.batch.findUnique({
         where: { id: params.batchId },
         include: {
             students: {

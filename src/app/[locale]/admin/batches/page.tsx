@@ -1,10 +1,10 @@
 
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
 export default async function AdminBatchesPage() {
-  const batches = await prisma.batch.findMany({
+  const batches = await db.batch.findMany({
     include: {
       course: true,
       _count: {

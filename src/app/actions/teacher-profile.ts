@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -32,7 +32,7 @@ export async function updateTeacherProfile(formData: FormData) {
   const { bio, qualification, domain } = validation.data;
 
   try {
-    await prisma.teacherProfile.update({
+    await db.teacherProfile.update({
       where: { userId: session.user.id },
       data: {
         bio: bio ?? null,

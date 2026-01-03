@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { endOfDay, endOfWeek, endOfYear, format, startOfDay, startOfMonth, startOfWeek, startOfYear, subDays, subMonths, subWeeks, subYears } from "date-fns";
 import { unstable_cache } from "next/cache";
 
@@ -10,7 +10,7 @@ export async function getTeacherAnalytics() {
     if (!session?.user?.id) return null;
     const userId = session.user.id;
 
-    const teacherProfile = await prisma.teacherProfile.findUnique({
+    const teacherProfile = await db.teacherProfile.findUnique({
         where: { userId },
         include: {
             courses: {
@@ -81,7 +81,7 @@ export async function getStudentAnalytics() {
   const userId = session.user.id;
 
   // 1. Enrollment Stats
-  const enrollments = await prisma.enrollment.findMany({
+  const enrollments = await db.enrollment.findMany({
     where: { studentProfile: { userId } },
     include: { course: true }
   });
@@ -91,7 +91,7 @@ export async function getStudentAnalytics() {
   const activeCourses = enrollments.filter((e: any) => e.status === 'ACTIVE').length;
 
   // 2. Quiz Performance (Recent 5)
-  const quizAttempts = await prisma.quizAttempt.findMany({
+  const quizAttempts = await db.quizAttempt.findMany({
     where: { userId },
     orderBy: { startedAt: 'desc' },
     take: 5,
@@ -106,7 +106,7 @@ export async function getStudentAnalytics() {
 
   // 3. Attendance Overview (Last 30 days present vs absent)
   // Simplified for demo
-  const attendance = await prisma.attendance.findMany({
+  const attendance = await db.attendance.findMany({
       where: { userId },
       take: 30,
       orderBy: { date: 'desc' }
@@ -141,7 +141,7 @@ const getCachedAdminAnalyticsData = unstable_cache(
                 const start = startOfDay(date);
                 const end = endOfDay(date);
 
-                const dailyRevenue = await prisma.paymentReceipts.aggregate({
+                const dailyRevenue = await db.paymentReceipts.aggregate({
                     _sum: { amountPaid: true },
                     where: { paymentDate: { gte: start, lte: end } }
                 });
@@ -158,7 +158,7 @@ const getCachedAdminAnalyticsData = unstable_cache(
                 const start = startOfWeek(date, { weekStartsOn: 1 });
                 const end = endOfWeek(date, { weekStartsOn: 1 });
 
-                const weeklyRevenue = await prisma.paymentReceipts.aggregate({
+                const weeklyRevenue = await db.paymentReceipts.aggregate({
                     _sum: { amountPaid: true },
                     where: { paymentDate: { gte: start, lte: end } }
                 });
@@ -175,7 +175,7 @@ const getCachedAdminAnalyticsData = unstable_cache(
                 const start = startOfYear(date);
                 const end = endOfYear(date);
 
-                const yearlyRevenue = await prisma.paymentReceipts.aggregate({
+                const yearlyRevenue = await db.paymentReceipts.aggregate({
                     _sum: { amountPaid: true },
                     where: { paymentDate: { gte: start, lte: end } }
                 });
@@ -192,7 +192,7 @@ const getCachedAdminAnalyticsData = unstable_cache(
                 const start = startOfMonth(date);
                 const end = endOfDay(new Date(date.getFullYear(), date.getMonth() + 1, 0));
 
-                const monthlyRevenue = await prisma.paymentReceipts.aggregate({
+                const monthlyRevenue = await db.paymentReceipts.aggregate({
                     _sum: { amountPaid: true },
                     where: { paymentDate: { gte: start, lte: end } }
                 });
@@ -205,12 +205,12 @@ const getCachedAdminAnalyticsData = unstable_cache(
         }
 
         // 2. Total Stats
-        const totalStudents = await prisma.user.count({ where: { roleId: { not: null } } });
-        const totalCourses = await prisma.course.count();
-        const totalRevenue = await prisma.paymentReceipts.aggregate({ _sum: { amountPaid: true } });
+        const totalStudents = await db.user.count({ where: { roleId: { not: null } } });
+        const totalCourses = await db.course.count();
+        const totalRevenue = await db.paymentReceipts.aggregate({ _sum: { amountPaid: true } });
 
         // 3. Top Courses by Enrollment
-        const popularCourses = await prisma.enrollment.groupBy({
+        const popularCourses = await db.enrollment.groupBy({
             by: ['courseId'],
             _count: { courseId: true },
             orderBy: {
@@ -221,7 +221,7 @@ const getCachedAdminAnalyticsData = unstable_cache(
 
         const enrichedPopularCourses = (await Promise.all(popularCourses.map(async (item: any) => {
             if (!item.courseId) return null;
-            const course = await prisma.course.findUnique({ where: { id: item.courseId }, select: { title: true } });
+            const course = await db.course.findUnique({ where: { id: item.courseId }, select: { title: true } });
             return {
                 name: course?.title || 'Unknown',
                 students: item._count.courseId
@@ -316,11 +316,11 @@ const getCachedDashboardMetricsData = unstable_cache(
 
         // 1. Revenue
         const [currentRevenue, previousRevenue] = await Promise.all([
-            prisma.paymentReceipts.aggregate({
+            db.paymentReceipts.aggregate({
                 _sum: { amountPaid: true },
                 where: { paymentDate: { gte: currentStart, lte: currentEnd } }
             }),
-            prisma.paymentReceipts.aggregate({
+            db.paymentReceipts.aggregate({
                 _sum: { amountPaid: true },
                 where: { paymentDate: { gte: previousStart, lte: previousEnd } }
             })
@@ -328,14 +328,14 @@ const getCachedDashboardMetricsData = unstable_cache(
 
         // 2. Leads
         const [currentLeads, previousLeads] = await Promise.all([
-            prisma.lead.count({ where: { createdAt: { gte: currentStart, lte: currentEnd } } }),
-            prisma.lead.count({ where: { createdAt: { gte: previousStart, lte: previousEnd } } })
+            db.lead.count({ where: { createdAt: { gte: currentStart, lte: currentEnd } } }),
+            db.lead.count({ where: { createdAt: { gte: previousStart, lte: previousEnd } } })
         ]);
 
         // 3. New Students (Enrollments)
         const [currentEnrollments, previousEnrollments] = await Promise.all([
-            prisma.enrollment.count({ where: { enrolledAt: { gte: currentStart, lte: currentEnd } } }),
-            prisma.enrollment.count({ where: { enrolledAt: { gte: previousStart, lte: previousEnd } } })
+            db.enrollment.count({ where: { enrolledAt: { gte: currentStart, lte: currentEnd } } }),
+            db.enrollment.count({ where: { enrolledAt: { gte: previousStart, lte: previousEnd } } })
         ]);
 
         return {
@@ -366,7 +366,7 @@ export async function getLeadAnalytics(branchId?: string) {
   }
 
   // 1. Leads by Count per Status
-  const statusCounts = await prisma.lead.groupBy({
+  const statusCounts = await db.lead.groupBy({
     by: ['status'],
     where,
     _count: { status: true }
@@ -379,7 +379,7 @@ export async function getLeadAnalytics(branchId?: string) {
   const conversionRatio = totalLeads > 0 ? (convertedLeads / totalLeads) * 100 : 0;
 
   // 3. Leads by Source
-  const sourceCounts = await prisma.lead.groupBy({
+  const sourceCounts = await db.lead.groupBy({
      by: ['source'],
      where,
      _count: { source: true }

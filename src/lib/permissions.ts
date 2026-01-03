@@ -1,5 +1,5 @@
 import { auth } from '@/auth';
-import { prisma } from '@/lib/prisma';
+import { db } from "@/lib/db";
 import { redirect } from 'next/navigation';
 import type { PermissionAction, PermissionSubject, UserWithRole } from './permissions-core';
 import { hasPermission } from './permissions-core';
@@ -17,7 +17,7 @@ export async function requirePermission(
     redirect('/login');
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: session.user.id },
     include: {
       role: {

@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { auth } from '@/auth';
-import { prisma } from '@/lib/prisma';
+import { db } from "@/lib/db";
 import { addModule, createCourse } from '../academic';
 import { createQuiz, submitQuizAttempt } from '../quiz';
 
@@ -44,21 +44,21 @@ describe('Curriculum Integration Tests', () => {
 
             await createCourse(formData);
 
-            expect(prisma.course.create).toHaveBeenCalledWith(expect.objectContaining({
+            expect(db.course.create).toHaveBeenCalledWith(expect.objectContaining({
                 data: expect.objectContaining({ title: 'New Course' })
             }));
         });
 
         test('addModule should create module', async () => {
-            (prisma.curriculum.findFirst as jest.Mock).mockResolvedValue({ id: 'curr-1' });
-            (prisma.module.findFirst as jest.Mock).mockResolvedValue({ order: 1 });
+            (db.curriculum.findFirst as jest.Mock).mockResolvedValue({ id: 'curr-1' });
+            (db.module.findFirst as jest.Mock).mockResolvedValue({ order: 1 });
 
             const formData = new FormData();
             formData.append('title', 'Module 1');
 
             await addModule('course-1', formData);
 
-            expect(prisma.module.create).toHaveBeenCalledWith(expect.objectContaining({
+            expect(db.module.create).toHaveBeenCalledWith(expect.objectContaining({
                 data: expect.objectContaining({ title: 'Module 1', order: 2 })
             }));
         });
@@ -66,7 +66,7 @@ describe('Curriculum Integration Tests', () => {
 
     describe('Quiz Management', () => {
         test('createQuiz should create quiz', async () => {
-            (prisma.curriculum.findFirst as jest.Mock).mockResolvedValue({ id: 'curr-1' });
+            (db.curriculum.findFirst as jest.Mock).mockResolvedValue({ id: 'curr-1' });
 
             const result = await createQuiz({
                 title: 'Quiz 1',
@@ -75,7 +75,7 @@ describe('Curriculum Integration Tests', () => {
             });
 
             expect(result.success).toBe(true);
-            expect(prisma.quiz.create).toHaveBeenCalled();
+            expect(db.quiz.create).toHaveBeenCalled();
         });
 
         test('submitQuizAttempt should grade responses', async () => {
@@ -90,7 +90,7 @@ describe('Curriculum Integration Tests', () => {
                 ]
             };
 
-            (prisma.quizAttempt.findUnique as jest.Mock).mockResolvedValue({
+            (db.quizAttempt.findUnique as jest.Mock).mockResolvedValue({
                 id: 'att-1',
                 quiz: mockQuiz
             });
@@ -102,7 +102,7 @@ describe('Curriculum Integration Tests', () => {
             expect(result.success).toBe(true);
             expect(result.score).toBe(100);
             expect(result.passed).toBe(true);
-            expect(prisma.quizAttempt.update).toHaveBeenCalled();
+            expect(db.quizAttempt.update).toHaveBeenCalled();
         });
     });
 });

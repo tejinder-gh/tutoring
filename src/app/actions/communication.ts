@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { Priority, QueryStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -31,7 +31,7 @@ export async function getAdminQueries(): Promise<QueryWithDetails[]> {
 
   await requirePermission("read", "user"); // or specific support permission
 
-  const queries = await prisma.query.findMany({
+  const queries = await db.query.findMany({
     orderBy: [
       { status: "asc" }, // OPEN first
       { priority: "desc" }, // URGENT first
@@ -63,7 +63,7 @@ export async function updateQueryStatus(queryId: string, status: QueryStatus) {
 
   await requirePermission("update", "user");
 
-  await prisma.query.update({
+  await db.query.update({
     where: { id: queryId },
     data: {
       status,
@@ -81,7 +81,7 @@ export async function replyToQuery(queryId: string, response: string) {
 
     await requirePermission("update", "user");
 
-    const query = await prisma.query.update({
+    const query = await db.query.update({
       where: { id: queryId },
       data: {
         response,
@@ -109,7 +109,7 @@ export async function replyToQuery(queryId: string, response: string) {
     }
 
     // Create in-app notification
-    await prisma.notification.create({
+    await db.notification.create({
         data: {
             userId: query.studentId,
             title: 'Query Resolved',

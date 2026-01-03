@@ -1,11 +1,11 @@
 import { RoleList } from "@/components/admin/RoleList";
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export default async function RolesPage() {
   await requirePermission("manage", "settings");
 
-  const roles = await prisma.role.findMany({
+  const roles = await db.role.findMany({
     include: {
       permissions: true,
       _count: {
@@ -17,7 +17,7 @@ export default async function RolesPage() {
     }
   });
 
-  const allPermissions = await prisma.permission.findMany({
+  const allPermissions = await db.permission.findMany({
     orderBy: [
       { subject: 'asc' },
       { action: 'asc' }

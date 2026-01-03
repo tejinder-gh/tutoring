@@ -1,5 +1,5 @@
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { format } from "date-fns";
 import { Briefcase, Mail, Phone, Plus, Users } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminStaffPage() {
   await requirePermission("read", "user");
 
-  const staffProfiles = await prisma.staffProfile.findMany({
+  const staffProfiles = await db.staffProfile.findMany({
     include: {
       user: {
         select: {

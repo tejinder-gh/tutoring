@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await db.user.findUnique({
       where: { email },
     });
 
@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
     // Find course if tier is provided
     let courseId = null;
     if (tier) {
-        const course = await prisma.course.findUnique({ where: { slug: tier } });
+        const course = await db.course.findUnique({ where: { slug: tier } });
         if (course) {
             courseId = course.id;
         }
     }
 
-    const student = await prisma.user.create({
+    const student = await db.user.create({
       data: {
         email,
         name,
@@ -49,12 +49,14 @@ export async function POST(request: NextRequest) {
         phone,
         studentProfile: {
           create: {
-            enrollments: courseId ? {
-                create: {
-                    courseId: courseId,
-                    status: 'ON_HOLD' // Pending payment (ON_HOLD used as proxy for PENDING)
+            ...(courseId ? {
+                enrollments: {
+                    create: {
+                        courseId: courseId,
+                        status: 'ON_HOLD'
+                    }
                 }
-            } : undefined
+            } : {})
           }
         }
       },

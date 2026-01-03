@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { createQuery } from "@/lib/actions/communication";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { MessageSquare } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +9,7 @@ export default async function StudentQueriesPage() {
     const session = await auth();
     if (!session?.user?.id) return <div>Unauthorized</div>;
 
-    const queries = await prisma.query.findMany({
+    const queries = await db.query.findMany({
         where: { studentId: session.user.id },
         orderBy: { createdAt: 'desc' }
     });

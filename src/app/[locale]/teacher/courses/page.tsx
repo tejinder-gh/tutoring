@@ -1,6 +1,6 @@
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { BarChart, BookOpen, Clock } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -13,7 +13,7 @@ export default async function TeacherCoursesPage() {
   }
 
   // Get teacher profile
-  const teacherProfile = await prisma.teacherProfile.findUnique({
+  const teacherProfile = await db.teacherProfile.findUnique({
     where: {
       userId: session.user.id,
     },

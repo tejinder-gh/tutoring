@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export async function createQuery(formData: FormData) {
@@ -11,7 +11,7 @@ export async function createQuery(formData: FormData) {
   const subject = formData.get("subject") as string;
   const message = formData.get("message") as string;
 
-  await prisma.query.create({
+  await db.query.create({
     data: {
       subject,
       message,
@@ -30,7 +30,7 @@ export async function createAnnouncement(formData: FormData) {
     const title = formData.get("title") as string;
     const content = formData.get("content") as string;
 
-    await prisma.announcement.create({
+    await db.announcement.create({
         data: {
             title,
             content,
@@ -48,7 +48,7 @@ export async function getAdminQueries() {
     // In real app, check for ADMIN or SUPPORT role
     if (!session?.user) throw new Error("Unauthorized");
 
-    return await prisma.query.findMany({
+    return await db.query.findMany({
         orderBy: { createdAt: 'desc' },
         include: {
             student: {
@@ -65,7 +65,7 @@ export async function resolveQuery(queryId: string) {
     const session = await auth();
     if (!session?.user) throw new Error("Unauthorized");
 
-    await prisma.query.update({
+    await db.query.update({
         where: { id: queryId },
         data: {
             status: "RESOLVED",
@@ -83,7 +83,7 @@ export async function createQueryReply(queryId: string, response: string) {
     const session = await auth();
     if (!session?.user) throw new Error("Unauthorized");
 
-    await prisma.query.update({
+    await db.query.update({
         where: { id: queryId },
         data: {
             response,

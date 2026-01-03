@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { ResourceType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -31,7 +31,7 @@ export async function createResource(data: {
   await requirePermission("manage", "course");
 
   try {
-    const resource = await prisma.resource.create({
+    const resource = await db.resource.create({
       data: {
         title: data.title,
         description: data.description,
@@ -41,7 +41,7 @@ export async function createResource(data: {
         mimeType: data.mimeType,
         isPublic: data.isPublic ?? false,
         uploadedById: session.user.id,
-        curriculumId: data.courseId ? (await prisma.curriculum.findFirst({ where: { courseId: data.courseId, teacherId: null } }))?.id : undefined,
+        curriculumId: data.courseId ? (await db.curriculum.findFirst({ where: { courseId: data.courseId, teacherId: null } }))?.id : undefined,
         lessonId: data.lessonId,
         moduleId: data.moduleId,
         quizId: data.quizId,
@@ -78,7 +78,7 @@ export async function updateResource(
   await requirePermission("manage", "course");
 
   try {
-    const resource = await prisma.resource.update({
+    const resource = await db.resource.update({
       where: { id },
       data,
     });
@@ -103,7 +103,7 @@ export async function deleteResource(id: string) {
   await requirePermission("manage", "course");
 
   try {
-    await prisma.resource.delete({
+    await db.resource.delete({
       where: { id },
     });
 
@@ -127,7 +127,7 @@ export async function toggleResourceVisibility(id: string, isPublic: boolean) {
   await requirePermission("manage", "course");
 
   try {
-    const resource = await prisma.resource.update({
+    const resource = await db.resource.update({
       where: { id },
       data: { isPublic },
     });
@@ -172,7 +172,7 @@ export async function getAllResources(filters?: {
     }
   }
 
-  const resources: any = await prisma.resource.findMany({
+  const resources: any = await db.resource.findMany({
     where,
     include: {
       uploadedBy: {
@@ -240,7 +240,7 @@ export async function getResourcesByEntity(
     where.isPublic = true;
   }
 
-  const resources = await prisma.resource.findMany({
+  const resources = await db.resource.findMany({
     where,
     include: {
       uploadedBy: {
@@ -271,13 +271,13 @@ export async function linkResourceToEntity(
   try {
     const updateData: any = {};
     if (entityType === 'course') {
-        const c = await prisma.curriculum.findFirst({ where: { courseId: entityId, teacherId: null } });
+        const c = await db.curriculum.findFirst({ where: { courseId: entityId, teacherId: null } });
         if (c) updateData.curriculumId = c.id;
     } else {
         updateData[`${entityType}Id`] = entityId;
     }
 
-    const resource = await prisma.resource.update({
+    const resource = await db.resource.update({
       where: { id: resourceId },
       data: updateData,
     });
@@ -312,7 +312,7 @@ export async function unlinkResourceFromEntity(
          updateData[`${entityType}Id`] = null;
     }
 
-    const resource = await prisma.resource.update({
+    const resource = await db.resource.update({
       where: { id: resourceId },
       data: updateData,
     });

@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { FeeFrequency } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -31,7 +31,7 @@ export async function createBatch(formData: FormData) {
   const startDate = new Date(startDateStr);
   const endDate = endDateStr ? new Date(endDateStr) : null;
 
-  await prisma.batch.create({
+  await db.batch.create({
     data: {
       name,
       courseId,
@@ -74,7 +74,7 @@ export async function updateBatch(id: string, formData: FormData) {
   const startDate = new Date(startDateStr);
   const endDate = endDateStr ? new Date(endDateStr) : null;
 
-  await prisma.batch.update({
+  await db.batch.update({
     where: { id },
     data: {
       name,
@@ -99,7 +99,7 @@ export async function updateBatch(id: string, formData: FormData) {
 
 export async function getEnrollableStudents(batchId: string) {
   // Get students not already enrolled in this batch
-  const batch = await prisma.batch.findUnique({
+  const batch = await db.batch.findUnique({
     where: { id: batchId },
     include: { enrollments: { select: { studentProfileId: true } } },
   });
@@ -108,7 +108,7 @@ export async function getEnrollableStudents(batchId: string) {
 
   const enrolledStudentIds = batch.enrollments.map((e: { studentProfileId: string }) => e.studentProfileId);
 
-  const students = await prisma.studentProfile.findMany({
+  const students = await db.studentProfile.findMany({
     where: {
       id: { notIn: enrolledStudentIds },
     },
@@ -126,17 +126,17 @@ export async function getEnrollableStudents(batchId: string) {
 }
 
 export async function enrollStudentInBatch(batchId: string, studentProfileId: string, discount = 0) {
-  const batch = await prisma.batch.findUnique({ where: { id: batchId } });
+  const batch = await db.batch.findUnique({ where: { id: batchId } });
   if (!batch) throw new Error("Batch not found");
 
   // Check if already enrolled
-  const existing = await prisma.enrollment.findFirst({
+  const existing = await db.enrollment.findFirst({
     where: { batchId, studentProfileId },
   });
 
   if (existing) throw new Error("Student already enrolled");
 
-  const enrollment = await prisma.enrollment.create({
+  const enrollment = await db.enrollment.create({
     data: {
       batchId,
       studentProfileId,
@@ -147,7 +147,7 @@ export async function enrollStudentInBatch(batchId: string, studentProfileId: st
   });
 
   // Also update student's batch reference
-  await prisma.studentProfile.update({
+  await db.studentProfile.update({
     where: { id: studentProfileId },
     data: { batchId },
   });
@@ -157,12 +157,12 @@ export async function enrollStudentInBatch(batchId: string, studentProfileId: st
 }
 
 export async function removeStudentFromBatch(batchId: string, studentProfileId: string) {
-  await prisma.enrollment.deleteMany({
+  await db.enrollment.deleteMany({
     where: { batchId, studentProfileId },
   });
 
   // Clear student's batch reference
-  await prisma.studentProfile.update({
+  await db.studentProfile.update({
     where: { id: studentProfileId },
     data: { batchId: null },
   });
@@ -172,7 +172,7 @@ export async function removeStudentFromBatch(batchId: string, studentProfileId: 
 }
 
 export async function getBatchEnrollments(batchId: string) {
-  const enrollments = await prisma.enrollment.findMany({
+  const enrollments = await db.enrollment.findMany({
     where: { batchId },
     include: {
       studentProfile: {

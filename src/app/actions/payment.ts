@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { env } from "@/env.mjs";
 import { emailTemplates, sendEmail } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import crypto from "crypto";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
@@ -23,7 +23,7 @@ export async function createOrder(courseId: string) {
     throw new Error("Unauthorized");
   }
 
-  const course = await prisma.course.findUnique({
+  const course = await db.course.findUnique({
     where: { id: courseId },
   });
 
@@ -81,11 +81,11 @@ export async function verifyPayment(
 
   // Payment verified, update DB
   try {
-      const course = await prisma.course.findUnique({ where: { id: courseId } });
+      const course = await db.course.findUnique({ where: { id: courseId } });
       if (!course) throw new Error("Course not found");
 
       // 1. Create Payment Receipt
-      await prisma.paymentReceipts.create({
+      await db.paymentReceipts.create({
           data: {
               userId: session.user.id,
               courseId: courseId,
@@ -104,19 +104,19 @@ export async function verifyPayment(
       // Assuming StudentProfile exists for signed-in user or creating if user has role.
       // For now, let's assume `StudentProfile` logic is handled elsewhere or user has one.
 
-      let studentProfile = await prisma.studentProfile.findUnique({
+      let studentProfile = await db.studentProfile.findUnique({
           where: { userId: session.user.id }
       });
 
       if (!studentProfile) {
           // Auto-create profile if missing (and assume they are student now)
-          studentProfile = await prisma.studentProfile.create({
+          studentProfile = await db.studentProfile.create({
               data: { userId: session.user.id }
           });
           // Update user role to STUDENT if not already? Or keep as is.
       }
 
-      await prisma.enrollment.upsert({
+      await db.enrollment.upsert({
           where: {
               studentProfileId_courseId: {
                   studentProfileId: studentProfile.id,
@@ -162,7 +162,7 @@ export async function verifyPayment(
       const notifTitle = t("paymentSuccess.title");
       const notifMessage = t("paymentSuccess.message", { course: course.title });
 
-      await prisma.notification.create({
+      await db.notification.create({
         data: {
           userId: session.user.id,
           title: notifTitle,

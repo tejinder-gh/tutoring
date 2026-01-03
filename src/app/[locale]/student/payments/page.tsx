@@ -1,12 +1,12 @@
 import { auth } from '@/auth';
-import { prisma } from '@/lib/prisma';
+import { db } from "@/lib/db";
 import { format } from 'date-fns';
 
 export default async function PaymentHistoryPage() {
   const session = await auth();
   if (!session?.user?.id) return <div>Unauthorized</div>;
 
-  const payments = await prisma.paymentReceipts.findMany({
+  const payments = await db.paymentReceipts.findMany({
     where: { userId: session.user.id },
     orderBy: { paymentDate: 'desc' },
     include: { course: true }

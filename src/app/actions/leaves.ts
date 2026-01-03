@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { sendEmail } from "@/lib/email";
 import { requirePermission } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { LeaveStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -18,7 +18,7 @@ export async function createLeaveRequest(data: CreateLeaveInput) {
     if (!session?.user?.id) throw new Error("Unauthorized");
 
     try {
-        await prisma.leave.create({
+        await db.leave.create({
             data: {
                 userId: session.user.id,
                 startDate: data.startDate,
@@ -46,7 +46,7 @@ export async function getMyLeaves() {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Unauthorized");
 
-    const leaves = await prisma.leave.findMany({
+    const leaves = await db.leave.findMany({
         where: { userId: session.user.id },
         orderBy: { createdAt: "desc" },
     });
@@ -88,7 +88,7 @@ export async function getAllLeaveRequests(filters?: {
         whereClause.endDate = { lte: filters.endDate };
     }
 
-    const leaves = await prisma.leave.findMany({
+    const leaves = await db.leave.findMany({
         where: whereClause,
         include: {
             user: {
@@ -115,7 +115,7 @@ export async function updateLeaveStatus(leaveId: string, status: "APPROVED" | "R
     await requirePermission("update", "user"); // Assuming HR/Admin permission
 
     try {
-        const leave = await prisma.leave.update({
+        const leave = await db.leave.update({
             where: { id: leaveId },
             data: {
                 status,
@@ -139,7 +139,7 @@ export async function updateLeaveStatus(leaveId: string, status: "APPROVED" | "R
         }
 
         // Notify the user via In-App Notification
-        await prisma.notification.create({
+        await db.notification.create({
             data: {
                 userId: leave.userId,
                 title: `Leave Request ${status === 'APPROVED' ? 'Approved' : 'Rejected'}`,

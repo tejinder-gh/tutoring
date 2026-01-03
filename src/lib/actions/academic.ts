@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -26,7 +26,7 @@ export async function createCourse(formData: FormData) {
     return;
   }
 
-  await prisma.course.create({
+  await db.course.create({
     data: {
       title: validation.data.title,
       description: validation.data.description || "",
@@ -45,18 +45,18 @@ export async function addModule(courseId: string, formData: FormData) {
     const title = formData.get("title") as string;
     const richTextContent = formData.get("richTextContent") as string;
 
-    const curriculum = await prisma.curriculum.findFirst({ where: { courseId, teacherId: null } });
+    const curriculum = await db.curriculum.findFirst({ where: { courseId, teacherId: null } });
     if (!curriculum) return; // Should handle error
 
     // Find current max order
-    const lastModule = await prisma.module.findFirst({
+    const lastModule = await db.module.findFirst({
         where: { curriculumId: curriculum.id },
         orderBy: { order: 'desc' }
     });
 
     const newOrder = lastModule ? lastModule.order + 1 : 1;
 
-    await prisma.module.create({
+    await db.module.create({
         data: {
             title,
             richTextContent: richTextContent || null,
@@ -74,7 +74,7 @@ export async function addLesson(moduleId: string, courseId: string, formData: Fo
     const weightageStr = formData.get("weightage") as string;
     const weightage = weightageStr ? parseFloat(weightageStr) : 1.0;
 
-    await prisma.lesson.create({
+    await db.lesson.create({
         data: {
             title,
             content,
@@ -95,10 +95,10 @@ export async function createAssignment(courseId: string, formData: FormData) {
     // Parse dueInDays to integer, default to null if not provided
     const dueInDays = dueInDaysStr ? parseInt(dueInDaysStr) : null;
 
-    const curriculum = await prisma.curriculum.findFirst({ where: { courseId, teacherId: null } });
+    const curriculum = await db.curriculum.findFirst({ where: { courseId, teacherId: null } });
     if (!curriculum) return;
 
-    await prisma.assignment.create({
+    await db.assignment.create({
         data: {
             title,
             description: description || "",
@@ -114,7 +114,7 @@ export async function createAssignment(courseId: string, formData: FormData) {
 export async function addNoteToModule(moduleId: string, content: string) {
     if (!moduleId || !content) return;
 
-    await prisma.module.update({
+    await db.module.update({
         where: { id: moduleId },
         data: { richTextContent: content }
     });
@@ -123,7 +123,7 @@ export async function addNoteToModule(moduleId: string, content: string) {
     // but in a server action called from client, we usually revalidate the current path.
     // For now we can fetch it to be safe if strictly needed, or rely on client to call revalidate.
     // Let's look it up.
-    const module = await prisma.module.findUnique({
+    const module = await db.module.findUnique({
         where: { id: moduleId },
         select: { curriculum: { select: { courseId: true } } }
     });
