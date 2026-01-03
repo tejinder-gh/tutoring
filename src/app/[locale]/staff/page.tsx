@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 export default async function StaffDashboard() {
   const session = await auth();
-  if (!session?.user) redirect("/login");
+  if (!session?.user?.id) redirect("/login");
 
   const staffProfile = await prisma.staffProfile.findUnique({
     where: { userId: session.user.id },

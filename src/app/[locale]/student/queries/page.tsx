@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function StudentQueriesPage() {
     const session = await auth();
-    if (!session?.user) return <div>Unauthorized</div>;
+    if (!session?.user?.id) return <div>Unauthorized</div>;
 
     const queries = await prisma.query.findMany({
         where: { studentId: session.user.id },

@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function StudentDashboard() {
     const session = await auth();
-    if (!session?.user) return <div>Unauthorized</div>;
+    if (!session?.user?.id) return <div>Unauthorized</div>;
 
     const [profile, announcements, enrolledCourses, analytics] = await Promise.all([
         prisma.studentProfile.findUnique({

@@ -19,8 +19,8 @@ export async function createCampaign(data: {
       data: {
         name: data.name,
         type: data.type,
-        description: data.description,
-        budget: data.budget,
+        description: data.description ?? null,
+        budget: data.budget ?? null,
         status: "DRAFT",
       },
     });

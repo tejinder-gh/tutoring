@@ -257,7 +257,7 @@ export async function processSalaryPayment(
       salaryId,
       amount,
       paymentMethod: "BANK_TRANSFER",
-      reference,
+      reference: reference ?? null,
       paymentDate: new Date(),
     },
   });

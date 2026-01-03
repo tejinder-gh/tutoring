@@ -213,8 +213,8 @@ export async function processSalaryPayment(data: {
                 salaryId: data.salaryId,
                 amount: data.amount,
                 paymentMethod: data.paymentMethod as any,
-                reference: data.reference,
-                notes: data.notes,
+                reference: data.reference ?? null,
+                notes: data.notes ?? null,
                 paymentDate: new Date()
             },
             include: {

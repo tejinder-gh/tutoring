@@ -9,14 +9,21 @@ import { revalidatePath } from "next/cache";
 /**
  * Create a new lead
  */
+export type LeadActionResponse =
+ | { success: true; data?: any }
+ | { success: false; error: string };
+
+/**
+ * Create a new lead
+ */
 export async function createLead(data: {
   name: string;
-  email?: string;
+  email?: string | undefined;
   phone: string;
-  source?: LeadSource;
-  notes?: string;
-  courseInterest?: string;
-}) {
+  source?: LeadSource | undefined;
+  notes?: string | undefined;
+  courseInterest?: string | undefined;
+}): Promise<LeadActionResponse> {
   const session = await auth();
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
@@ -24,11 +31,11 @@ export async function createLead(data: {
     const lead = await prisma.lead.create({
       data: {
         name: data.name,
-        email: data.email,
+        email: data.email ?? null,
         phone: data.phone,
         source: data.source || "OTHER",
-        notes: data.notes,
-        courseInterest: data.courseInterest,
+        notes: data.notes ?? null,
+        courseInterest: data.courseInterest ?? null,
         status: "NEW", // Default
       },
     });

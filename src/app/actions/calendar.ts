@@ -104,8 +104,8 @@ export async function getMySchedule(date: Date) {
                       const [startH, startM] = startStr.split(':').map(Number);
                       const [endH, endM] = endStr.split(':').map(Number);
 
-                      const startDateTime = set(currentDayDate, { hours: startH, minutes: startM });
-                      const endDateTime = set(currentDayDate, { hours: endH, minutes: endM });
+                      const startDateTime = set(currentDayDate, { hours: startH || 0, minutes: startM || 0 });
+                      const endDateTime = set(currentDayDate, { hours: endH || 0, minutes: endM || 0 });
 
                       classEvents.push({
                           id: `${batch.id}-${currentDayDate.toISOString()}`,

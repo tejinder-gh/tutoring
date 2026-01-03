@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function TeacherAssignmentsPage() {
   const session = await auth();
-  if (!session?.user) return <div>Unauthorized</div>;
+  if (!session?.user?.id) return <div>Unauthorized</div>;
 
   // Fetch courses taught by this teacher
   // 1. Get Teacher Profile ID

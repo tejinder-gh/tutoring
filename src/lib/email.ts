@@ -1,4 +1,5 @@
 import { siteConfig } from "@/config/site";
+import { env } from "@/env.mjs";
 import nodemailer from "nodemailer";
 
 type EmailPayload = {
@@ -9,12 +10,12 @@ type EmailPayload = {
 
 // Initialize transporter
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: process.env.SMTP_SECURE === "true",
+  host: env.SMTP_HOST || "smtp.gmail.com",
+  port: parseInt(env.SMTP_PORT || "587"),
+  secure: env.SMTP_SECURE === "true",
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: env.SMTP_USER,
+    pass: env.SMTP_PASS,
   },
 });
 
@@ -22,7 +23,7 @@ export const sendEmail = async (data: EmailPayload) => {
   const { to, subject, html } = data;
 
   // In development, if no credentials, log the email instead of failing
-  if (!process.env.SMTP_USER && process.env.NODE_ENV !== "production") {
+  if (!env.SMTP_USER && env.NODE_ENV !== "production") {
     console.log("-----------------------------------------");
     console.log(`[MOCK EMAIL SERVICE] To: ${to}`);
     console.log(`[MOCK EMAIL SERVICE] Subject: ${subject}`);
@@ -33,7 +34,7 @@ export const sendEmail = async (data: EmailPayload) => {
 
   try {
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"${siteConfig.name} Support" <support@${siteConfig.name.toLowerCase().replace(/\s/g, '')}.in>`,
+      from: env.SMTP_FROM || `"${siteConfig.name} Support" <support@${siteConfig.name.toLowerCase().replace(/\s/g, '')}.in>`,
       to,
       subject,
       html,
@@ -60,7 +61,7 @@ export const emailTemplates = {
         <p><strong>Transaction ID:</strong> ${transactionId}</p>
         <p>You can now access your course from your dashboard.</p>
         <div style="text-align: center; margin-top: 30px;">
-          <a href="${process.env.NEXT_PUBLIC_APP_URL}/student/learn" style="background-color: #10B981; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to Dashboard</a>
+          <a href="${env.NEXT_PUBLIC_APP_URL}/student/learn" style="background-color: #10B981; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to Dashboard</a>
         </div>
       </div>
       <div style="background-color: #f9f9f9; padding: 15px; text-align: center; font-size: 12px; color: #666;">
@@ -78,7 +79,7 @@ export const emailTemplates = {
         <p>We are thrilled to have you on board. Get ready to upgrade your skills and future-proof your career.</p>
         <p>Explore our courses and start learning today!</p>
         <div style="text-align: center; margin-top: 30px;">
-           <a href="${process.env.NEXT_PUBLIC_APP_URL}/courses" style="background-color: #FFD700; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Explore Courses</a>
+           <a href="${env.NEXT_PUBLIC_APP_URL}/courses" style="background-color: #FFD700; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Explore Courses</a>
         </div>
       </div>
     </div>

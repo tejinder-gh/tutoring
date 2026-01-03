@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function StudentAssignmentsPage() {
   const session = await auth();
-  if (!session?.user) return <div>Unauthorized</div>;
+  if (!session?.user?.id) return <div>Unauthorized</div>;
 
   const profile = await prisma.studentProfile.findUnique({
     where: { userId: session.user.id },

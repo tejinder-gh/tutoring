@@ -43,7 +43,7 @@ const getColor = (index: number) => {
          cardHover: 'hover:shadow-elegant hover:border-secondary/30'
       }
    ];
-   return COLOR_SCHEMES[index % COLOR_SCHEMES.length];
+   return (COLOR_SCHEMES[index % COLOR_SCHEMES.length] || COLOR_SCHEMES[0])!;
 };
 
 export const CourseCard = ({ tierData, t, index, onOpenModal }: { tierData: any, t: any, index: number, onOpenModal?: (tier: any, scheme: any) => void }) => {

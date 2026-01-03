@@ -14,12 +14,12 @@ import { revalidatePath } from "next/cache";
  */
 export async function createQuiz(data: {
   title: string;
-  description?: string;
+  description?: string | undefined;
   courseId: string;
-  lessonId?: string;
-  moduleId?: string;
-  duration?: number;
-  passingScore?: number;
+  lessonId?: string | undefined;
+  moduleId?: string | undefined;
+  duration?: number | undefined;
+  passingScore?: number | undefined;
 }) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -38,11 +38,11 @@ export async function createQuiz(data: {
     const quiz = await prisma.quiz.create({
       data: {
         title: data.title,
-        description: data.description,
+        description: data.description ?? null,
         curriculumId: curriculum.id,
         lessonId: data.lessonId || null,
         moduleId: data.moduleId || null,
-        duration: data.duration || null,
+        duration: data.duration ?? null,
         passingScore: data.passingScore ?? 70,
       },
     });
@@ -95,9 +95,9 @@ export async function addQuestion(
   data: {
     text: string;
     type: QuestionType;
-    points?: number;
-    explanation?: string;
-    options?: { text: string; isCorrect: boolean }[];
+    points?: number | undefined;
+    explanation?: string | undefined;
+    options?: { text: string; isCorrect: boolean }[] | undefined;
   }
 ) {
   const session = await auth();
@@ -120,16 +120,18 @@ export async function addQuestion(
         type: data.type,
         points: data.points ?? 1,
         order: newOrder,
-        explanation: data.explanation,
-        options: data.options
+        explanation: data.explanation ?? null,
+        ...(data.options
           ? {
-              create: data.options.map((opt, idx) => ({
-                text: opt.text,
-                isCorrect: opt.isCorrect,
-                order: idx,
-              })),
+              options: {
+                create: data.options.map((opt, idx) => ({
+                  text: opt.text,
+                  isCorrect: opt.isCorrect,
+                  order: idx,
+                })),
+              },
             }
-          : undefined,
+          : {}),
       },
       include: { options: true },
     });
@@ -310,7 +312,7 @@ export async function startQuizAttempt(quizId: string) {
  */
 export async function submitQuizAttempt(
   attemptId: string,
-  responses: { questionId: string; selectedIds: string[]; textAnswer?: string }[]
+  responses: { questionId: string; selectedIds: string[]; textAnswer?: string | undefined }[]
 ) {
   const session = await auth();
   if (!session?.user?.id) {

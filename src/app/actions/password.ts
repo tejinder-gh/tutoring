@@ -1,6 +1,7 @@
 "use server";
 
 import { siteConfig } from "@/config/site";
+import { env } from "@/env.mjs";
 import { sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
@@ -38,7 +39,7 @@ export async function requestPasswordReset(email: string) {
     });
 
     // Build reset URL
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/en/reset-password/${token}`;
+    const resetUrl = `${env.NEXT_PUBLIC_APP_URL}/en/reset-password/${token}`;
 
     // Send email
     await sendEmail({

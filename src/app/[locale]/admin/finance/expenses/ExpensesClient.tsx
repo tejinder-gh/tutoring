@@ -1,6 +1,7 @@
 "use client";
 
-import { addExpense, deleteExpense, ExpenseData, updateExpense } from "@/app/actions/expenses";
+import type { ExpenseData } from "@/app/actions/expenses";
+import { addExpense, deleteExpense, updateExpense } from "@/app/actions/expenses";
 import { format } from "date-fns";
 import { Edit2, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";

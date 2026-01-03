@@ -32,10 +32,10 @@ export async function createEvent(data: {
         startTime: new Date(data.startTime),
         endTime: new Date(data.endTime),
         type: data.type,
-        batchId: data.batchId,
-        description: data.description,
-        assignmentId: data.assignmentId,
-        quizId: data.quizId,
+        batchId: data.batchId ?? null,
+        description: data.description ?? null,
+        assignmentId: data.assignmentId ?? null,
+        quizId: data.quizId ?? null,
       },
     });
 

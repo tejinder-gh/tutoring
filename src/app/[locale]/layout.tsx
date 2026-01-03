@@ -2,6 +2,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import ConditionalLayout from "@/components/ConditionalLayout";
 import { ThemeProvider } from "@/components/ThemeContext";
 import { routing } from '@/i18n/routing';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -65,6 +66,7 @@ export default async function RootLayout({
                 {children}
               </ConditionalLayout>
               <Toaster position="top-center" richColors />
+              <SpeedInsights />
             </ThemeProvider>
           </AuthProvider>
         </NextIntlClientProvider>

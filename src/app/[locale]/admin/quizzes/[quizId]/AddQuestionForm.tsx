@@ -37,7 +37,9 @@ export default function AddQuestionForm({ quizId }: AddQuestionFormProps) {
   const handleOptionChange = (index: number, field: "text" | "isCorrect", value: string | boolean) => {
     const updated = [...options];
     if (field === "text") {
-      updated[index].text = value as string;
+      if (updated[index]) {
+        updated[index].text = value as string;
+      }
     } else {
       // For single choice, only one can be correct
       if (type === "MULTIPLE_CHOICE" || type === "TRUE_FALSE") {
@@ -45,7 +47,9 @@ export default function AddQuestionForm({ quizId }: AddQuestionFormProps) {
           opt.isCorrect = i === index ? (value as boolean) : false;
         });
       } else {
-        updated[index].isCorrect = value as boolean;
+        if (updated[index]) {
+          updated[index].isCorrect = value as boolean;
+        }
       }
     }
     setOptions(updated);
@@ -127,8 +131,8 @@ export default function AddQuestionForm({ quizId }: AddQuestionFormProps) {
                 type="button"
                 onClick={() => handleTypeChange(t)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${type === t
-                    ? "bg-primary text-black"
-                    : "bg-accent/50 border border-border hover:border-primary/50"
+                  ? "bg-primary text-black"
+                  : "bg-accent/50 border border-border hover:border-primary/50"
                   }`}
               >
                 {t.replace("_", " ")}

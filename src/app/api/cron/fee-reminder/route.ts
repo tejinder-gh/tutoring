@@ -1,3 +1,4 @@
+import { env } from "@/env.mjs";
 import { checkFeesDue } from "@/lib/cron";
 import { NextResponse } from "next/server";
 
@@ -10,8 +11,8 @@ export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
 
   // In production, verify with CRON_SECRET
-  if (process.env.NODE_ENV === "production") {
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (env.NODE_ENV === "production") {
+    if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   }

@@ -41,7 +41,12 @@ export default function QuizTaker({ quiz, attemptId, courseId }: QuizTakerProps)
   const [showConfirm, setShowConfirm] = useState(false);
 
   const currentQuestion = quiz.questions[currentQuestionIndex];
-  const currentResponse = responses.get(currentQuestion?.id);
+
+  if (!currentQuestion) {
+    return <div>Error: Question not found</div>;
+  }
+
+  const currentResponse = responses.get(currentQuestion.id);
 
   // Timer
   useEffect(() => {
@@ -125,8 +130,8 @@ export default function QuizTaker({ quiz, attemptId, courseId }: QuizTakerProps)
               {timeRemaining !== null && (
                 <div
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-mono font-bold ${timeRemaining < 60
-                      ? "bg-red-500/10 text-red-500"
-                      : "bg-accent/50 text-foreground"
+                    ? "bg-red-500/10 text-red-500"
+                    : "bg-accent/50 text-foreground"
                     }`}
                 >
                   <Clock size={18} />
@@ -195,15 +200,15 @@ export default function QuizTaker({ quiz, attemptId, courseId }: QuizTakerProps)
                   key={option.id}
                   onClick={() => handleOptionSelect(option.id)}
                   className={`w-full p-5 text-left rounded-xl border-2 transition-all ${isSelected
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-primary/50 bg-card"
+                    ? "border-primary bg-primary/10"
+                    : "border-border hover:border-primary/50 bg-card"
                     }`}
                 >
                   <div className="flex items-center gap-4">
                     <div
                       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected
-                          ? "border-primary bg-primary"
-                          : "border-border"
+                        ? "border-primary bg-primary"
+                        : "border-border"
                         }`}
                     >
                       {isSelected && <CheckCircle size={14} className="text-black" />}
@@ -261,10 +266,10 @@ export default function QuizTaker({ quiz, attemptId, courseId }: QuizTakerProps)
                   key={q.id}
                   onClick={() => setCurrentQuestionIndex(idx)}
                   className={`w-10 h-10 rounded-lg font-bold text-sm transition-colors ${isCurrent
-                      ? "bg-primary text-black"
-                      : isAnswered
-                        ? "bg-green-500/20 text-green-500 border border-green-500/30"
-                        : "bg-accent/50 border border-border text-text-muted hover:border-primary/50"
+                    ? "bg-primary text-black"
+                    : isAnswered
+                      ? "bg-green-500/20 text-green-500 border border-green-500/30"
+                      : "bg-accent/50 border border-border text-text-muted hover:border-primary/50"
                     }`}
                 >
                   {idx + 1}

@@ -1,4 +1,4 @@
-import { Permission, Role, User } from '@prisma/client';
+import type { Permission, Role, User } from '@prisma/client';
 
 export type PermissionAction =
   | 'create'

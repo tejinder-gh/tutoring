@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
+import { env } from "@/env.mjs";
 import { emailTemplates, sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
@@ -12,8 +13,8 @@ import Razorpay from "razorpay";
 // Note: In production, these should be in .env.
 // Using fallback or existing env vars.
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'secret_placeholder',
+  key_id: env.RAZORPAY_KEY_ID,
+  key_secret: env.RAZORPAY_KEY_SECRET,
 });
 
 export async function createOrder(courseId: string) {
@@ -50,7 +51,7 @@ export async function createOrder(courseId: string) {
         id: order.id,
         amount: order.amount,
         currency: order.currency,
-        key: process.env.RAZORPAY_KEY_ID
+        key: env.RAZORPAY_KEY_ID
     };
   } catch (error) {
     console.error("Razorpay Order Error:", error);
@@ -70,7 +71,7 @@ export async function verifyPayment(
   }
 
   const generatedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+    .createHmac("sha256", env.RAZORPAY_KEY_SECRET)
     .update(orderId + "|" + paymentId)
     .digest("hex");
 

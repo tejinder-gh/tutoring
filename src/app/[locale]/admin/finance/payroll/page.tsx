@@ -1,6 +1,7 @@
 import { getPendingPayroll } from "@/app/actions/finance";
 import { auth } from "@/auth";
-import { PayrollEntry, PayrollTable } from "@/components/Finance/PayrollTable";
+import type { PayrollEntry } from "@/components/Finance/PayrollTable";
+import { PayrollTable } from "@/components/Finance/PayrollTable";
 import { requirePermission } from "@/lib/permissions";
 import { redirect } from "next/navigation";
 

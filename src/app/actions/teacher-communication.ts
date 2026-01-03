@@ -18,7 +18,7 @@ export async function createTeacherAnnouncement(formData: FormData) {
   const rawData = {
     title: formData.get("title"),
     content: formData.get("content"),
-    courseId: formData.get("courseId")?.toString() || undefined,
+    courseId: formData.get("courseId")?.toString() || null,
   };
 
   const validation = AnnouncementSchema.safeParse(rawData);
@@ -39,7 +39,7 @@ export async function createTeacherAnnouncement(formData: FormData) {
       title,
       content,
       authorId: session.user.id,
-      courseId
+      courseId: courseId ?? null
     }
   });
 

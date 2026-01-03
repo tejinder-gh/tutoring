@@ -35,8 +35,8 @@ export async function updateTeacherProfile(formData: FormData) {
     await prisma.teacherProfile.update({
       where: { userId: session.user.id },
       data: {
-        bio,
-        qualification,
+        bio: bio ?? null,
+        qualification: qualification ?? null,
         domain,
       },
     });

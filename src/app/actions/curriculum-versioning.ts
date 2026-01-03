@@ -205,9 +205,7 @@ export async function getEffectiveCurriculum(courseId: string) {
     });
   };
 
-  if (!user) return getDirectorVersion();
-
-  // 1. If Teacher -> Check for their own version
+  if (!user?.id) return getDirectorVersion();
   const teacherProfile = await prisma.teacherProfile.findUnique({ where: { userId: user.id } });
   if (teacherProfile) {
     const teacherVersion = await prisma.curriculum.findUnique({
@@ -249,7 +247,7 @@ export async function getEffectiveCurriculum(courseId: string) {
 
   if (studentProfile?.enrollments.length) {
     const enrollment = studentProfile.enrollments[0];
-    const teacherId = enrollment.batch?.teacherId;
+    const teacherId = enrollment?.batch?.teacherId;
 
     if (teacherId) {
       const teacherCurriculum = await prisma.curriculum.findUnique({

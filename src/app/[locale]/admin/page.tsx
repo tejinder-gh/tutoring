@@ -5,7 +5,8 @@ import { Link } from '@/i18n/routing';
 import { requirePermission } from '@/lib/permissions';
 import { BadgeIndianRupee, Filter, GraduationCap, Users } from 'lucide-react';
 import { prisma } from '../../../lib/prisma';
-import { getAdminAnalytics, getDashboardMetrics, getLeadAnalytics, TrendPeriod } from '../../actions/analytics';
+import type { TrendPeriod } from '../../actions/analytics';
+import { getAdminAnalytics, getDashboardMetrics, getLeadAnalytics } from '../../actions/analytics';
 
 
 export const dynamic = 'force-dynamic';
@@ -19,7 +20,7 @@ export default async function AdminPage({ searchParams }: { searchParams: { peri
 
   const [leads, students, analytics, dashboardMetrics, leadAnalytics, auditLogs, branches] = await Promise.all([
     prisma.lead.findMany({
-      where: branchId ? { branchId } : undefined,
+      where: branchId ? { branchId } : {},
       orderBy: { createdAt: 'desc' },
       include: { branch: true }
     }),

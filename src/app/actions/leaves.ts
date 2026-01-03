@@ -56,10 +56,10 @@ export async function getMyLeaves() {
 
 // For Admin
 export async function getAllLeaveRequests(filters?: {
-    status?: LeaveStatus;
-    role?: string;
-    startDate?: Date;
-    endDate?: Date;
+    status?: LeaveStatus | undefined;
+    role?: string | undefined;
+    startDate?: Date | undefined;
+    endDate?: Date | undefined;
 }) {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Unauthorized");

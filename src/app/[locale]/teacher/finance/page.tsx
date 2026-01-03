@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 
 export default async function TeacherFinancePage() {
   const session = await auth();
-  if (!session?.user) redirect("/login");
+  if (!session?.user?.id) redirect("/login");
 
   const salaryStructure = await getTeacherSalaryStructure();
   const receipts = await getTeacherSalaries();

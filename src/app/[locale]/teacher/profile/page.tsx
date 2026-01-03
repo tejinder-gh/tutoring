@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 export default async function TeacherProfilePage() {
   const session = await auth();
-  if (!session?.user) redirect("/login");
+  if (!session?.user?.id) redirect("/login");
 
   const teacher = await prisma.teacherProfile.findUnique({
     where: { userId: session.user.id },

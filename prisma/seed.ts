@@ -4,11 +4,15 @@ import {
   LeadStatus,
   Level,
   NotificationType,
+  Prisma,
   PrismaClient
 } from '@prisma/client';
 import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
+
+type TeacherUser = Prisma.UserGetPayload<{ include: { teacherProfile: true } }>;
+type StudentUser = Prisma.UserGetPayload<{ include: { studentProfile: true } }>;
 
 // ===========================================================================
 // DATA SOURCE
@@ -624,7 +628,7 @@ async function main() {
   });
 
   // TEACHER
-  const teacher = await prisma.user.upsert({
+  const teacher = (await prisma.user.upsert({
       where: { email: 'teacher@future-ready.com' },
       update: {
           password: HASHED_PASSWORD,
@@ -646,12 +650,12 @@ async function main() {
           }
       },
       include: { teacherProfile: true }
-  });
+  })) as unknown as TeacherUser;
 
   if (!teacher.teacherProfile) throw new Error("Teacher profile not created");
 
   // STUDENT
-  const student = await prisma.user.upsert({
+  const student = (await prisma.user.upsert({
       where: { email: 'student@future-ready.com' },
       update: {
           password: HASHED_PASSWORD,
@@ -671,7 +675,7 @@ async function main() {
           }
       },
       include: { studentProfile: true }
-  });
+  })) as unknown as StudentUser;
 
   if (!student.studentProfile) throw new Error("Student profile not created");
 
@@ -722,7 +726,7 @@ async function main() {
   const parseDuration = (durationStr: string | undefined): number => {
     if (!durationStr) return 0;
     const match = durationStr.match(/(\d+)/);
-    if (match) {
+    if (match && match[1]) {
         const num = parseInt(match[1], 10);
         if (durationStr.toLowerCase().includes('month')) return num * 4 * 10;
         if (durationStr.toLowerCase().includes('week')) return num * 10;

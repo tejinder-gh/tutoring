@@ -1,6 +1,7 @@
 "use client";
 
-import { createTodo, deleteTodo, TodoData } from "@/app/actions/todos";
+import type { TodoData } from "@/app/actions/todos";
+import { createTodo, deleteTodo } from "@/app/actions/todos";
 import { format } from "date-fns";
 import { CheckCircle, Clock, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -32,7 +33,6 @@ export default function TodosClient({ initialTodos, users }: { initialTodos: any
     title: "",
     description: "",
     priority: "MEDIUM",
-    dueDate: undefined,
     assignedToId: "",
   });
 

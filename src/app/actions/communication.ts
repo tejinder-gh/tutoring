@@ -67,8 +67,8 @@ export async function updateQueryStatus(queryId: string, status: QueryStatus) {
     where: { id: queryId },
     data: {
       status,
-      resolvedById: status === "RESOLVED" || status === "CLOSED" ? session.user.id : undefined,
-      resolvedAt: status === "RESOLVED" || status === "CLOSED" ? new Date() : undefined,
+      resolvedById: status === "RESOLVED" || status === "CLOSED" ? session.user.id : null,
+      resolvedAt: status === "RESOLVED" || status === "CLOSED" ? new Date() : null,
     },
   });
 
